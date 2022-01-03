@@ -1,0 +1,361 @@
+---
+title: "QC: Replicate Agreement Object Creation"
+author: "Chase Mateusiak"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+  Tally the 90minuteInduction experiment set.
+  brentlabRnaSeqTools package version: `r packageVersion("brentlabRnaSeqTools")`
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{Creating Experiment Set Objects for Replicate Agreement QC}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  include = TRUE,
+  eval = FALSE
+)
+```
+
+# Introduction
+
+This illustrates how to construct the data object for the Sample Agreement QC 
+step -- RLE -- on each of the data sets. In each case, once you have added the 
+design (the last step for each set), you need to write the object to file and 
+send it to the cluster. I suggest mounting to the cluster and writing to the 
+mounted directory. See the vignette _Running DESeq on HTCF_ for instructions on 
+running DESeq on HTCF.  
+
+You can see all defined sets by entering `?createExperimentSet`. If an experiment 
+set you are interested in does not exist as an option in `set_names`, then you'll 
+need to use the `extractColData(blrs)` of the `blrs` object below to play around 
+and come up with a set of filters to define your new set. See the github repository, 
+"R/ExperimentSetFunctions.R" for examples
+
+## Setup the environment 
+
+```{r setup}
+library(brentlabRnaSeqTools)
+library(rtracklayer)
+library(tidyverse)
+library(caret)
+
+# set variables 
+
+KN99_GFF_PATH = Sys.getenv("kn99_gff")
+DB_USERNAME = Sys.getenv("db_username")
+DB_PASSWORD = Sys.getenv("db_password")
+
+# note: I mount to the cluster and output directly to it
+DDS_OUTPUT_DIR = Sys.getenv("OUTPUT_DIR")
+TODAY = format(lubridate::today(),"%Y%m%d")
+
+# controls whether dds objects are written
+WRITE_OUT = TRUE
+```
+
+## Pull the database
+
+```{r}
+blrs = brentlabRnaSeqSetFromDatabase('kn99',DB_USERNAME, DB_PASSWORD)
+
+# filter down to just the protein coding genes. Note that this works because the
+# nctr-rna annotations were all added to the end of the annotation file.
+blrs = blrs[1:6967,]
+```
+
+## Add gene level data (optional)
+
+```{r}
+# this adds all of the data regarding each locus as a GRange object to the
+# gene data slot of the brentlabRnaSeqSet object. Useful if you are going to
+# use other Bioconductor packages, or brentlabRnaSeqTools::createIgvBrowserShot()
+
+kn99_gff = rtracklayer::import(KN99_GFF_PATH)
+
+kn99_genes = kn99_gff[kn99_gff$ID %in% rownames(blrs)]
+
+rowRanges(blrs) = kn99_genes[order(match(kn99_genes$ID,rownames(blrs)))]
+```
+
+# 90minuteInduction
+
+## 2016 grant set
+
+This is the data set defined by the single locus KOs in 90minuteInduction 
+conditions for genotypes in the `grant_df` (this is a data object which is 
+loaded as part of `brentlabRnaSeqTools` -- take a look if you are interested)
+
+### Create the set and quality filter
+
+```{r}
+blrs_90min_grant = createExperimentSet(blrs, 'ninetyMin_2016Grant')
+
+# note that this filters out those samples which failed QC1, 
+# but but does not filter on RLE unless the argument rle_iqr_threshold 
+# is set to a numeric value
+blrs_90min_grant_fltr = qaFilter(blrs_90min_grant)
+
+# remove WT which fall on dates with no perturbed samples
+blrs_90min_grant_fltr = 
+  filterWtByExperimentalLibdate_90min(blrs_90min_grant_fltr)
+```
+
+### Add the design
+
+```{r}
+
+blrs_90min_grant_fltr = estimateSizeFactorsByProtocol(blrs_90min_grant_fltr)
+
+min_libdate = min(as.Date(colData(blrs_90min_grant_fltr)$libraryDate))
+
+colData(blrs_90min_grant_fltr)$libraryDate = 
+  colData(blrs_90min_grant_fltr)$libraryDate %>%
+  relevel(ref = as.character(min_libdate)) %>%
+  droplevels()
+
+colData(blrs_90min_grant_fltr)$libraryProtocol = 
+  colData(blrs_90min_grant_fltr)$libraryProtocol %>%
+  factor() %>%
+  relevel(ref = "SolexaPrep") %>%
+  droplevels()
+
+colData(blrs_90min_grant_fltr)$genotype1 = 
+  colData(blrs_90min_grant_fltr)$genotype1 %>%
+  relevel(ref = "CNAG_00000") %>%
+  droplevels()
+
+mm = model.matrix(~libraryProtocol+libraryDate+genotype1, 
+                  extractColData(blrs_90min_grant_fltr))
+
+min_new_protocol = min(as.Date((unique(pull(filter(
+  extractColData(blrs_90min_grant_fltr), 
+  libraryProtocol == 'E7420L'), 
+  libraryDate)))))
+
+mm = mm[,-which(colnames(mm) == paste0('libraryDate',min_new_protocol))]
+```
+
+#### inspect the model matrix for linear dependencies
+
+```{r}
+lin_dep_report = caret::findLinearCombos(mm)
+```
+
+#### add the design to the object
+
+```{r}
+design(blrs_90min_grant_fltr) = mm
+rm(mm)
+
+if(WRITE_OUT){
+  
+  outpath = file.path(DDS_OUTPUT_DIR,
+                      "90minDataFreeze",
+                      TODAY,
+                      "grant_only_input.rds")
+  
+  dds = DESeq2::DESeqDataSetFromMatrix(
+    colData = extractColData(blrs_90min_grant_fltr),
+    countData = counts(blrs_90min_grant_fltr),
+    design = design(blrs_90min_grant_fltr))
+  
+  sizeFactors(dds) = sizeFactors(blrs_90min_grant_fltr)
+  
+  write_rds(dds, outpath)
+}
+```
+
+## 2016 Grant Set with Doubles
+
+This has all double KO samples in which either of the KO loci are in the `grant_df`, 
+plus single KO samples corresponding to one of the double KO perturbed loci and 
+WT.
+
+### Create set and quality filter
+
+```{r}
+blrs_grant_with_doubles = createExperimentSet(blrs, 'ninetyMin_2016GrantWithDoubles')
+
+# note that this filters out those samples which failed QC1, 
+# but but does not filter on RLE unless the argument rle_iqr_threshold 
+# is set to a numeric value
+blrs_grant_with_doubles_fltr = qaFilter(blrs_grant_with_doubles)
+
+# remove WT which fall on dates with no perturbed samples
+blrs_grant_with_doubles_fltr = 
+  filterWtByExperimentalLibdate_90min(blrs_grant_with_doubles_fltr)
+```
+
+### Add the design
+
+```{r}
+blrs_grant_with_doubles_fltr = estimateSizeFactorsByProtocol(blrs_grant_with_doubles_fltr)
+
+min_libdate = min(as.Date(colData(blrs_grant_with_doubles_fltr)$libraryDate))
+
+colData(blrs_grant_with_doubles_fltr)$libraryDate = 
+  colData(blrs_grant_with_doubles_fltr)$libraryDate %>%
+  relevel(ref = as.character(min_libdate)) %>%
+  droplevels()
+
+# add a 'genotype' column which is a concatenation of genotype1 and genotype2
+colData(blrs_grant_with_doubles_fltr)$genotype = 
+  paste(colData(blrs_grant_with_doubles_fltr)$genotype1,
+        colData(blrs_grant_with_doubles_fltr)$genotype2,
+        sep = "_") %>%
+  str_remove('_$') %>%
+  factor() %>%
+  relevel(ref = "CNAG_00000") %>%
+  droplevels()
+
+colData(blrs_grant_with_doubles_fltr)$libraryProtocol = 
+  colData(blrs_grant_with_doubles_fltr)$libraryProtocol %>%
+  factor() %>%
+  relevel(ref = "SolexaPrep") %>%
+  droplevels()
+
+mm = model.matrix(~libraryProtocol+libraryDate+genotype, 
+                  extractColData(blrs_grant_with_doubles_fltr))
+
+min_new_protocol = min(
+  as.Date(
+    (unique(
+      pull(
+        filter(extractColData(blrs_grant_with_doubles_fltr), 
+               libraryProtocol == 'E7420L'), libraryDate)))))
+
+mm = mm[,-which(colnames(mm) == paste0('libraryDate',min_new_protocol))]
+```
+
+#### inspect the model matrix for linear dependencies
+
+```{r}
+lin_dep_report = caret::findLinearCombos(mm)
+lin_dep_report
+```
+
+#### add the design to the object
+
+```{r}
+design(blrs_grant_with_doubles_fltr) = mm
+rm(mm)
+
+if(WRITE_OUT){
+  
+  outpath = file.path(DDS_OUTPUT_DIR,
+                      "90minDataFreeze",
+                      TODAY,
+                      "grant_doubles_input.rds")
+  
+  dds = DESeq2::DESeqDataSetFromMatrix(
+    colData = extractColData(blrs_grant_with_doubles_fltr),
+    countData = counts(blrs_grant_with_doubles_fltr),
+    design = design(blrs_grant_with_doubles_fltr))
+  
+  sizeFactors(dds) = sizeFactors(blrs_grant_with_doubles_fltr)
+  
+  write_rds(dds, outpath)
+}
+```
+
+## All
+
+This set is all samples -- singles and doubles -- which are in the 
+90minuteInduction conditions. 
+
+### Create set and quality filter
+
+```{r}
+blrs_90min_all = createExperimentSet(blrs, 'ninetyMin_all')
+
+# note that this filters out those samples which failed QC1, 
+# but but does not filter on RLE unless the argument rle_iqr_threshold 
+# is set to a numeric value
+blrs_90min_all_fltr = qaFilter(blrs_90min_all)
+
+# remove WT which fall on dates with no perturbed samples
+blrs_90min_all_fltr = 
+  filterWtByExperimentalLibdate_90min(blrs_90min_all_fltr)
+```
+
+### Add the design
+
+```{r}
+blrs_90min_all_fltr = estimateSizeFactorsByProtocol(blrs_90min_all_fltr)
+
+min_libdate = min(as.Date(colData(blrs_90min_all_fltr)$libraryDate))
+
+colData(blrs_90min_all_fltr)$libraryDate = 
+  colData(blrs_90min_all_fltr)$libraryDate %>%
+  relevel(ref = as.character(min_libdate)) %>%
+  droplevels()
+
+# add a 'genotype' column which is a concatenation of genotype1 and genotype2
+colData(blrs_90min_all_fltr)$genotype = 
+  paste(colData(blrs_90min_all_fltr)$genotype1,
+        colData(blrs_90min_all_fltr)$genotype2,
+        sep = "_") %>%
+  str_remove('_$') %>%
+  factor() %>%
+  relevel(ref = "CNAG_00000") %>%
+  droplevels()
+
+colData(blrs_90min_all_fltr)$libraryProtocol = 
+  colData(blrs_90min_all_fltr)$libraryProtocol %>%
+  factor() %>%
+  relevel(ref = "SolexaPrep") %>%
+  droplevels()
+
+mm = model.matrix(~libraryProtocol+libraryDate+genotype, 
+                  extractColData(blrs_90min_all_fltr))
+
+min_new_protocol = min(
+  as.Date(
+    (unique(
+      pull(
+        filter(extractColData(blrs_90min_all_fltr), 
+               libraryProtocol == 'E7420L'), libraryDate)))))
+
+mm = mm[,-which(colnames(mm) == paste0('libraryDate',min_new_protocol))]
+```
+
+#### inspect the model matrix for linear dependencies
+
+```{r}
+lin_dep_report = caret::findLinearCombos(mm)
+lin_dep_report
+```
+
+#### add the design to the object
+
+```{r}
+design(blrs_90min_all_fltr) = mm
+rm(mm)
+
+if(WRITE_OUT){
+  
+  outpath = file.path(DDS_OUTPUT_DIR,
+                      "90minDataFreeze",
+                      TODAY,
+                      "90min_all_input.rds")
+  
+  dds = DESeq2::DESeqDataSetFromMatrix(
+    colData = extractColData(blrs_90min_all_fltr),
+    countData = counts(blrs_90min_all_fltr),
+    design = design(blrs_90min_all_fltr))
+  
+  sizeFactors(dds) = sizeFactors(blrs_90min_all_fltr)
+  
+  write_rds(dds, outpath)
+}
+```

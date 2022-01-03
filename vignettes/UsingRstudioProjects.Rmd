@@ -1,0 +1,66 @@
+---
+title: "UsingRstudioProjects"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{UsingRstudioProjects}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  include = TRUE,
+  eval = FALSE
+)
+```
+
+# Using an Rstudio project
+
+## install devtools
+
+```{r}
+install.packages("devtools")
+```
+
+## set your working directory
+
+If you do not already have a directory in which you store the projects you work 
+on, create one. I suggest a direcory called `projects` in your `$HOME`
+
+```{r}
+project_dir = "~/projects"
+if(!dir.exists(project_dir)){
+  dir.create(project_dir)
+}
+setwd(project_dir)
+```
+
+## Create a new Rstudio project
+
+A project is a subset of the infrastructure in an R software package. You can use 
+a virtual environment, .Renviron files for environmental variables, etc. It is a 
+tool for reproducibility
+
+```{r}
+# if this is for the nineyMinuteInduction data, for example, you might call 
+# this project "ninetyMinInduction".
+project_name = "my_new_project"
+
+usethis::create_project(project_name)
+```
+
+## Using the project directory
+
+A new Rstudio session will launch in your new project directory. Now, whenever 
+you launch this project, all of your environment variables in .Renviron will be 
+loaded. If you are using a virtual environment (a good idea. Use `renv`), then 
+your virtual environment will be automatically launched, also.  
+
+The `/R` directory is for R scripts. You could make a `notebooks` directory, or 
+just put the notebook in the project parent directory, for example.
+
+It is in the `/R` directory that the ninetyMinInduction script should go -- see 
+the Quickstart.

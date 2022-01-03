@@ -1,0 +1,7 @@
+^renv$
+^renv\.lock$
+^brentlabRnaSeqTools\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^SINGULARITY
+brentlabRnaSeqTools.sif

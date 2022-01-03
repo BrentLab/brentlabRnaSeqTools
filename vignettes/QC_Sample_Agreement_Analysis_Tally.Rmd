@@ -1,0 +1,382 @@
+---
+title: "QC: Replicate Agreement Analysis and tally"
+author: "Chase Mateusiak"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+  Tally the 90minuteInduction experiment set.
+  brentlabRnaSeqTools package version: `r packageVersion("brentlabRnaSeqTools")`
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{Conduct RLE and update database}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  include = TRUE,
+  eval = FALSE
+)
+```
+
+# Introduction
+
+TODO it is possible for the database to be updated between submitting 
+
+## Setup the environment 
+
+```{r setup}
+library(brentlabRnaSeqTools)
+library(rtracklayer)
+library(tidyverse)
+library(caret)
+
+# set variables ----
+
+KN99_GFF_PATH = Sys.getenv("kn99_gff")
+DB_USERNAME = Sys.getenv("db_username")
+DB_PASSWORD = Sys.getenv("db_password")
+
+DESEQ_OUTPUT_LIST = list(
+  ninetyMin_grant = "/mnt/htcf_scratch/chasem/rnaseq_pipeline/experiments/90minDataFreeze/20211215/grant_only_20211215_output.rds",
+  ninetyMin_2016GrantWithDoubles = "/mnt/htcf_scratch/chasem/rnaseq_pipeline/experiments/90minDataFreeze/20211215/grant_doubles_20211215_output.rds",
+ ninetyMin_all = "/mnt/htcf_scratch/chasem/rnaseq_pipeline/experiments/90minDataFreeze/20211215/90min_all_20211215_output.rds"
+)
+
+# controls whether dds objects are written
+UPDATE_DB = FALSE
+
+# Pull the database ----
+blrs = brentlabRnaSeqSetFromDatabase('kn99',DB_USERNAME, DB_PASSWORD)
+
+# filter down to just the protein coding genes. Note that this works because the
+# nctr-rna annotations were all added to the end of the annotation file.
+blrs = blrs[1:6967,]
+
+# Add gene level data (optional) ----
+
+# this adds all of the data regarding each locus as a GRange object to the
+# gene data slot of the brentlabRnaSeqSet object. Useful if you are going to
+# use other Bioconductor packages, or brentlabRnaSeqTools::createIgvBrowserShot()
+
+kn99_gff = rtracklayer::import(KN99_GFF_PATH)
+
+kn99_genes = kn99_gff[kn99_gff$ID %in% rownames(blrs)]
+
+rowRanges(blrs) = kn99_genes[order(match(kn99_genes$ID,rownames(blrs)))]
+```
+
+# 90minuteInduction
+
+## 2016 grant set
+
+This is the data set defined by the single locus KOs in 90minuteInduction 
+conditions for genotypes in the `grant_df` (this is a data object which is 
+loaded as part of `brentlabRnaSeqTools` -- take a look if you are interested)
+
+### Create the set
+
+```{r ninetyMin grant set}
+# get deseq output object
+blrs_90min_grant_qc_passing = readRDS(DESEQ_OUTPUT_LIST$ninetyMin_grant)
+```
+
+### RLE transform
+
+#### set unwanted parameters and replicate groups
+
+```{r 90min grant unwanted params and replicate groups}
+
+# define unwanted design indicies ----
+
+unwanted_indicies = which(startsWith(colnames(design(
+  blrs_90min_grant_qc_passing)), "library"))
+
+# set replicate groups ----
+
+replicate_split = 
+  as_tibble(colData(blrs_90min_grant_qc_passing)) %>%
+  group_by(genotype1) %>%
+  group_split()
+
+replicate_names = 
+  lapply(replicate_split, 
+         function(x) 
+           as.character(unique(pull(x,genotype1))))
+
+replicate_sample_list = 
+  lapply(replicate_split, function(x) 
+    as.vector(pull(x,fastqFileName)))
+
+names(replicate_sample_list) = replicate_names
+```
+
+#### get unwated parameter effect removed quants
+
+```{r 90min grant remove prameter effects rle}
+removed_effect_log_norm = removeParameterEffects(blrs_90min_grant_qc_passing, 
+                                                 unwanted_indicies)
+
+removed_effect_rle_by_replicate_group = 
+  rleByReplicateGroup(replicate_sample_list,
+                      removed_effect_log_norm, 
+                      log2_transformed_flag = TRUE)
+
+removed_effect_rle_summary = 
+  as_tibble(bind_rows(lapply(removed_effect_rle_by_replicate_group, 
+                             rleSummary)), 
+            rownames = "fastqFileName") %>% 
+  left_join(as_tibble(colData(blrs_90min_grant_qc_passing)), 
+            by='fastqFileName')
+```
+
+```{r 90min grant log norm rle}
+log_norm_rle = calculateRLE(counts(blrs_90min_grant_qc_passing), 
+                            log2_transformed_flag = FALSE)
+
+log_norm_rle_by_replicate_group = 
+  rleByReplicateGroup(replicate_sample_list,
+                      log_norm_rle, 
+                      log2_transformed_flag = TRUE)
+
+log_norm_rle_summary = 
+  as_tibble(bind_rows(lapply(log_norm_rle_by_replicate_group, 
+                             rleSummary)), rownames = "fastqFileName") %>% 
+  left_join(as_tibble(colData(blrs_90min_grant_qc_passing)), 
+            by='fastqFileName')
+```
+
+#### Update the database
+
+```{r 90min grant update DB}
+if(UPDATE_DB){
+  
+ update_df = removed_effect_rle_summary %>%
+   select(replicateAgreementNumber, rle_iqr, rle_median_deviation) %>%
+   dplyr::rename(ninetyMin_iqr = rle_iqr, 
+                 ninetyMin_median_dev = rle_median_deviation)
+  
+ res = patchTable(
+  database_info$kn99$urls$replicateAgreement,
+  Sys.getenv("kn99_token"),
+  update_df,
+  "replicateAgreementNumber") 
+}
+
+# check status ----
+## failures should only be those without enough replicates to calculate RLE
+x = map(res, ~as.numeric(.$status_code))
+x[unlist(x) != 200]
+```
+
+## 2016 Grant Set with Doubles
+
+This is the data set defined by the double and corresponding single locus KOs 
+in 90minuteInduction conditions for genotypes in the `grant_df` 
+(this is a data object which is loaded as part of `brentlabRnaSeqTools` -- 
+take a look if you are interested)
+
+### Create the set
+
+```{r 90min grant doubles set}
+# Read in the processed data (post DESeq)
+blrs_grant_with_doubles_passing = readRDS(DESEQ_OUTPUT_LIST$ninetyMin_2016GrantWithDoubles)
+```
+
+### RLE transform
+
+#### set unwanted parameters and replicate groups
+
+```{r 90min grant with doubles unwanted params and replicate groups}
+
+# define unwanted design indicies ----
+
+unwanted_indicies = which(startsWith(colnames(design(
+  blrs_grant_with_doubles_passing)), "library"))
+
+# set replicate groups ----
+
+replicate_split = 
+  as_tibble(colData(blrs_grant_with_doubles_passing)) %>%
+  group_by(genotype) %>%
+  group_split()
+
+replicate_names = 
+  lapply(replicate_split, 
+         function(x) 
+           as.character(unique(pull(x,genotype))))
+
+replicate_sample_list = 
+  lapply(replicate_split, function(x) 
+    as.vector(pull(x,fastqFileName)))
+
+names(replicate_sample_list) = replicate_names
+```
+
+#### get unwated parameter effect removed quants
+
+```{r 90min grant with doubles removed effect rle}
+removed_effect_log_norm = removeParameterEffects(blrs_grant_with_doubles_passing, 
+                                                 unwanted_indicies)
+
+removed_effect_rle_by_replicate_group = 
+  rleByReplicateGroup(replicate_sample_list,
+                      as_tibble(removed_effect_log_norm), 
+                      log2_transformed_flag = TRUE)
+
+removed_effect_rle_summary = 
+  as_tibble(bind_rows(lapply(removed_effect_rle_by_replicate_group, 
+                             rleSummary)), 
+            rownames = "fastqFileName") %>% 
+  left_join(as_tibble(colData(blrs_grant_with_doubles_passing)), 
+            by='fastqFileName')
+```
+
+```{r 90min grant with doubles log norm rle}
+log_norm_rle = calculateRLE(counts(blrs_grant_with_doubles_passing), 
+                            log2_transformed_flag = FALSE)
+
+log_norm_rle_by_replicate_group = 
+  rleByReplicateGroup(replicate_sample_list,
+                      as_tibble(log_norm_rle), 
+                      log2_transformed_flag = TRUE)
+
+log_norm_rle_summary = 
+  as_tibble(bind_rows(lapply(log_norm_rle_by_replicate_group, 
+                             rleSummary)), rownames = "fastqFileName") %>% 
+  left_join(as_tibble(colData(blrs_grant_with_doubles_passing)), 
+            by='fastqFileName')
+```
+
+#### Update the database
+
+```{r 90min grant with doubles update db}
+if(UPDATE_DB){
+  
+ update_df = removed_effect_rle_summary %>%
+   select(replicateAgreementNumber, rle_iqr, rle_median_deviation) %>%
+   dplyr::rename(ninetyMin_grantDoubles_iqr = rle_iqr, 
+                 ninetyMin_grantDoubles_median_dev = rle_median_deviation)
+  
+ res = patchTable(
+  database_info$kn99$urls$replicateAgreement,
+  Sys.getenv("kn99_token"),
+  update_df,
+  "replicateAgreementNumber") 
+}
+
+# check status ----
+## failures should only be those without enough replicates to calculate RLE
+x = map(res, ~as.numeric(.$status_code))
+x[unlist(x) != 200]
+```
+
+## All
+
+This is all samples in the 90minte induction conditions in the database. single 
+and double deletions are included.
+
+### Create set and quality filter
+
+```{r 90min all create set}
+# Read in the processed data (post DESeq)
+blrs_90min_all_fltr = readRDS(DESEQ_OUTPUT_LIST$ninetyMin_all)
+```
+
+### RLE transform
+
+#### set unwanted parameters and replicate groups
+
+```{r 90min all unwanted params and replicate groups}
+
+# define unwanted design indicies ----
+
+unwanted_indicies = which(startsWith(colnames(design(
+  blrs_90min_all_fltr)), "library"))
+
+# set replicate groups ----
+
+replicate_split = 
+  as_tibble(colData(blrs_90min_all_fltr)) %>%
+  group_by(genotype) %>%
+  group_split()
+
+replicate_names = 
+  lapply(replicate_split, 
+         function(x) 
+           as.character(unique(pull(x,genotype))))
+
+replicate_sample_list = 
+  lapply(replicate_split, function(x) 
+    as.vector(pull(x,fastqFileName)))
+
+names(replicate_sample_list) = replicate_names
+```
+
+#### get unwated parameter effect removed quants
+
+```{r 90min all removed effect rle}
+removed_effect_log_norm = removeParameterEffects(blrs_90min_all_fltr, 
+                                                 unwanted_indicies)
+
+removed_effect_rle_by_replicate_group = 
+  rleByReplicateGroup(replicate_sample_list,
+                      as_tibble(removed_effect_log_norm), 
+                      log2_transformed_flag = TRUE)
+
+removed_effect_rle_summary = 
+  as_tibble(bind_rows(lapply(removed_effect_rle_by_replicate_group, 
+                             rleSummary)), 
+            rownames = "fastqFileName") %>% 
+  left_join(as_tibble(colData(blrs_90min_all_fltr)), 
+            by='fastqFileName')
+```
+
+```{r 90min all log norm rle}
+log_norm_rle = calculateRLE(counts(blrs_90min_all_fltr), 
+                            log2_transformed_flag = FALSE)
+
+log_norm_rle_by_replicate_group = 
+  rleByReplicateGroup(replicate_sample_list,
+                      as_tibble(log_norm_rle), 
+                      log2_transformed_flag = TRUE)
+
+log_norm_rle_summary = 
+  as_tibble(bind_rows(lapply(log_norm_rle_by_replicate_group, 
+                             rleSummary)), rownames = "fastqFileName") %>% 
+  left_join(as_tibble(colData(blrs_90min_all_fltr)), 
+            by='fastqFileName')
+```
+
+#### update the database
+
+```{r 90min all update db}
+UPDATE_DB = TRUE
+if(UPDATE_DB){
+  
+ update_df = removed_effect_rle_summary %>%
+   select(replicateAgreementNumber, rle_iqr, rle_median_deviation) %>%
+   dplyr::rename(ninetyMin_all_iqr = rle_iqr, 
+                 ninetyMin_all_median_dev = rle_median_deviation)
+  
+ res = patchTable(
+  database_info$kn99$urls$replicateAgreement,
+  Sys.getenv("kn99_token"),
+  update_df,
+  "replicateAgreementNumber") 
+}
+
+# check status ----
+## failures should only be those without enough replicates to calculate RLE
+x = map(res, ~as.numeric(.$status_code))
+x[unlist(x) != 200]
+
+```
+
