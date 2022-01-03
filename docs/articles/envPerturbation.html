@@ -134,13 +134,15 @@
 </h1>
 <p>If the experiment set you want is not already created, issue an ‘issue report’, and describe the <strong>EXACT</strong> filter that you want to use to create the set. What goes into your set depends on what you describe as your filter, so spend time with the database to figure out what is there.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">blrs_ep</span> <span class="op">=</span> <span class="fu"><a href="../reference/createExperimentSet.html">createExperimentSet</a></span><span class="op">(</span><span class="va">blrs</span>, <span class="st">'envPert'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">blrs_ep</span> <span class="op">=</span> <span class="fu"><a href="../reference/createExperimentSet.html">createExperimentSet</a></span><span class="op">(</span><span class="va">blrs</span>, <span class="st">'envPert_epWT'</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level1">
 <h1 id="quality-filter">Quality Filter<a class="anchor" aria-label="anchor" href="#quality-filter"></a>
 </h1>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">blrs_ep_qc_passing</span> <span class="op">=</span> <span class="fu"><a href="../reference/qaFilter.html">qaFilter</a></span><span class="op">(</span><span class="va">blrs_ep</span>, rle_iqr_threshold <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">blrs_ep_qc_passing</span> <span class="op">=</span> <span class="fu"><a href="../reference/qaFilter.html">qaFilter</a></span><span class="op">(</span><span class="va">blrs_ep</span>, 
+                              rle_iqr_threshold <span class="op">=</span> <span class="fl">1</span>, 
+                              iqr_colname <span class="op">=</span> <span class="st">"envPert_iqr"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level1">
 <h1 id="expression-filter">Expression filter<a class="anchor" aria-label="anchor" href="#expression-filter"></a>
@@ -151,29 +153,33 @@
 <span class="co"># Below is an example. You need to think about the thresholds and filter method </span>
 <span class="co"># that suits your purpose best.</span>
 
-<span class="va">mid_expression_filter</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu">edgeR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="fu">counts</span><span class="op">(</span><span class="va">blrs_ep_qc_passing_param_fltr</span><span class="op">)</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">4</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">4</span>
+<span class="va">expr_fltr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu">edgeR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="fu">counts</span><span class="op">(</span><span class="va">blrs_ep_qc_passing</span><span class="op">)</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">4</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">4</span>
 
-<span class="va">blrs_ep_qc_passing_param_fltr</span> <span class="op">=</span> <span class="va">blrs_ep_qc_passing_param_fltr</span><span class="op">[</span><span class="va">mid_expression_filter</span>,<span class="op">]</span></code></pre></div>
+<span class="va">blrs_ep_qc_passing_expr_fltr</span> <span class="op">=</span> <span class="va">blrs_ep_qc_passing</span><span class="op">[</span><span class="va">expr_fltr</span>,<span class="op">]</span></code></pre></div>
 </div>
 <div class="section level1">
 <h1 id="set-design">Set Design<a class="anchor" aria-label="anchor" href="#set-design"></a>
 </h1>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span> <span class="op">=</span> 
-  <span class="fu"><a href="https://rdrr.io/r/stats/relevel.html" class="external-link">relevel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span>,
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing_expr_fltr</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span> <span class="op">=</span> 
+  <span class="fu"><a href="https://rdrr.io/r/stats/relevel.html" class="external-link">relevel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing_expr_fltr</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span>,
           ref <span class="op">=</span> <span class="st">'YPD_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_30'</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing</span><span class="op">)</span> <span class="op">=</span> 
-  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing</span>, 
-          <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing_expr_fltr</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu">DataFrame</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing_expr_fltr</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># NOTE!! Not full rank with genotype included</span>
-<span class="fu">design</span><span class="op">(</span><span class="va">blrs_ep_qc_passing</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></span><span class="op">(</span><span class="op">~</span><span class="va">libraryDate</span><span class="op">+</span><span class="va">genotype1</span><span class="op">+</span><span class="va">concat_treatment</span><span class="op">)</span></code></pre></div>
+<span class="fu">design</span><span class="op">(</span><span class="va">blrs_ep_qc_passing_expr_fltr</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></span><span class="op">(</span><span class="op">~</span><span class="va">libraryDate</span><span class="op">+</span><span class="va">concat_treatment</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level1">
+<h1 id="coerce-back-to-deseqdataobjects-for-proessing">Coerce back to DeseqDataObjects for proessing<a class="anchor" aria-label="anchor" href="#coerce-back-to-deseqdataobjects-for-proessing"></a>
+</h1>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">blrs_ep_qc_passing_expr_fltr</span> <span class="op">=</span> <span class="fu"><a href="../reference/coerceToDds.html">coerceToDds</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing_expr_fltr</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level1">
 <h1 id="write-out">Write out<a class="anchor" aria-label="anchor" href="#write-out"></a>
 </h1>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="va">WRITE_OUT</span><span class="op">)</span><span class="op">{</span>
   <span class="va">today</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/now.html" class="external-link">today</a></span><span class="op">(</span><span class="op">)</span>,<span class="st">"%Y%m%d"</span><span class="op">)</span>
 
@@ -181,29 +187,15 @@
 
   <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">output_dir</span>, recursive<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
 
-  <span class="co"># note: this is probably better done with a function and map() as the list gets</span>
-  <span class="co">#       longer</span>
   <span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">write_rds</a></span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">E7420L</span>,
-            <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>,<span class="st">"full_set_new_protocol_input.dds"</span><span class="op">)</span><span class="op">)</span>
-
-  <span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">write_rds</a></span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">SolexaPrep</span>,
-            <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"full_set_old_protocol_input.dds"</span><span class="op">)</span><span class="op">)</span>
-
-  <span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">write_rds</a></span><span class="op">(</span><span class="va">hold_out_set</span>,
-            <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"hold_out_set_raw_data.rds"</span><span class="op">)</span><span class="op">)</span>
-
-  <span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">write_rds</a></span><span class="op">(</span><span class="va">hold_out_set</span><span class="op">$</span><span class="va">E7420L</span>,
-            <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"train_set_new_protocol_input.rds"</span><span class="op">)</span><span class="op">)</span>
-
-  <span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">write_rds</a></span><span class="op">(</span><span class="va">hold_out_set</span><span class="op">$</span><span class="va">SolexaPrep</span>,
-            <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>, <span class="st">"train_set_old_protocol_input.rds"</span><span class="op">)</span><span class="op">)</span>
+            <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>,<span class="st">"envPert_epWT.dds"</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
 </div>
 <div class="section level1">
 <h1 id="copy-the-htcf-deseq-scripts-to-the-working-directory">Copy the HTCF DESeq scripts to the working directory<a class="anchor" aria-label="anchor" href="#copy-the-htcf-deseq-scripts-to-the-working-directory"></a>
 </h1>
 <p>These scripts will run DESeq in parallel on HTCF. The only items you’l need to edit is the path to the lookup file (if you are running more than one model), and to the dds_input in deseq_mpi.sh. If you do not keep deseq_de.R in the same directory as deseq_mpi.sh, then you’ll need to update the path to the deseq_de.R script, also.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="va">WRITE_OUT</span><span class="op">)</span><span class="op">{</span>
   <span class="va">htcf_deseq_scripts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'bash'</span>, 
                             <span class="st">'htcf_parallel_deseq.sh'</span>, 
