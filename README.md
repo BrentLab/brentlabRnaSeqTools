@@ -13,9 +13,7 @@ You can install the development version of brentlabRnaSeqTools from [GitHub](htt
 
 ``` r
 # install.packages("devtools")
-# note that while this is private, you'll need to include the `auth_token` 
-# argument
-devtools::install_github("BrentLab/brentlabRnaSeqTools", auth_token = 'asdf...')
+devtools::install_github("BrentLab/brentlabRnaSeqTools")
 ```
 
 ## Documentation
