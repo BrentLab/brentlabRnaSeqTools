@@ -99,13 +99,15 @@ goes into your set depends on what you describe as your filter, so spend time
 with the database to figure out what is there.
 
 ```{r}
-blrs_ep = createExperimentSet(blrs, 'envPert')
+blrs_ep = createExperimentSet(blrs, 'envPert_epWT')
 ```
 
 # Quality Filter
 
 ```{r}
-blrs_ep_qc_passing = qaFilter(blrs_ep, rle_iqr_threshold = 1)
+blrs_ep_qc_passing = qaFilter(blrs_ep, 
+                              rle_iqr_threshold = 1, 
+                              iqr_colname = "envPert_iqr")
 ```
 
 # Expression filter
@@ -125,25 +127,30 @@ of expression, which is shown below.
 # Below is an example. You need to think about the thresholds and filter method 
 # that suits your purpose best.
 
-mid_expression_filter <- rowSums(edgeR::cpm(counts(blrs_ep_qc_passing_param_fltr))>4) >= 4
+expr_fltr <- rowSums(edgeR::cpm(counts(blrs_ep_qc_passing))>4) >= 4
 
-blrs_ep_qc_passing_param_fltr = blrs_ep_qc_passing_param_fltr[mid_expression_filter,]
+blrs_ep_qc_passing_expr_fltr = blrs_ep_qc_passing[expr_fltr,]
 ```
 
 # Set Design
 
 ```{r}
-colData(blrs_ep_qc_passing)$concat_treatment = 
-  relevel(colData(blrs_ep_qc_passing)$concat_treatment,
+colData(blrs_ep_qc_passing_expr_fltr)$concat_treatment = 
+  relevel(colData(blrs_ep_qc_passing_expr_fltr)$concat_treatment,
           ref = 'YPD_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_30')
 
-colData(blrs_ep_qc_passing) = 
-  colData(blrs_ep_qc_passing, 
-          droplevels(as_tibble(colData(blrs_ep_qc_passing))))
+colData(blrs_ep_qc_passing_expr_fltr) = droplevels(DataFrame(colData(blrs_ep_qc_passing_expr_fltr)))
 
 # NOTE!! Not full rank with genotype included
-design(blrs_ep_qc_passing) = formula(~libraryDate+genotype1+concat_treatment)
+design(blrs_ep_qc_passing_expr_fltr) = formula(~libraryDate+concat_treatment)
 ```
+
+# Coerce back to DeseqDataObjects for proessing
+
+```{r}
+blrs_ep_qc_passing_expr_fltr = coerceToDds(blrs_ep_qc_passing_expr_fltr)
+```
+
 
 # Write out
 
@@ -155,22 +162,8 @@ if(WRITE_OUT){
 
   dir.create(output_dir, recursive=TRUE)
 
-  # note: this is probably better done with a function and map() as the list gets
-  #       longer
   write_rds(fltr_full_set_90min$E7420L,
-            file.path(output_dir,"full_set_new_protocol_input.dds"))
-
-  write_rds(fltr_full_set_90min$SolexaPrep,
-            file.path(output_dir, "full_set_old_protocol_input.dds"))
-
-  write_rds(hold_out_set,
-            file.path(output_dir, "hold_out_set_raw_data.rds"))
-
-  write_rds(hold_out_set$E7420L,
-            file.path(output_dir, "train_set_new_protocol_input.rds"))
-
-  write_rds(hold_out_set$SolexaPrep,
-            file.path(output_dir, "train_set_old_protocol_input.rds"))
+            file.path(output_dir,"envPert_epWT.dds"))
 }
 ```
 
