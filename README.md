@@ -20,5 +20,5 @@ devtools::install_github("BrentLab/brentlabRnaSeqTools", auth_token = 'asdf...')
 
 ## Documentation
 
-(Please visit this site for documentation)[]
+[Please visit this site for documentation](https://brentlab.github.io/brentlabRnaSeqTools)
 
