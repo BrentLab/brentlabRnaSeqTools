@@ -20,5 +20,3 @@ devtools::install_github("BrentLab/brentlabRnaSeqTools")
 ## Documentation
 
 [Please visit this site for documentation](https://brentlab.github.io/brentlabRnaSeqTools)
-
-
