@@ -12,22 +12,10 @@ sendCountsToDatabase(htseq_path, run_number, auth_token, fastq_table_path)
 \item{run_number}{run number from which the sample originates}
 
 \item{auth_token}{your user authentication token to the database. See
-\link{brentlabRnaSeqTools}{getUserAuthToken}}
+\code{\link{getUserAuthToken}}}
 
 \item{fastq_table_path}{path to recent fastq table reflecting current state of
 database}
-
-\item{...}{
-  Arguments passed on to \code{\link[=postCounts]{postCounts}}
-  \describe{
-    \item{\code{database_counts_url}}{eg database_info$kn99_urls$Counts.
-See \code{\link{database_info}}}
-    \item{\code{count_df}}{the counts read in as a dataframe. Make sure there is no
-'feature' or 'gene_id' column. Colnames need to be the sample identifier}
-    \item{\code{fastq_table}}{a recent pull of the database fastq table}
-    \item{\code{count_file_suffix}}{the suffix appended to the fastqFileName in the
-count file column headings. default is "_read_count.tsv"}
-  }}
 }
 \value{
 http response

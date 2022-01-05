@@ -155,8 +155,8 @@ setClass("brentlabRnaSeqSetTransform", contains="DESeqTransform")
 
 #' brentlabRnaSeqSetTransform object and constructor. This extends DESeqTransform.
 #'
-#' Extends DESeqTransform for use in regularizedLogExpression
-#' It is used by \code{\link{regularizedLogExpression}}
+#' Extends DESeqTransform for use in rleTransform
+#' It is used by \code{\link{rleTransform}}
 #'
 #' @param SummarizedExperiment a RangedSummarizedExperiment
 #'

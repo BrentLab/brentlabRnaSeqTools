@@ -1,0 +1,21 @@
+Warning: A reporting limit ( -r All limit )should be set with the -r All option. Defaulting to 999.
+# novoalign (AVX2) (V3.09.01 - Build Nov 27 2018 @ 17:09:15) - A short read aligner with qualities.
+# (C) 2008-2016 Novocraft Technologies Sdn Bhd.
+# License file: /opt/apps/novoalign/3.09.01/novoalign.lic
+# Licensed to WASHINGTON UNIVERSITY
+#  novoalign -r All -c 8 -o SAM -d /scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_genome_fungidb.nix -f Brent_large_2994_GTAC_02_SIC_Index2_06_GCTTAGAATC_GACCTTGT_S3_R1_001.fastq.gz
+# Starting at Mon Oct 25 20:48:03 2021
+# Interpreting input files as Illumina FASTQ, Casava Pipeline 1.8 & later.
+# Index Build Version: 3.9
+#   Hash length:   10
+#     Step size:    1
+#     Read Sequences:  5964630
+#   Unique Alignment:  5734616 (96.1%)
+#       Multi Mapped:   184405 ( 3.1%)
+#   No Mapping Found:    44378 ( 0.7%)
+# QC Failures...
+# Homopolymer Filter:     1231 ( 0.0%)
+# Timers
+#       Elapsed Time: 436.746 (secs.)
+#           CPU Time: 51.52 (min.)
+# Done at Mon Oct 25 20:55:26 2021

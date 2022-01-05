@@ -1,3 +1,5 @@
+# TODO use inheritParams etc to reduce redundancy in documentation
+
 #' Get the combined metadata as a tibble from a remote database
 #'
 #' @description Join the biosample, rnasample, s1sample, s2sample, library, fastqFiles and qualityAssessment tables (in that order, left joins) and return the result as a tibble
@@ -568,10 +570,9 @@ postTable = function(database_table_url, auth_token, df){
 #' @param htseq_path path to htseq-counts output
 #' @param run_number run number from which the sample originates
 #' @param auth_token your user authentication token to the database. See
-#'   \link{brentlabRnaSeqTools}{getUserAuthToken}
+#'   \code{\link{getUserAuthToken}}
 #' @param fastq_table_path path to recent fastq table reflecting current state of
 #'   database
-#' @inheritDotParams postCounts
 #'
 #' @return http response
 #'

@@ -24,6 +24,7 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Analysis_Tally.html">QC: Replicate Agreement Analysis and tally</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement Object Creation</a>
     <a class="dropdown-item" href="../articles/Replicate_Tallies.html">Replicate_Tallies</a>
@@ -199,6 +200,12 @@
         <dd>filter low replicate parameters from metadata</dd>
       </dl><dl><dt>
           
+          <code><a href="geneGRanges.html">geneGRanges()</a></code> 
+        </dt>
+        <dd>Given a GenomicFeatures annotation_db and a gene_id, extract an GRanges
+object of the cds</dd>
+      </dl><dl><dt>
+          
           <code><a href="getGeneNames.html">getGeneNames()</a></code> 
         </dt>
         <dd>Get gene names</dd>
@@ -229,6 +236,26 @@
         <dd>the 2016 grant summary represented as a dataframe</dd>
       </dl><dl><dt>
           
+          <code><a href="htseq_libraryComplexity.html">htseq_libraryComplexity()</a></code> 
+        </dt>
+        <dd>Calculate percentage of library accounted for by top expressed genes</dd>
+      </dl><dl><dt>
+          
+          <code><a href="htseq_locusLog2cpm.html">htseq_locusLog2cpm()</a></code> 
+        </dt>
+        <dd>Get the log2cpm of a given locus in the htseq output</dd>
+      </dl><dl><dt>
+          
+          <code><a href="htseq_notAlignedTotalPercent.html">htseq_notAlignedTotalPercent()</a></code> 
+        </dt>
+        <dd>Extract notAlignedTotalPercent from novoalign log</dd>
+      </dl><dl><dt>
+          
+          <code><a href="htseq_proteinCodingTotal.html">htseq_proteinCodingTotal()</a></code> 
+        </dt>
+        <dd>Calculate KN99 protein coding total</dd>
+      </dl><dl><dt>
+          
           <code><a href="isNumeric.html">isNumeric()</a></code> 
         </dt>
         <dd>test if argument is numeric</dd>
@@ -249,6 +276,11 @@
         <dd>To view a data.frame / data.table in LibreOffice Calc</dd>
       </dl><dl><dt>
           
+          <code><a href="locusCoverage.html">locusCoverage()</a></code> 
+        </dt>
+        <dd>Calculate coverage over a given feature</dd>
+      </dl><dl><dt>
+          
           <code><a href="moveNfCoFastqFiles.html">moveNfCoFastqFiles()</a></code> 
         </dt>
         <dd>move fastq files from lts to scratch for nf-co/rnaseq pipeline</dd>
@@ -257,6 +289,16 @@
           <code><a href="parseComparatives.html">parseComparatives()</a></code> 
         </dt>
         <dd>parse text comparative sentence</dd>
+      </dl><dl><dt>
+          
+          <code><a href="parseNovoalignLog.html">parseNovoalignLog()</a></code> 
+        </dt>
+        <dd>Parse a novoalign log</dd>
+      </dl><dl><dt>
+          
+          <code><a href="passing_genes_all.html">passing_genes_all</a></code> 
+        </dt>
+        <dd>genes considered NOT to have 'high dispersion'</dd>
       </dl><dl><dt>
           
           <code><a href="patchTable.html">patchTable()</a></code> 
@@ -363,6 +405,11 @@ a leading 0, eg 0647.</dd>
           <code><a href="splitProtocolGroups.html">splitProtocolGroups()</a></code> 
         </dt>
         <dd>Split a brentlabRnaSeqSet into two by protocol</dd>
+      </dl><dl><dt>
+          
+          <code><a href="strandedScanBamParam.html">strandedScanBamParam()</a></code> 
+        </dt>
+        <dd>A helper function to create a ScanBamParam object</dd>
       </dl><dl><dt>
           
           <code><a href="testBamPath.html">testBamPath()</a></code> 

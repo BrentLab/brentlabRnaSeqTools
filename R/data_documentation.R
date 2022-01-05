@@ -26,3 +26,10 @@
 #' @description also check the google sheet
 #'
 "grant_df"
+
+#'
+#' genes considered NOT to have 'high dispersion'
+#'
+#' @description union of old and new protocol
+#'
+"passing_genes_all"

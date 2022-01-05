@@ -24,6 +24,7 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Analysis_Tally.html">QC: Replicate Agreement Analysis and tally</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement Object Creation</a>
     <a class="dropdown-item" href="../articles/Replicate_Tallies.html">Replicate_Tallies</a>
@@ -65,28 +66,10 @@
 <dd><p>run number from which the sample originates</p></dd>
 <dt>auth_token</dt>
 <dd><p>your user authentication token to the database. See
-brentlabRnaSeqToolsgetUserAuthToken</p></dd>
+<code><a href="getUserAuthToken.html">getUserAuthToken</a></code></p></dd>
 <dt>fastq_table_path</dt>
 <dd><p>path to recent fastq table reflecting current state of
 database</p></dd>
-<dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="postCounts.html">postCounts</a></code></p><dl><dt><code>database_counts_url</code></dt>
-<dd><p>eg database_info$kn99_urls$Counts.
-See <code><a href="database_info.html">database_info</a></code></p></dd>
-
-    <dt><code>count_df</code></dt>
-<dd><p>the counts read in as a dataframe. Make sure there is no
-'feature' or 'gene_id' column. Colnames need to be the sample identifier</p></dd>
-
-    <dt><code>fastq_table</code></dt>
-<dd><p>a recent pull of the database fastq table</p></dd>
-
-    <dt><code>count_file_suffix</code></dt>
-<dd><p>the suffix appended to the fastqFileName in the
-count file column headings. default is "_read_count.tsv"</p></dd>
-
-  
-</dl></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>

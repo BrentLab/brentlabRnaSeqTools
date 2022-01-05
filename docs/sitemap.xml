@@ -10,6 +10,9 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/QC_Library_Quality.html</loc>
+  </url>
+  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/QC_Sample_Agreement_Analysis_Tally.html</loc>
   </url>
   <url>
@@ -124,6 +127,9 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/fltrLowReplicateParams.html</loc>
   </url>
   <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/geneGRanges.html</loc>
+  </url>
+  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/getGeneNames.html</loc>
   </url>
   <url>
@@ -142,6 +148,18 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/grant_df.html</loc>
   </url>
   <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/htseq_libraryComplexity.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/htseq_locusLog2cpm.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/htseq_notAlignedTotalPercent.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/htseq_proteinCodingTotal.html</loc>
+  </url>
+  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/index.html</loc>
   </url>
   <url>
@@ -157,10 +175,19 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/localView.html</loc>
   </url>
   <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/locusCoverage.html</loc>
+  </url>
+  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/moveNfCoFastqFiles.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/parseComparatives.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/parseNovoalignLog.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/passing_genes_all.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/patchTable.html</loc>
@@ -224,6 +251,9 @@
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/splitProtocolGroups.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/strandedScanBamParam.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/testBamPath.html</loc>

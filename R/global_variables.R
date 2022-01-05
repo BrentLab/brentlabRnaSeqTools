@@ -47,7 +47,9 @@ misc = c("strain_status", "qc_passing_iqr_filtered",
          "Intragenic\ Rate", "rRNA\ Rate", "Estimated\ Library\ Complexity", "expression_profiling_efficiency",
          "exonic_rate", "intronic_rate", "intergenic_rate", "intragenic_rate", "rRna_rate", "estimated_library_complexity",
          "V1", "V2", "destination", "replicate_group","genotype", "colData<-", 'nn', 'pivot_wider', 'E7420L', 'SolexaPrep',
-         'RLE', 'replicate_group_counts', 'feature', 'colname', 'assay<-', 'unique_identifier')
+         'RLE', 'replicate_group_counts', 'feature', 'colname', 'assay<-',
+         'unique_identifier', 'replicate_group_rle', 'total', 'head', 'metric',
+         'reads', 'percent')
 
 package_data_variables = c("test_metadata",
                            "run_numbers_with_leading_zero",

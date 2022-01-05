@@ -1,0 +1,43 @@
+---
+title: "QC: Library Quality"
+author: "Chase Mateusiak"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+  Details of library quality metrics and thresholds
+  brentlabRnaSeqTools package version: `r packageVersion("brentlabRnaSeqTools")`
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{Library Quality Metrics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  include = TRUE,
+  eval = FALSE
+)
+```
+
+# Cryptococcus
+
+Metric                     | Threshold | Status
+-------------------------- | --------- | ---
+Protein Coding Total       | 1e6       | 1
+Not Aligned Total Percent  | .07       | 2
+Perturbed Coverage         | .25       | 4
+NAT coverage: expected     | .5        | 8
+NAT log2cpm: expected      | 5         | 8
+NAT coverage: unexpected   | .5        | 16
+NAT log2cpm: unexpected    | 2.5       | 16
+G418 log2cpm: expected     | 5.687583  | 32
+G418 log2cpm: unexpected   | 5.687583  | 64 
+overexpression FOW         | 2         | 128
+missing marker in metadata |           | 256

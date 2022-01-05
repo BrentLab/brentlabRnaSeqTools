@@ -15,6 +15,6 @@ brentlabRnaSeqSetTransform(SummarizedExperiment)
 a brentlabRnaSeqSetTransform object
 }
 \description{
-Extends DESeqTransform for use in regularizedLogExpression
-It is used by \code{\link{regularizedLogExpression}}
+Extends DESeqTransform for use in rleTransform
+It is used by \code{\link{rleTransform}}
 }

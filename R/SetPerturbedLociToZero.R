@@ -17,7 +17,7 @@ setPerturbedLociToZero = function(object){
 
   count_matrix = counts(object)
 
-  if(!startsWith(rownames(counts(blrs))[1], "CKF44")){
+  if(!startsWith(rownames(counts(object))[1], "CKF44")){
     stop("This function is only set up for single perturbation 90 min induction
          currently. Rownames of object/counts must be the KN99 gene ids, with
          the correct CKF44 prefix")

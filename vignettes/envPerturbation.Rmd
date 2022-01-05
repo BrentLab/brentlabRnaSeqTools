@@ -89,6 +89,8 @@ kn99_gff = rtracklayer::import(KN99_GFF_PATH)
 kn99_genes = kn99_gff[kn99_gff$ID %in% rownames(blrs)]
 
 rowRanges(blrs) = kn99_genes[order(match(kn99_genes$ID,rownames(blrs)))]
+
+rownames(blrs) = rowData(blrs)$ID
 ```
 
 # Create Set
@@ -135,14 +137,15 @@ blrs_ep_qc_passing_expr_fltr = blrs_ep_qc_passing[expr_fltr,]
 # Set Design
 
 ```{r}
-colData(blrs_ep_qc_passing_expr_fltr)$concat_treatment = 
+colData(blrs_ep_qc_passing_expr_fltr)$concat_treatment =
   relevel(colData(blrs_ep_qc_passing_expr_fltr)$concat_treatment,
           ref = 'YPD_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_30')
 
-colData(blrs_ep_qc_passing_expr_fltr) = droplevels(DataFrame(colData(blrs_ep_qc_passing_expr_fltr)))
 
-# NOTE!! Not full rank with genotype included
-design(blrs_ep_qc_passing_expr_fltr) = formula(~libraryDate+concat_treatment)
+colData(blrs_ep_qc_passing_expr_fltr) = 
+  droplevels(DataFrame(colData(blrs_ep_qc_passing_expr_fltr)))
+
+design(blrs_ep_qc_passing_expr_fltr) = formula(~libraryDate + concat_treatment)
 ```
 
 # Coerce back to DeseqDataObjects for proessing
