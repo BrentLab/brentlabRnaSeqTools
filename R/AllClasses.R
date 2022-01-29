@@ -44,10 +44,10 @@ brentlabRnaSeqSet = function(dds = NULL) {
 
 #' @rdname brentlabRnaSeqSet
 #' @export
-brentlabRnaSeqSetFromDatabase = function(organism,
-                                         username,
-                                         password,
-                                         full_rnaseq_only = TRUE){
+brentlabRnaSeqSetFromDatabase =  function(organism,
+                                          username,
+                                          password,
+                                          full_rnaseq_only = TRUE){
 
   metadata = getMetadata(database_info[[organism]]$db_host,
                          database_info[[organism]]$db_name,
@@ -60,9 +60,9 @@ brentlabRnaSeqSetFromDatabase = function(organism,
     mutate(fastqFileName = str_remove(fastqFileName, ".fastq.gz"))
 
   raw_counts = getRawCounts(database_info[[organism]]$db_host,
-                         database_info[[organism]]$db_name,
-                         username,
-                         password)
+                            database_info[[organism]]$db_name,
+                            username,
+                            password)
 
   gene_ids = getGeneNames(database_info[[organism]]$db_host,
                           database_info[[organism]]$db_name,
@@ -77,6 +77,17 @@ brentlabRnaSeqSetFromDatabase = function(organism,
   if(full_rnaseq_only){
     # note -- this run was missing during lts re-org.
     metadata = filter(metadata, purpose == "fullRNASeq", runNumber != 5361)
+  }
+
+  if(length(setdiff(metadata$fastqFileName, colnames(raw_counts))) != 0){
+    message(
+      paste0("WARNING: there are fullRun fastqFileNames in the metadata ",
+             "which are not present in the counts. This means that there is ",
+             "an unprocessed run(s?). Proceeding with only those samples for ",
+             "which counts exist.")
+      )
+    metadata = metadata %>%
+      filter(fastqFileName %in% colnames(raw_counts))
   }
 
   raw_counts = raw_counts[, metadata$fastqFileName]
