@@ -1,0 +1,17 @@
+pandoc: 2.7.3
+pkgdown: 2.0.2
+pkgdown_sha: ~
+articles:
+  QC_Library_Quality: QC_Library_Quality.html
+  QC_Sample_Agreement_Analysis_Tally: QC_Sample_Agreement_Analysis_Tally.html
+  QC_Sample_Agreement_Objects: QC_Sample_Agreement_Objects.html
+  Replicate_Tallies: Replicate_Tallies.html
+  UsingRstudioProjects: UsingRstudioProjects.html
+  envPerturbation: envPerturbation.html
+  ninetyMinInduction_tally: ninetyMinInduction_tally.html
+  ninetyMinuteInduction_analysis: ninetyMinuteInduction_analysis.html
+last_built: 2022-01-29T16:29Z
+urls:
+  reference: https://brentlab.github.io/brentlabRnaSeqTools/reference
+  article: https://brentlab.github.io/brentlabRnaSeqTools/articles
+
