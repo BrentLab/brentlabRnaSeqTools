@@ -6,11 +6,9 @@
 \usage{
 locusCoverage(
   bam_path,
-  bam_index_path,
-  annote_obj_path,
-  gene_id,
-  strandedness,
-  feature = "cds",
+  locus_granges,
+  library_strandedness,
+  index_suffix = ".bai",
   coverage_threshold = 0,
   ...
 )
@@ -18,21 +16,21 @@ locusCoverage(
 \arguments{
 \item{bam_path}{path to a given samples alignment file (.bam)}
 
-\item{bam_index_path}{path to a given sample's alignment file index (.bai)}
+\item{locus_granges}{a granges object for a given gene
+(or some other feature on only one strand)}
 
-\item{annote_obj_path}{path to an annotation file parsed by rtracklayer::import}
+\item{library_strandedness}{one of c("reverse", "same", "unstranded")}
 
-\item{gene_id}{the ID of a gene in the db. Eg, for cryptococcus CKF44_05222}
-
-\item{strandedness}{one of c("reverse", "same", "unstranded")}
-
-\item{feature}{one of c("cds", "exon"), determines which feature to extract
-from the annotations. Note that case is not important -- it will be handled
-correctly in the function regardless.}
+\item{index_suffix}{suffix to append to bampath. Default .bai}
 
 \item{coverage_threshold}{minimum threshold to consider. Default is 0}
 
-\item{...}{other arguments to \link{strandedScanBamParam}}
+\item{...}{
+  Arguments passed on to \code{\link[=strandedScanBamParam]{strandedScanBamParam}}
+  \describe{
+    \item{\code{quality_threshold}}{quality threshold above which reads will be
+considered. 20l is default, which is chosen b/c it is the default for HTSeq}
+  }}
 }
 \value{
 coverage of feature

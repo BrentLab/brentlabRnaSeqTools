@@ -1,4 +1,20 @@
 #'
+#' create a sample sheet for the novoalign pipeline
+#'
+#'
+createNovoalignPipelineSamplesheet = function(metadata, sequence_dir_prefix){
+
+  metadata$runNumber = unlist(map(metadata$runNumber, getRunNumberLeadingZero))
+
+  metadata %>%
+    mutate(fastqFilePath = file.path(sequence_dir_prefix,
+                              paste0("run_",runNumber, "_samples"),
+                              paste0(fastqFileName, ".fastq.gz")),
+           strandedness = ifelse(libraryProtocol == "E7420L", "reverse", "unstranded")) %>%
+    select(fastqFilePath, strandedness)
+}
+
+#'
 #' create nf-co sample sheet
 #'
 #' @description create a samplesheet for the nf-co rnaseq pipeline

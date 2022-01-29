@@ -1,0 +1,190 @@
+---
+title: "Process a New Run From MGI"
+author: "Chase Mateusiak"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+  After receiving a new run from MGI, align, count and QC
+  brentlabRnaSeqTools package version: `r packageVersion("brentlabRnaSeqTools")`
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{Process a New Run}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  include = TRUE,
+  eval = FALSE
+)
+```
+
+```{r setup}
+library(brentlabRnaSeqTools)
+library(tidyverse)
+```
+
+# Get the metadata from the database
+
+```{r}
+meta = getMetadata(
+  database_info$kn99$db_host,
+  database_info$kn99$db_name,
+  Sys.getenv("db_username"),
+  Sys.getenv("db_password")
+)
+```
+
+# Filter out the reads of interest
+
+```{r}
+run_df = meta %>%
+  filter(runNumber == 5500)
+```
+
+# Look at it. Make sure it is correct
+
+```{r}
+View(run_df)
+```
+
+# Write out and move it to the cluster
+
+```{r}
+sample_sheet = createNovoalignPipelineSamplesheet(run_df, "/scratch/mblab/chasem/rnaseq_pipeline/scratch_sequence")
+
+write_csv(sample_sheet, "/path/to/where/you/write_things/run_<some_identifier>.csv")
+```
+
+# Move it to HTCF
+
+Log into HTCF and make a directory that will store the input/output for this 
+run. For example, if I were processing 
+`run_1234`, I would log into HTCF and make a directory like so:
+
+```{bash}
+$ mkdir /scratch/mblab/chasem/rnaseq_pipeline/align_count_results/run_1234
+```
+
+You could mount HTCf and write to some scratch directly as if it were on your 
+computer. Another way is to write to your computer, and then send it to htcf 
+with `scp`. To do this, open a terminal and enter the following:
+
+```{bash}
+# copy the file from your computer to a directory in your personal subdirectory 
+# of the lab scratch space
+$ scp /path/to/where/you/write_things/run_<some_identifier>.csv \ 
+      <your_username>@htcf.wustl.edu:/scratch/mblab/<your_username>/rnaseq_pipeline/align_count_results/run_1234
+```
+
+Please note that there is no requirement that the path look like this:
+`<your_username>/rnaseq_pipeline/align_count_results/run_1234`. It is just an 
+example of what it might look like.
+
+# Login to HTCF and start the pipeline
+
+The first time you do this, navigate to your scratch space and do this:
+
+```{bash}
+$ git clone https://github.com/cmatKhan/brentlab_rnaseq_nf.git
+```
+
+If you have done this before, navigate into your brentlab_rnaseq_nf directory 
+and do this:
+
+```{bash}
+$ git pull https://github.com/cmatKhan/brentlab_rnaseq_nf.git
+```
+
+If you get some sort of error that says something like, "this is not a git directory", 
+then HTCF deleted some files. In that case, navigate out of `brentlab_rnaseq_nf`, 
+delete it (`rm -rf brentlab_rnaseq_nf`), and use the `git clone` command 
+described above.
+
+# Copy the fastq files into scratch
+
+I suggest having a `rnaseq_pipeline` directory in your personal scratch space. 
+If you don't have one, make one, or otherwise navigate to where ever you are 
+keeping rnaseq type data. 
+[You can use the script here for the job](https://github.com/BrentLab/brentlabRnaSeqTools/blob/main/inst/bash/fastqFilesToScratchFromSamplesheet.sh). 
+Ask if you need help setting this up to use on HTCF. Here is an example, assuming 
+that you have this scriptin your `$PWD`
+
+
+```{bash}
+$ ./fastqFilesToScratchFromSamplesheet.sh path/to/sample_sheet.csv /lts/mblab/sequence_data/rnaseq_data/lts_sequence
+```
+
+# Run the pipeline
+Navigate into the directory into which you are going to store the input/output 
+of the pipeline, eg:
+
+```{bash}
+$ cd rnaseq_pipeline/align_count_results/run_1234
+```
+
+## Make the params file
+
+You will need a file describing the experiment. This should go into the directory 
+where the input/output is stored. It must look like this, and the paths must be 
+correct. Save this as, eg, params_run1234.json. [The example below is also shown 
+here](https://github.com/BrentLab/brentlabRnaSeqTools/blob/main/inst/params_example.json)
+
+```{json}
+{
+"output_dir": ".",
+"sample_sheet": "path/to/sample_sheet.csv",
+"run_number": "1234",
+"KN99_novoalign_index": "/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_genome_fungidb.nix",
+"KN99_fasta": "/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_genome_fungidb.fasta",
+"KN99_stranded_annotation_file": "/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_stranded_annotations_fungidb_augment.gff",
+"KN99_unstranded_annotation_file": "/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_no_strand_annotations_fungidb_augment.gff",
+"htseq_count_feature": "exon"
+}
+
+```
+
+## Run nextflow
+
+Next, make a script to run the pipeline. [An example may be found here]((https://github.com/BrentLab/brentlabRnaSeqTools/blob/main/inst/bash/run_novo_nf_pipeline.sh), 
+or you can copy/paste what is below into a file.
+
+```{bash}
+#!/bin/bash
+
+#SBATCH --time=15:00:00  # right now, 15 hours. change depending on time expectation to run
+#SBATCH --mem-per-cpu=10G
+#SBATCH -J your_jobname.out
+#SBATCH -o your_jobname.out
+
+ml miniconda
+
+# until HTCF updates and spack is available, this works. When HTCF updates and 
+# we have spack, ill update this...though at that point, hopefully we are no 
+# longer using this pipeline
+source activate /scratch/mblab/chasem/rnaseq_pipeline/conda_envs/nextflow
+
+mkdir tmp
+
+nextflow run /path/to/brentlab_rnaseq_nf/main.nf \ 
+             -params-file /path/to/your_params.json
+
+```
+
+You can check progress by looking at the squeue and the `<your_jobname>.out`. 
+Right now, it is taking a very long time for HTCF to launch nextflow. When HTCF 
+updates to the 'new' implementation, it starts much faster.
+
+# QC
+
+```{r}
+
+```
+

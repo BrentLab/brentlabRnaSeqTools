@@ -1,0 +1,10 @@
+{
+  "output_dir": ".",
+  "sample_sheet": "path/to/sample_sheet.csv",
+  "run_number": "1234",
+  "KN99_novoalign_index": "/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_genome_fungidb.nix",
+  "KN99_fasta": "/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_genome_fungidb.fasta",
+  "KN99_stranded_annotation_file": "/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_stranded_annotations_fungidb_augment.gff",
+  "KN99_unstranded_annotation_file": "/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_no_strand_annotations_fungidb_augment.gff",
+  "htseq_count_feature": "exon"
+}

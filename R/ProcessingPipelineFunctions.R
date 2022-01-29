@@ -83,37 +83,30 @@ parseNovoalignLog = function(novoalign_log_path){
 #'
 #' @param annote_obj_path path to an annotation file parsed by rtracklayer::import
 #' @param gene_id the ID of a gene in the db. Eg, for cryptococcus CKF44_05222
-#' @param feature one of c("cds", "exon"), determines which feature to extract
-#'   from the annotations. Note that case is not important -- it will be handled
-#'   correctly in the function regardless.
+#' @param id_col gene feature column. Default is 'ID'
+#' @param feature_col feature (col 3) column of annote_obj. Default is 'type'
+#' @param feature what feature to select. Default is 'cds'
 #' @references rtracklayer::import
 #'
-#' @return an IRanges object of the given gene's exons
+#' @return an IRanges object of a given feature (eg, a gene's cds features)
 #'
 #' @export
-geneGRanges = function(annote_obj_path, gene_id, feature){
-
-  # TODO generalize this to 'featureGranges'
+geneGRanges = function(annote_obj_path, gene_id, id_col = "ID",
+                       feature_col = "type", feature = "cds"){
 
   annot_obj = readRDS(annote_obj_path)
 
   if(!class(annot_obj) == "GRanges"){
     stop(paste0("annote_obj_path must lead to a GRanges object. ",
-         "It should be created with a command similar to the ",
-         "following: rtracklayer::import('path/to/gff')"))
-  }
-
-  if(!str_detect(feature, regex("cds|exon", ignore_case = TRUE))){
-    stop("Only 'cds' and 'exon' are supported currently. Note that the input
-         case is not important -- it is handled correctly in the function
-         regardless.")
+                "It should be created with a command similar to the ",
+                "following: rtracklayer::import('path/to/gff')"))
   }
 
   regions = tryCatch(
     expr = {
-      annot_obj[str_detect(annot_obj$ID, gene_id) &
-                  str_detect(annot_obj$type,
-                             regex(feature, ignore_case = TRUE))]
+      annot_obj[grepl(gene_id, annot_obj@elementMetadata[,id_col]) &
+                  grepl(feature, annot_obj@elementMetadata[,feature_col],
+                        ignore.case = TRUE),]
     },
     error = function(e){
       message(
@@ -143,7 +136,7 @@ geneGRanges = function(annote_obj_path, gene_id, feature){
 #'
 #' @param locus_granges a granges object for a given gene
 #'   (or some other feature on only one strand)
-#' @param strandedness one of c("reverse", "same", "unstranded")
+#' @param library_strandedness one of c("reverse", "same", "unstranded")
 #' @param quality_threshold quality threshold above which reads will be
 #'   considered. 20l is default, which is chosen b/c it is the default for HTSeq
 #'
@@ -154,7 +147,7 @@ geneGRanges = function(annote_obj_path, gene_id, feature){
 #' @seealso \code{\link[Rsamtools]{ScanBamParam}}
 #'
 #' @export
-strandedScanBamParam = function(locus_granges, strandedness, quality_threshold=20L){
+strandedScanBamParam = function(locus_granges, library_strandedness, quality_threshold=20L){
 
   # ensure the locus is entirely on the same strand, error out if not
   if(!length(gene_strand) == 1){
@@ -284,34 +277,31 @@ htseq_libraryComplexity = function(htseq_filename, num_genes = 25){
 #'
 #' @inheritParams strandedScanBamParam
 #' @inheritParams geneGRanges
+#' @inheritDotParams strandedScanBamParam
 #'
 #' @param bam_path path to a given samples alignment file (.bam)
-#' @param bam_index_path path to a given sample's alignment file index (.bai)
+#' @param index_suffix suffix to append to bampath. Default .bai
 #' @param coverage_threshold minimum threshold to consider. Default is 0
-#' @param ... other arguments to \link{strandedScanBamParam}
 #'
 #' @return coverage of feature
 #'
 #' @export
-locusCoverage = function(bam_path, bam_index_path, annote_obj_path, gene_id,
-                         strandedness, feature = "cds",
+locusCoverage = function(bam_path, locus_granges, library_strandedness,
+                         index_suffix = ".bai",
                          coverage_threshold = 0, ...){
+
+  # construct index path
+  bam_index_path = paste0(bam_path, index_suffix)
   # check arguments
-  for(arg in c(bam_path, bam_index_path, annote_obj_path)){
+  for(arg in c(bam_path, bam_index_path)){
     if(!file.exists(arg)){
-      stop(paste0("path not valid: ", arg))
+      stop(paste0("path not valid: ", arg, ". If this ends in .bai, then
+                  it means you must first index the bam file. Make sure the
+                  index is saved in the same directory as the bam"))
     }
   }
 
-  if(!strandedness %in% c('unstranded', 'reverse', 'forward')){
-    stop(paste0("strandedness: ", strandedness, " invalid. Must be one of ",
-                "['unstranded', 'reverse', 'forward']"))
-  }
-
-  # get grange object of feature
-  gr = geneGRanges(annote_obj_path, gene_id, feature)
-
-  sbp = strandedScanBamParam(gr, strandedness, ...)
+  sbp = strandedScanBamParam(locus_granges, library_strandedness, ...)
 
   # set parameter options
   p_param <- PileupParam(min_mapq = sbp@mapqFilter,
@@ -327,8 +317,8 @@ locusCoverage = function(bam_path, bam_index_path, annote_obj_path, gene_id,
                        scanBamParam = sbp,
                        pileupParam = p_param)
 
-  message("done with gene_id: ", gene_id)
-  length(unique(coverage_df$pos))/sum(width(gr))
+  message("done")
+  length(unique(coverage_df$pos))/sum(width(locus_granges))
 }
 
 #' Get the log2cpm of a given locus in the htseq output
