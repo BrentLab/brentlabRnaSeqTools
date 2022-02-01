@@ -41,10 +41,10 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/ProccessRun.html">Process a New Run From MGI</a>
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Analysis_Tally.html">QC: Replicate Agreement Analysis and tally</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement Object Creation</a>
-    <a class="dropdown-item" href="../articles/Replicate_Tallies.html">Replicate_Tallies</a>
     <a class="dropdown-item" href="../articles/UsingRstudioProjects.html">UsingRstudioProjects</a>
     <a class="dropdown-item" href="../articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
     <a class="dropdown-item" href="../articles/ninetyMinInduction_tally.html">90 Minute Induction Tally</a>
@@ -70,7 +70,7 @@
       <img src="" class="logo" alt=""><h1>Environmental Perturbation Analysis Data Creation</h1>
                         <h4 data-toc-skip class="author">Chase Mateusiak</h4>
             
-            <h4 data-toc-skip class="date">01/29/2022</h4>
+            <h4 data-toc-skip class="date">02/01/2022</h4>
       
       
       <div class="d-none name"><code>envPerturbation.Rmd</code></div>
@@ -98,7 +98,7 @@
 
 <span class="co"># set variables </span>
 
-<span class="va">KN99_GFF_PATH</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"kn99_gff"</span><span class="op">)</span>
+<span class="va">KN99_GFF_RDS</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"kn99_stranded_gff_rds"</span><span class="op">)</span>
 <span class="va">DB_USERNAME</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_username"</span><span class="op">)</span>
 <span class="va">DB_PASSWORD</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_password"</span><span class="op">)</span>
 
@@ -109,24 +109,17 @@
 <span class="va">WRITE_OUT</span> <span class="op">=</span> <span class="cn">FALSE</span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="pull-the-database">Pull the database<a class="anchor" aria-label="anchor" href="#pull-the-database"></a>
+<h2 id="pull-the-database-as-a-brentlabrnaseqset-object">pull the database as a brentlabRnaSeqSet object<a class="anchor" aria-label="anchor" href="#pull-the-database-as-a-brentlabrnaseqset-object"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">blrs</span> <span class="op">=</span> <span class="fu"><a href="../reference/brentlabRnaSeqSet.html">brentlabRnaSeqSetFromDatabase</a></span><span class="op">(</span><span class="st">'kn99'</span>,<span class="va">DB_USERNAME</span>, <span class="va">DB_PASSWORD</span><span class="op">)</span>
-
-<span class="co"># filter down to just the protein coding genes. Note that this works because the</span>
-<span class="co"># nctr-rna annotations were all added to the end of the annotation file.</span>
-<span class="va">blrs</span> <span class="op">=</span> <span class="va">blrs</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6967</span>,<span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span class="va">blrs</span> <span class="op">=</span> <span class="fu"><a href="../reference/brentlabRnaSeqSet.html">brentlabRnaSeqSetFromDatabase</a></span><span class="op">(</span><span class="st">'kn99'</span>,<span class="va">DB_USERNAME</span>, <span class="va">DB_PASSWORD</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="add-gene-level-data-optional">Add gene level data (optional)<a class="anchor" aria-label="anchor" href="#add-gene-level-data-optional"></a>
 </h2>
+<p>this adds all of the data regarding each locus as a GRange object to the gene data slot of the brentlabRnaSeqSet object. Useful if you are going to use other Bioconductor packages.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># this adds all of the data regarding each locus as a GRange object to the</span>
-<span class="co"># gene data slot of the brentlabRnaSeqSet object. Useful if you are going to</span>
-<span class="co"># use other Bioconductor packages.</span>
-
-<span class="va">kn99_gff</span> <span class="op">=</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="va">KN99_GFF_PATH</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">kn99_gff</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">KN99_GFF_RDS</span><span class="op">)</span>
 
 <span class="va">kn99_genes</span> <span class="op">=</span> <span class="va">kn99_gff</span><span class="op">[</span><span class="va">kn99_gff</span><span class="op">$</span><span class="va">ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">]</span>
 

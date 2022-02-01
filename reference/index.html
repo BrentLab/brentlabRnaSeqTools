@@ -24,10 +24,10 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/ProccessRun.html">Process a New Run From MGI</a>
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Analysis_Tally.html">QC: Replicate Agreement Analysis and tally</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement Object Creation</a>
-    <a class="dropdown-item" href="../articles/Replicate_Tallies.html">Replicate_Tallies</a>
     <a class="dropdown-item" href="../articles/UsingRstudioProjects.html">UsingRstudioProjects</a>
     <a class="dropdown-item" href="../articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
     <a class="dropdown-item" href="../articles/ninetyMinInduction_tally.html">90 Minute Induction Tally</a>
@@ -60,6 +60,11 @@
 
       <dl><dt>
           
+          <code><a href="addQcColsToMeta.html">addQcColsToMeta()</a></code> 
+        </dt>
+        <dd>add qc metrics to metadata</dd>
+      </dl><dl><dt>
+          
           <code><a href="addRleSummaryStats.html">addRleSummaryStats()</a></code> 
         </dt>
         <dd>calculate RLE by replicate groups</dd>
@@ -68,6 +73,11 @@
           <code><a href="archiveDatabase.html">archiveDatabase()</a></code> 
         </dt>
         <dd>pull entire database (not counts) and save to output_dir for archival purposes</dd>
+      </dl><dl><dt>
+          
+          <code><a href="autoAuditQcTable.html">autoAuditQcTable()</a></code> 
+        </dt>
+        <dd>Audit a qc table with metrics added</dd>
       </dl><dl><dt>
           
           <code><a href="brentlabRnaSeqExperiment.html">brentlabRnaSeqExperiment()</a></code> 
@@ -160,6 +170,11 @@
         <dd>Samples with genotypes not in the grant_df</dd>
       </dl><dl><dt>
           
+          <code><a href="createNovoalignPipelineSamplesheet.html">createNovoalignPipelineSamplesheet()</a></code> 
+        </dt>
+        <dd>create a sample sheet for the novoalign pipeline</dd>
+      </dl><dl><dt>
+          
           <code><a href="createTestTrainSet.html">createTestTrainSet()</a></code> 
         </dt>
         <dd>create test train set</dd>
@@ -173,6 +188,11 @@
           <code><a href="database_info.html">database_info</a></code> 
         </dt>
         <dd>URLS to active databases</dd>
+      </dl><dl><dt>
+          
+          <code><a href="decomposeStatus2Bit.html">decomposeStatus2Bit()</a></code> 
+        </dt>
+        <dd>decompose sums of powers of two to a list of the summed powers</dd>
       </dl><dl><dt>
           
           <code><a href="estimateSizeFactorsByProtocol.html">estimateSizeFactorsByProtocol()</a></code> 
@@ -266,6 +286,16 @@ object of the cds</dd>
         <dd>Test if value is datatype integer64</dd>
       </dl><dl><dt>
           
+          <code><a href="kn99_novo_htseq_status.html">kn99_novo_htseq_status</a></code> 
+        </dt>
+        <dd>QC status codes for the novo+htseq pipeline</dd>
+      </dl><dl><dt>
+          
+          <code><a href="kn99_novo_htseq_thresholds.html">kn99_novo_htseq_thresholds</a></code> 
+        </dt>
+        <dd>thresholds set for the novo+htseq pipeline</dd>
+      </dl><dl><dt>
+          
           <code><a href="listTables.html">listTables()</a></code> 
         </dt>
         <dd>list tables in databse</dd>
@@ -284,6 +314,11 @@ object of the cds</dd>
           <code><a href="moveNfCoFastqFiles.html">moveNfCoFastqFiles()</a></code> 
         </dt>
         <dd>move fastq files from lts to scratch for nf-co/rnaseq pipeline</dd>
+      </dl><dl><dt>
+          
+          <code><a href="novoalignPipelineQC.html">novoalignPipelineQC()</a></code> 
+        </dt>
+        <dd>QC a crypto run output by the novoalign+htseq pipeline</dd>
       </dl><dl><dt>
           
           <code><a href="parseComparatives.html">parseComparatives()</a></code> 

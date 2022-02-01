@@ -24,10 +24,10 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/ProccessRun.html">Process a New Run From MGI</a>
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Analysis_Tally.html">QC: Replicate Agreement Analysis and tally</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement Object Creation</a>
-    <a class="dropdown-item" href="../articles/Replicate_Tallies.html">Replicate_Tallies</a>
     <a class="dropdown-item" href="../articles/UsingRstudioProjects.html">UsingRstudioProjects</a>
     <a class="dropdown-item" href="../articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
     <a class="dropdown-item" href="../articles/ninetyMinInduction_tally.html">90 Minute Induction Tally</a>
@@ -55,7 +55,13 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">postQcSheet</span><span class="op">(</span><span class="va">database_qc_url</span>, <span class="va">auth_token</span>, <span class="va">run_number</span>, <span class="va">new_qc_path</span>, <span class="va">fastq_table</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">postQcSheet</span><span class="op">(</span>
+  <span class="va">database_qc_url</span>,
+  <span class="va">auth_token</span>,
+  <span class="va">run_number</span>,
+  <span class="va">new_qc_path</span>,
+  <span class="va">fastq_table_path</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -69,8 +75,8 @@
 outside of their runs</p></dd>
 <dt>new_qc_path</dt>
 <dd><p>path to the new counts csv</p></dd>
-<dt>fastq_table</dt>
-<dd><p>a recent pull of the database fastq table</p></dd>
+<dt>fastq_table_path</dt>
+<dd><p>path to a recent pull of the database fastq table</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
