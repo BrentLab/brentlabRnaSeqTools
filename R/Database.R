@@ -77,11 +77,15 @@ getMetadata = function(database_host, database_name, database_user, database_pas
   return(metadata_df)
 }
 
+# TODO: storing the counts the 'wide' way in the database is WRONG. a long table
+# is created -- needs to be filled and this can then be re-written
+
 #' Get combined raw counts
 #'
 #' @importFrom RPostgres dbGetQuery dbDisconnect
 #' @importFrom dplyr bind_cols
 #' @importFrom jsonlite fromJSON
+#' @importFrom purrr map
 #'
 #' @param database_host if connecting to a database hosted on AWS,
 #'                      it might be something like ec2-54-83-201-96.compute-1.amazonaws.com
@@ -103,11 +107,13 @@ getRawCounts = function(database_host, database_name, database_user, database_pa
 
   counts = dbGetQuery(db, 'select "rawCounts" from counts')
 
-  counts_df = bind_cols(lapply(seq(1, length(counts$rawCounts)), function(x) (as.data.frame(fromJSON(counts$rawCounts[x]), check.names=FALSE))))
-
+  counts_df = map(counts$rawCounts,
+      ~head(as.data.frame(fromJSON(.), check.names = FALSE), 6967)) %>%
+    bind_cols()
   dbDisconnect(db)
 
-  return (counts_df)
+  message("WARNING: genes have been subset down to the first 1:6967 gene indicies")
+  counts_df
 }
 
 #' Get gene names
@@ -422,61 +428,25 @@ postCounts = function(database_counts_url, run_number, auth_token,
 #' @param run_number the run number of this qc sheet -- this is important b/c fastqFileNames aren't necessarily unique
 #'                   outside of their runs
 #' @param new_qc_path path to the new counts csv
-#' @param fastq_table a recent pull of the database fastq table
+#' @param fastq_table_path path to a recent pull of the database fastq table
 #'
 #' @return a list of httr::response() objects
 #'
 #' @export
-postQcSheet = function(database_qc_url, auth_token, run_number, new_qc_path, fastq_table) {
+postQcSheet = function(database_qc_url, auth_token,
+                       run_number, new_qc_path, fastq_table_path) {
+
+  fastq_df = brentlabRnaSeqTools::readInData(fastq_table_path)
 
   # fastqFileNames may not be unique outside of their run
-  fastq_table = filter(fastq_table, runNumber == run_number)
+  fastq_df = filter(fastq_df, runNumber == run_number)
 
   new_qc_df = brentlabRnaSeqTools::readInData(new_qc_path)
 
   new_qc_df = new_qc_df %>%
-    dplyr::rename(fastqFileName = FASTQFILENAME) %>%
-    dplyr::rename(librarySize = LIBRARY_SIZE) %>%
-    dplyr::rename(effectiveLibrarySize = EFFECTIVE_LIBRARY_SIZE) %>%
-    dplyr::rename(effectiveUniqueAlignment = EFFECTIVE_UNIQUE_ALIGNMENT) %>%
-    dplyr::rename(effectiveUniqueAlignmentPercent = EFFECTIVE_UNIQUE_ALIGNMENT_PERCENT) %>%
-    dplyr::rename(multiMapPercent = MULTI_MAP_PERCENT) %>%
-    dplyr::rename(proteinCodingTotal = PROTEIN_CODING_TOTAL) %>%
-    dplyr::rename(proteinCodingTotalPercent = PROTEIN_CODING_TOTAL_PERCENT) %>%
-    dplyr::rename(proteinCodingCounted = PROTEIN_CODING_COUNTED) %>%
-    dplyr::rename(proteinCodingCountedPercent = PROTEIN_CODING_COUNTED_PERCENT) %>%
-    dplyr::rename(ambiguousFeaturePercent = AMBIGUOUS_FEATURE_PERCENT) %>%
-    dplyr::rename(noFeaturePercent = NO_FEATURE_PERCENT) %>%
-    dplyr::rename(intergenicCoverage = INTERGENIC_COVERAGE) %>%
-    dplyr::rename(notAlignedTotalPercent = NOT_ALIGNED_TOTAL_PERCENT) %>%
-    dplyr::rename(genotype1Coverage = GENOTYPE1_COVERAGE) %>%
-    dplyr::rename(genotype1Log2cpm = GENOTYPE1_LOG2CPM) %>%
-    dplyr::rename(genotype2Coverage = GENOTYPE2_COVERAGE) %>%
-    dplyr::rename(genotype2Log2cpm = GENOTYPE2_LOG2CPM) %>%
-    dplyr::rename(overexpressionFOW = OVEREXPRESSION_FOW) %>%
-    dplyr::rename(natCoverage = NAT_COVERAGE) %>%
-    dplyr::rename(natLog2cpm = NAT_LOG2CPM) %>%
-    dplyr::rename(g418Coverage = G418_COVERAGE) %>%
-    dplyr::rename(g418Log2cpm = G418_LOG2CPM) %>%
-    dplyr::rename(noMapPercent = NO_MAP_PERCENT) %>%
-    dplyr::rename(homopolyFilterPercent = HOMOPOLY_FILTER_PERCENT) %>%
-    dplyr::rename(readLengthFilterPercent = READ_LENGTH_FILTER_PERCENT) %>%
-    dplyr::rename(tooLowAqualPercent = TOO_LOW_AQUAL_PERCENT) %>%
-    dplyr::rename(rRnaPercent = rRNA_PERCENT) %>%
-    dplyr::rename(nctrRnaPercent = nctrRNA_PERCENT) %>%
-    dplyr::rename(autoStatus = STATUS) %>%
-    dplyr::rename(autoAudit = AUTO_AUDIT) %>%
-    dplyr::rename(autoStatusDecomp = STATUS_DECOMP)
-
-  # TODO this is copied from postCounts() -- split this off into its own function to avoid repeating
-  # remove suffixes from the fastqfiles if they exist
-  fastq_table$fastqFileName = str_remove(fastq_table$fastqFileName, ".fastq.gz")
-
-  new_qc_df = new_qc_df %>%
-    left_join(fastq_table %>%
+    left_join(fastq_df %>%
                 filter(runNumber == run_number) %>%
-                select(fastqFileName, fastqFileNumber), by="fastqFileName") %>%
-    select(-fastqFileName)
+                select(fastqFileNumber))
 
   # check that we still have the same number of samples
   stopifnot(sum(is.na(new_qc_df$fastqFileNumber))==0)

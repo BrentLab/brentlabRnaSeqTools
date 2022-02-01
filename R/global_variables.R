@@ -49,7 +49,7 @@ misc = c("strain_status", "qc_passing_iqr_filtered",
          "V1", "V2", "destination", "replicate_group","genotype", "colData<-", 'nn', 'pivot_wider', 'E7420L', 'SolexaPrep',
          'RLE', 'replicate_group_counts', 'feature', 'colname', 'assay<-',
          'unique_identifier', 'replicate_group_rle', 'total', 'head', 'metric',
-         'reads', 'percent')
+         'reads', 'percent', 'Var1', 'Var2', 'fastqFilePath')
 
 package_data_variables = c("test_metadata",
                            "run_numbers_with_leading_zero",

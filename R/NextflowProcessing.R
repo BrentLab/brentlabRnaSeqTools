@@ -1,12 +1,19 @@
 #'
 #' create a sample sheet for the novoalign pipeline
 #'
+#' @param meta_df metadata for the samples you'd like to QC. note that these
+#'   must be included in the pipeline_output_dirpath
+#' @param sequence_dir_prefix filepath to append to the run_1234_samples/fastq.fq.gz
+#'   eg "/scratch/mblab/chasem/rnaseq_pipeline/scratch_sequence"
 #'
-createNovoalignPipelineSamplesheet = function(metadata, sequence_dir_prefix){
+#' @return a dataframe in correct format for novo+hsteq pipeline
+#'
+#' @export
+createNovoalignPipelineSamplesheet = function(meta_df, sequence_dir_prefix){
 
-  metadata$runNumber = unlist(map(metadata$runNumber, getRunNumberLeadingZero))
+  meta_df$runNumber = unlist(map(meta_df$runNumber, getRunNumberLeadingZero))
 
-  metadata %>%
+  meta_df %>%
     mutate(fastqFilePath = file.path(sequence_dir_prefix,
                               paste0("run_",runNumber, "_samples"),
                               paste0(fastqFileName, ".fastq.gz")),

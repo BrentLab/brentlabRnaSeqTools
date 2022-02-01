@@ -33,3 +33,17 @@
 #' @description union of old and new protocol
 #'
 "passing_genes_all"
+
+#'
+#' thresholds set for the novo+htseq pipeline
+#'
+#' @description list of metrics and their thresholds
+#'
+"kn99_novo_htseq_thresholds"
+
+#'
+#' QC status codes for the novo+htseq pipeline
+#'
+#' @description list of metrics and their statuses (powers of 2)
+#'
+"kn99_novo_htseq_status"

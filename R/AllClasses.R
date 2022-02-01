@@ -69,7 +69,10 @@ brentlabRnaSeqSetFromDatabase = function(organism,
                           username,
                           password)
 
-  gene_ids = gene_ids$gene_id
+  message("WARNING: subsetting gene ids down to only those with prefix CKF44")
+  gene_ids = gene_ids %>%
+    filter(startsWith(gene_id, "CKF44")) %>%
+    pull(gene_id)
 
   if(full_rnaseq_only){
     # note -- this run was missing during lts re-org.

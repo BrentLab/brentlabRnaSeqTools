@@ -37,7 +37,182 @@ NAT coverage: expected     | .5        | 8
 NAT log2cpm: expected      | 5         | 8
 NAT coverage: unexpected   | .5        | 16
 NAT log2cpm: unexpected    | 2.5       | 16
-G418 log2cpm: expected     | 5.687583  | 32
-G418 log2cpm: unexpected   | 5.687583  | 64 
+G418 log2cpm: expected     | 5.688     | 32
+G418 log2cpm: unexpected   | 5.688     | 64 
 overexpression FOW         | 2         | 128
 missing marker in metadata |           | 256
+
+Note that libraryComplexity is included in the qc metrics now, but there is 
+no threshold currently set. The default setting for libraryComplexity is to 
+calculate the portion of the total counts made up by the top 25 expressed genes
+
+```{r setup}
+library(brentlabRnaSeqTools)
+library(tidyverse)
+```
+
+# Get the metadata from the database
+
+```{r}
+meta = getMetadata(
+  database_info$kn99$db_host,
+  database_info$kn99$db_name,
+  Sys.getenv("db_username"),
+  Sys.getenv("db_password")
+)
+```
+
+# Filter out the reads of interest
+
+```{r}
+run_df = meta %>%
+  filter(runNumber == 5500)
+```
+
+# Create QC table
+
+You will need to have the cluster mounted to your local for this to work. 
+Note that you may get warnings about the index file being older than the 
+bam. That isn't critical and can generally be ignored, 
+though something I am aware of and trying to figure out.
+
+```{r}
+pipeline_out = "/mnt/scratch/rnaseq_pipeline/align_count_results/run_5500/rnaseq_pipeline_results/run_5500_samples"
+
+run_qc = novoalignPipelineQC(run_df, pipeline_out, Sys.getenv("kn99_stranded_gff_rds"))
+```
+
+# parse this out into a QC sheet
+
+```{r}
+
+qc_table = addQcColsToMeta(run_df, run_qc)
+
+
+# write_csv(dplyr::select(qc_df, -c(genotype1, genotype2, marker1, marker2)), 
+#           "~/Desktop/tmp/run_5500_qc.csv")
+```
+
+# auto and manual audit
+
+```{r}
+audited_qc_df = autoAuditQcTable(qc_table) %>%
+  # add manual audit columns
+  mutate(manualAudit = NA,
+         manualStatus = NA)
+```
+
+# update manual audit
+
+```{r}
+audited_qc_df = edit(audited_qc_df)
+
+audited_qc_df %>%
+  dplyr::select(-c(genotype1, genotype2, marker1, marker2)) %>%
+write_csv("~/Desktop/tmp/run_5500_qc.csv")
+```
+
+# post Counts to database
+
+```{r}
+count_files = Sys.glob(file.path(pipeline_out, "count", "*_read_count.tsv"))
+names(count_files) = str_remove(basename(count_files), "_read_count.tsv")
+
+compiled_counts = map(names(count_files), ~readHTSeqFile(count_files[[.]], .)) %>%
+  plyr::join_all() %>%
+  filter(!startsWith(feature, "__")) %>%
+  dplyr::select(-feature)
+
+fastq_df = read_csv("/mnt/lts/sequence_data/rnaseq_data/kn99_database_archive/20220131/fastqFiles.csv")
+
+# note: commented out to prevent me from accidently running this
+# res = postCounts(database_info$kn99$urls$counts, 
+#                  5500, 
+#                  Sys.getenv("kn99_db_token"), 
+#                  compiled_counts, 
+#                  fastq_df)
+# 
+# res
+```
+
+
+# Send QC to database
+
+```{r}
+
+# note: commented out in the vignette to prevent me from running accidently
+# res = postQcSheet_test(database_info$kn99$urls$qualityAssess,
+#             Sys.getenv("kn99_db_token"),
+#             5500, 
+#             "~/Desktop/tmp/run_5500_qc.csv",
+#             "/mnt/lts/sequence_data/rnaseq_data/kn99_database_archive/20220131/fastqFiles.csv")
+
+# a code of 200 or 201 means it worked. anything else means failure
+# res
+
+```
+
+
+# IGV browser shot
+
+```{r}
+
+kn99_gff = readRDS(Sys.getenv("kn99_stranded_gff_rds"))
+
+unique_loci = str_replace(unique(run_qc$locus), "CNAG", "CKF44")
+
+unique_loci = c(unique_loci, c("CNAG_NAT", "CNAG_G418"))
+
+bam_prefix = file.path(pipeline_out, "align")
+bam_suffix = "_sorted_aligned_reads_with_annote.bam"
+
+bam_list_df = run_df %>%
+  distinct(fastqFileNumber, .keep_all = TRUE)
+
+bam_list = unlist(map(pull(bam_list_df, fastqFileName), ~file.path(bam_prefix, paste0(., bam_suffix))))
+
+bam_list = map(bam_list, ~c(., "/mnt/scratch/rnaseq_pipeline/align_count_results/run_5500/rnaseq_pipeline_results/run_5500_samples/align/Brent_3235_GTAC_1_SIC_Index2_08_TGAGGTTATC_AAGCACGT_S2_R1_001_sorted_aligned_reads_with_annote.bam"))
+names(bam_list) = bam_list_df$fastqFileNumber
+
+igvScriptAll = function(ffn){
+  for(locus in unique_loci){
+      granges = kn99_gff[kn99_gff$ID == locus & kn99_gff$type == 'gene']
+      print(granges)
+      basename = paste(ffn, locus, sep = "_")
+      createIgvBatchscript(
+        bam_list = bam_list[[ffn]],
+        granges = granges,
+        igv_genome = Sys.getenv("kn99_stranded_igv_genome"),
+        output_dir = "/home/oguzkhan/Desktop/tmp/igv/",
+        output_file_basename = basename)
+  }
+
+}
+
+igvScriptAll(names(bam_list)[1])
+
+```
+
+# Running the IGV batch scripts
+
+It is likely easiest just to cd into the place where you output the scripts
+
+```{bash}
+cd /home/oguzkhan/Desktop/tmp/igv/scripts
+
+for batch_script in $(ls .); do
+  xvfb-run --auto-servernum igv.sh -b batch_script
+done
+```
+
+I then scp these into the run directory before moving the run directory over 
+to `lts`
+
+```{bash}
+scp -r /home/oguzkhan/Desktop/tmp/igv chasem@htcf.wustl.edu:/mnt/scratch/rnaseq_pipeline/align_count_results/run_5500/rnaseq_pipeline_results/run_5500_samples/
+
+# then log into htcf, go to the pipeline output and move the whole run directory to lts
+
+rsync -aHv run_5500_samples /lts/mblab/sequence_data/rnaseq_data/lts_align_count/
+
+```

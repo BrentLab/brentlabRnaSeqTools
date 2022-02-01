@@ -4,7 +4,13 @@
 \alias{postQcSheet}
 \title{post new qc sheet to database}
 \usage{
-postQcSheet(database_qc_url, auth_token, run_number, new_qc_path, fastq_table)
+postQcSheet(
+  database_qc_url,
+  auth_token,
+  run_number,
+  new_qc_path,
+  fastq_table_path
+)
 }
 \arguments{
 \item{database_qc_url}{eg database_info$kn99_urls$QualityAssess. see \code{\link{database_info}}.}
@@ -16,7 +22,7 @@ outside of their runs}
 
 \item{new_qc_path}{path to the new counts csv}
 
-\item{fastq_table}{a recent pull of the database fastq table}
+\item{fastq_table_path}{path to a recent pull of the database fastq table}
 }
 \value{
 a list of httr::response() objects

@@ -182,9 +182,3 @@ You can check progress by looking at the squeue and the `<your_jobname>.out`.
 Right now, it is taking a very long time for HTCF to launch nextflow. When HTCF 
 updates to the 'new' implementation, it starts much faster.
 
-# QC
-
-```{r}
-
-```
-

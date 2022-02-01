@@ -149,13 +149,6 @@ geneGRanges = function(annote_obj_path, gene_id, id_col = "ID",
 #' @export
 strandedScanBamParam = function(locus_granges, library_strandedness, quality_threshold=20L){
 
-  # ensure the locus is entirely on the same strand, error out if not
-  if(!length(gene_strand) == 1){
-    message(paste0("The granges object contains features on both strands. ",
-                   "Separate the granges object into sets so that any set is on ",
-                   "the same strand and try again"))
-  }
-
   # TODO add support for forward stranded libraries
   # set some information for the ScanBamParam object below. gene_strand extracts
   # the +/- strand from the GRanges object
@@ -164,7 +157,14 @@ strandedScanBamParam = function(locus_granges, library_strandedness, quality_thr
   # returned -- either from a given strand, or from both
   gene_strand = as.character(unique(data.frame(locus_granges)$strand))
 
-  minus_strand_flag = switch (paste(strandedness, gene_strand, sep="_"),
+  # ensure the locus is entirely on the same strand, error out if not
+  if(!length(gene_strand) == 1){
+    message(paste0("The granges object contains features on both strands. ",
+                   "Separate the granges object into sets so that any set is on ",
+                   "the same strand and try again"))
+  }
+
+  minus_strand_flag = switch (paste(library_strandedness, gene_strand, sep="_"),
                               "reverse_+" = TRUE,
                               "reverse_-" = FALSE,
                               "same_+" = FALSE,
@@ -329,15 +329,18 @@ locusCoverage = function(bam_path, locus_granges, library_strandedness,
 #' @inheritParams readHTSeqFile
 #'
 #' @param gene_id gene id for which to return the log2cpm
+#' @param markers markers in library. Default CNAG_NAT, CNAG_G418
 #'
 #' @return log2cpm of a given gene
 #'
 #' @export
-htseq_locusLog2cpm = function(htseq_filename, gene_id){
+htseq_locusLog2cpm = function(htseq_filename, gene_id,
+                              markers = c("CNAG_NAT", "CNAG_G418")){
 
   # calculate log2cpm on protein coding genes only
-  htseq_df = suppressMessages(readHTSeqFile(htseq_filename) %>%
-    filter(startsWith(feature, "CKF44")))
+  htseq_df = suppressMessages(
+    readHTSeqFile(htseq_filename) %>%
+      filter(feature %in% markers | startsWith(feature, "CKF44")))
 
   log2cpm_mat = cpm(matrix(htseq_df$sample), log = TRUE)
 
@@ -351,3 +354,342 @@ htseq_locusLog2cpm = function(htseq_filename, gene_id){
 # overexpressionFOW = function(){
 #
 # }
+
+novoalignPipelineQC = function(meta_df, pipeline_output_dirpath){
+
+  meta_df_longer = meta_df %>%
+    pivot_longer(cols = starts_with("marker|genotype"),
+                 names_to = "locus")
+
+}
+
+#'
+#' QC a crypto run output by the novoalign+htseq pipeline
+#'
+#' @description coverage and log2cpm are both over the annotated CDS
+#'
+#' @importFrom dplyr filter pull select rename mutate left_join
+#' @importFrom parallel makeForkCluster stopCluster
+#' @importFrom doParallel registerDoParallel
+#' @importFrom iterators iter
+#' @import foreach
+#'
+#' @inheritParams geneGRanges
+#' @inheritParams createNovoalignPipelineSamplesheet
+#'
+#' @param pipeline_output_dirpath path to the directory which stores the
+#'   subdirectories align, count and logs,
+#'   eg /mnt/scratch/rnaseq_pipeline/pipeline_out/run_5500
+#' @param markers a list of markers. must be in the counts and genome
+#'   annotations. default is c("NAT", "G418")
+#' @param bam_suffix suffix appended to the bam files. default is
+#'   "_sorted_aligned_reads_with_annote.bam"
+#' @param novolog_suffix suffix appended to log files. default is
+#'   "_novoalign.log"
+#' @param count_suffix suffix appended to count files. default is
+#'   '_read_count.tsv'
+#' @param num_nodes number of cpus(by slurm definition)/threads(on your local).
+#'   the argument in the parallel function is nnodes, hence the name of the
+#'   argument. Default is 10
+#'
+#' @return a dataframe, long format, with columns fastqFileNumber, perturbed
+#'   locus coverage/log2cpm, marker coverage/log2cpm and the library
+#'   quality metrics
+#'
+#' @export
+novoalignPipelineQC = function(meta_df,
+                               pipeline_output_dirpath,
+                               annote_obj_path,
+                               markers = c("NAT", "G418"),
+                               bam_suffix = "_sorted_aligned_reads_with_annote.bam",
+                               novolog_suffix = "_novoalign.log",
+                               exon_counts_suffix = "_read_count.tsv",
+                               cds_counts_suffix = '_read_count_cds.tsv',
+                               num_nodes = 10){
+
+  message(paste0("WARNING: this function will not work on a windows machine ",
+                 "due to the parallelization method currently implemented. ",
+                 "Additionally, threads/cpus must be on the same machine ",
+                 "(eg on slurm nodes_per_task=1, cpus_per_task=8)"))
+
+  # extract all perturbed loci in run
+  geno1_loci = meta_df %>%
+    filter(genotype1 != 'CNAG_00000') %>%
+    pull(genotype1) %>%
+    as.character() %>%
+    unique()
+
+  geno2_loci = meta_df %>%
+    filter(!is.na(genotype2), genotype2 != '') %>%
+    pull(genotype2) %>%
+    as.character() %>%
+    unique()
+
+  perturbed_loci_df = expand.grid(unique(meta_df$fastqFileNumber),
+                                  c(geno1_loci, geno2_loci)) %>%
+    dplyr::rename(fastqFileNumber = Var1, locus = Var2)
+
+  # create qc df
+  qc_df = meta_df %>%
+    dplyr::select(fastqFileNumber, fastqFileName, libraryProtocol) %>%
+    dplyr::rename(strandedness = libraryProtocol) %>%
+    mutate(strandedness =
+             ifelse(as.character(strandedness) == "E7420L",
+                    "reverse", "unstranded")) %>%
+    left_join(perturbed_loci_df)
+
+  # initiate parallelization
+  cl = parallel::makeForkCluster(nnodes = num_nodes)
+  doParallel::registerDoParallel(cl)
+
+  qc_df_mod =
+    foreach(row=iter(qc_df, by='row'), .combine=rbind) %dopar% {
+
+      # get paths to bam/count/log
+      path_list = list(
+        bam = file.path(pipeline_output_dirpath,
+                        "align",
+                        paste0(row$fastqFileName, bam_suffix)),
+        exon_count = file.path(pipeline_output_dirpath,
+                               "count",
+                               paste0(row$fastqFileName, exon_counts_suffix)),
+        cds_count = file.path(pipeline_output_dirpath,
+                          "count",
+                          paste0(row$fastqFileName, cds_counts_suffix)),
+        novolog = file.path(pipeline_output_dirpath,
+                            "logs",
+                            paste0(row$fastqFileName, novolog_suffix))
+      )
+
+      # make granges for markers
+      marker_granges = list(
+        nat = geneGRanges(annote_obj_path,
+                          "NAT",
+                          feature = 'cds'),
+        g418 = geneGRanges(annote_obj_path,
+                           "G418",
+                           feature = 'cds')
+      )
+
+      # calculate perturbed locus metrics
+      if(!is.na(row$locus)){
+
+        locus_granges = geneGRanges(annote_obj_path,
+                                    str_replace(row$locus, "CNAG", "CKF44"),
+                                    feature = 'cds')
+
+        row$perturbedCoverage = locusCoverage(path_list$bam,
+                                              locus_granges,
+                                              row$strandedness)
+        row$perturbedLog2cpm = htseq_locusLog2cpm(path_list$cds_count,
+                                                  str_replace(row$locus,
+                                                              "CNAG", "CKF44"))
+      }
+
+      # nat metrics
+      row$natCoverage = locusCoverage(path_list$bam,
+                                      marker_granges$nat,
+                                      row$strandedness)
+      row$natLog2cpm = htseq_locusLog2cpm(path_list$cds_count, "CNAG_NAT")
+
+      # g418 metrics
+      row$g418Coverage = locusCoverage(path_list$bam,
+                                       marker_granges$g418,
+                                       row$strandedness)
+      row$g418Log2cpm = htseq_locusLog2cpm(path_list$cds_count, "CNAG_G418")
+
+      # lib quality metrics
+      row$proteinCodingCounted = htseq_proteinCodingTotal(path_list$exon_count)
+      row$notAlignedTotalPercent = htseq_notAlignedTotalPercent(path_list$novolog)
+      row$libraryComplexity = htseq_libraryComplexity(path_list$exon_count)
+
+      # return the modified row (will be rbind together)
+      row
+    }
+
+  parallel::stopCluster(cl)
+
+  # return the qc_df with filled entries
+  qc_df_mod %>%
+    dplyr::select(-c(fastqFileName, strandedness))
+
+}
+
+#'
+#' add qc metrics to metadata
+#'
+#' @importFrom tidyr as_tibble
+#' @importFrom iterators iter
+#' @importFrom dplyr distinct filter pull select rename mutate left_join
+#' @import foreach
+#'
+#' @description take the long form of the qc_df and add the appropriate metrics
+#'   to the metadata in a 'wide' format
+#'
+#' @inheritParams createNovoalignPipelineSamplesheet
+#' @param qc_df output of the function [brentlabRnaSeqTools::novoalignPipelineQC]
+#'
+#' @return a subset of the meta_df columns suitable for auto/manual auditing
+#'
+#' @export
+addQcColsToMeta = function(meta_df, qc_df){
+
+  if(length(setdiff(meta_df$fastqFileNumber, qc_df$fastqFileNumber)) != 0){
+    stop(paste0("There are fastqFileNumbers in meta_df that are not in qc_df. ",
+          "Filter one or the other and resubmit -- the same samples and no
+          more should be in each."))
+  }
+
+  meta_qc_select = meta_df %>%
+    dplyr::select(fastqFileNumber,
+                  genotype1,
+                  genotype2,
+                  marker1,
+                  marker2)
+
+  meta_qc_filled = foreach(
+    row = iterators::iter(meta_qc_select, by = 'row'),
+    .combine = 'rbind') %do% {
+
+      ffn = row$fastqFileNumber
+      genotype1 = as.character(row$genotype1)
+      genotype2 = as.character(row$genotype2)
+
+      genotype1_df = qc_df %>%
+        filter(fastqFileNumber == ffn,
+               locus == genotype1) %>%
+        dplyr::select(fastqFileNumber, perturbedCoverage, perturbedLog2cpm) %>%
+        dplyr::rename(genotype1Coverage = perturbedCoverage,
+                      genotype1Log2cpm = perturbedLog2cpm)
+
+      genotype2_df = qc_df %>%
+        filter(fastqFileNumber == ffn,
+               locus == genotype2) %>%
+        dplyr::select(fastqFileNumber, perturbedCoverage, perturbedLog2cpm) %>%
+        dplyr::rename(genotype2Coverage = perturbedCoverage,
+                      genotype2Log2cpm = perturbedLog2cpm)
+
+      marker_libqual_df = qc_df %>%
+        filter(fastqFileNumber == ffn) %>%
+        dplyr::select(fastqFileNumber, natCoverage, natLog2cpm, g418Coverage,
+                      g418Log2cpm, proteinCodingCounted, notAlignedTotalPercent) %>%
+        distinct(fastqFileNumber, .keep_all = TRUE)
+
+      library_qual_df = qc_df %>%
+        filter(fastqFileNumber == ffn)
+
+      qc_select = marker_libqual_df %>%
+        left_join(genotype1_df) %>%
+        left_join(genotype2_df)
+
+      row %>%
+        as_tibble() %>%
+        left_join(qc_select)
+    }
+
+  meta_qc_filled
+}
+
+#'
+#' Audit a qc table with metrics added
+#' @description audits the output of [brentlabRnaSeqTools::addQcColsToMeta]
+#'
+#' @param qc_table output of [brentlabRnaSeqTools::addQcColsToMeta]
+#'
+#' @return the qc_table with autoStatus and autoStatusDecomp columns added
+#'
+#' @export
+autoAuditQcTable = function(qc_table){
+
+  qc_table %>%
+    mutate(autoStatus = 0) %>%
+    mutate(autoStatus =
+             ifelse(proteinCodingCounted <
+                      kn99_novo_htseq_thresholds$proteinCodingCounted,
+                    autoStatus + kn99_novo_htseq_status$proteinCodingCounted,
+                    autoStatus)) %>%
+
+    mutate(autoStatus =
+             ifelse(notAlignedTotalPercent >
+                      kn99_novo_htseq_thresholds$notAlignedTotalPercent,
+                    autoStatus + kn99_novo_htseq_status$notAlignedTotalPercent,
+                    autoStatus)) %>%
+
+    mutate(autoStatus =
+             ifelse((genotype1 != "CNAG_00000" &
+                       genotype1Coverage >
+                       kn99_novo_htseq_thresholds$perturbedCoverage) |
+                      ((!is.na(genotype2) | genotype2 != "") &
+                         !is.na(genotype2Coverage) & genotype2Coverage >
+                         kn99_novo_htseq_thresholds$perturbedCoverage),
+                    autoStatus + kn99_novo_htseq_status$perturbedCoverage,
+                    autoStatus)) %>%
+
+    mutate(autoStatus =
+             ifelse((marker1 == "NAT" | marker2 == "NAT") &
+                      (natCoverage < kn99_novo_htseq_thresholds$natExpectedCoverage |
+                         natLog2cpm < kn99_novo_htseq_thresholds$natExpectedLog2cpm),
+                    autoStatus + kn99_novo_htseq_status$natExpected,
+                    autoStatus)) %>%
+
+    mutate(autoStatus =
+             ifelse((marker1 == "G418" | marker2 == "G418") &
+                      g418Log2cpm < kn99_novo_htseq_thresholds$g418ExpectedLog2cpm,
+                    autoStatus + kn99_novo_htseq_status$g418Expected,
+                    autoStatus)) %>%
+
+    mutate(autoStatus =
+             ifelse((genotype1 == "CNAG_00000" |
+                       (marker1 == "G418" & (is.na(marker2) | marker2 == ""))) &
+                      (natCoverage > kn99_novo_htseq_thresholds$natUnexpectedCoverage &
+                         natLog2cpm > kn99_novo_htseq_thresholds$natUnexpectedLog2cpm),
+                    autoStatus + kn99_novo_htseq_status$natUnxpected,
+                    autoStatus)) %>%
+
+    mutate(autoStatus =
+             ifelse((genotype1 == "CNAG_00000" |
+                       (marker1 == "NAT" & (is.na(marker2) | marker2 == ""))) &
+                      g418Log2cpm > kn99_novo_htseq_thresholds$g418UnxpectedLog2cpm,
+                    autoStatus + kn99_novo_htseq_status$g418Unexpected,
+                    autoStatus)) %>%
+
+    mutate(autoStatusDecomp = unlist(map(autoStatus, decomposeStatus2Bit))) %>%
+    # remove passing_sample -- current database doesn't have this as an option
+    mutate(autoStatusDecomp = ifelse(autoStatusDecomp == 'passing_sample',
+                                     NA, autoStatusDecomp)) %>%
+    # add brackets to prevent database from considering this a number
+    mutate(autoStatusDecomp = paste0("[", autoStatusDecomp, "]"))
+}
+
+#' decompose sums of powers of two to a list of the summed powers
+#'
+#' @description eg 18 = 2 + 16 decomposes to 1, 4
+#'
+#' @references yiming kang
+#' \url{https://github.com/yiming-kang/rnaseq_pipe/blob/master/tools/utils.py}
+#'
+#' @param status an integer that represents the sum of powers of 2
+#' @return a string of powers of 2 representing the bit, eg 1,4
+#'
+#' @export
+decomposeStatus2Bit = function(status){
+
+  #TODO can use negative numbers for "passing reasons"!!
+
+  status_decomp = list()
+
+  if(is.na(status)){
+    status_decomp = "status_NA"
+  } else if(status == 0){
+    status_decomp = "passing_sample"
+  } else if(status > 0){
+    for(i in seq(floor(log2(status)),0)){
+      if ((status -2**i) >= 0){
+        status_decomp = append(status_decomp, i)
+        status = status - 2**i
+      }
+    }
+    status_decomp = paste(sort(unlist(status_decomp)), collapse=",")
+  }
+  status_decomp
+}

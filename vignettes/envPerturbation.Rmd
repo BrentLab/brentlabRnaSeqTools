@@ -49,7 +49,7 @@ library(tidyverse)
 
 # set variables 
 
-KN99_GFF_PATH = Sys.getenv("kn99_gff")
+KN99_GFF_RDS = Sys.getenv("kn99_stranded_gff_rds")
 DB_USERNAME = Sys.getenv("db_username")
 DB_PASSWORD = Sys.getenv("db_password")
 
@@ -60,24 +60,20 @@ DDS_OUTPUT_DIR = "."
 WRITE_OUT = FALSE
 ```
 
-# Pull the database
+# pull the database as a brentlabRnaSeqSet object
 
 ```{r}
 blrs = brentlabRnaSeqSetFromDatabase('kn99',DB_USERNAME, DB_PASSWORD)
-
-# filter down to just the protein coding genes. Note that this works because the
-# nctr-rna annotations were all added to the end of the annotation file.
-blrs = blrs[1:6967,]
 ```
 
 # Add gene level data (optional)
 
-```{r}
-# this adds all of the data regarding each locus as a GRange object to the
-# gene data slot of the brentlabRnaSeqSet object. Useful if you are going to
-# use other Bioconductor packages.
+this adds all of the data regarding each locus as a GRange object to the
+gene data slot of the brentlabRnaSeqSet object. Useful if you are going to
+use other Bioconductor packages.
 
-kn99_gff = rtracklayer::import(KN99_GFF_PATH)
+```{r}
+kn99_gff = readRDS(KN99_GFF_RDS)
 
 kn99_genes = kn99_gff[kn99_gff$ID %in% rownames(blrs)]
 

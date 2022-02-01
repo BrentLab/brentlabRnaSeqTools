@@ -57,7 +57,7 @@ createIgvBatchscript = function(bam_list,
   parsed_range = paste(as.character(granges@seqnames),
                        as.character(granges@ranges), sep=":")
 
-  if(parsed_range == character(0)){
+  if(parsed_range == ""){
     stop("range object cannot be empty")
   }
 
@@ -65,9 +65,9 @@ createIgvBatchscript = function(bam_list,
                         load_samples, "goto %s")
 
   batch_script = sprintf(batch_script,
-                         output_dir,
+                         path.expand(output_dir),
                          maxPanelHeight,
-                         igv_genome,
+                         path.expand(igv_genome),
                          parsed_range)
 
   if(exit_browser){
@@ -75,7 +75,7 @@ createIgvBatchscript = function(bam_list,
     batch_script = sprintf(batch_script, output_img_filename)
   }
 
-  script_output_dir = file.path(output_dir, "scripts")
+  script_output_dir = path.expand(file.path(output_dir, "scripts"))
   dir.create(script_output_dir, recursive = TRUE)
 
   output_filename = file.path(script_output_dir,
