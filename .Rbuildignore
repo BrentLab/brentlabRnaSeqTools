@@ -9,3 +9,4 @@ brentlabRnaSeqTools.sif
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^brentlabRnaSeqTools\R/test.R
