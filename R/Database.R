@@ -46,6 +46,7 @@ getMetadata = function(database_host, database_name, database_user, database_pas
     mutate(timePoint = as.integer(timePoint)) %>%
     # replace empty strings in the following columns with NA
     mutate(across(c("treatment",
+                    "treatmentConc",
                     "otherConditions",
                     "medium",
                     "atmosphere",
@@ -53,16 +54,14 @@ getMetadata = function(database_host, database_name, database_user, database_pas
                     "timePoint"),
                   ~ifelse(.=="", NA, .) )) %>%
     # replace NA with defined value
-    mutate(treatmentConc = replace_na(treatmentConc, 'noTreatmentConc')) %>%
-    mutate(pH = replace_na(pH, 'noPH')) %>%
+    mutate(treatmentConc = replace_na(as.character(treatmentConc), 'noTreatmentConc')) %>%
+    mutate(pH = replace_na(as.character(pH), 'noPH')) %>%
     mutate(treatment = replace_na(treatment, 'noTreatment')) %>%
-    mutate(otherConditions = replace_na(otherConditions, 'noOtherConditions')) %>%
+    mutate(otherConditions = replace_na(as.character(otherConditions), 'noOtherConditions')) %>%
     mutate(medium = replace_na(medium, 'noMedium')) %>%
     mutate(atmosphere = replace_na(atmosphere, 'noAtmosphere')) %>%
-    mutate(temperature = replace_na(temperature, 'noTemperature')) %>%
-    mutate(timePoint = replace_na(timePoint, 'noTimepoint')) %>%
-    mutate(temperature = as.numeric(temperature)) %>%
-    mutate(timePoint = as.numeric(timePoint)) %>%
+    mutate(temperature = replace_na(as.character(temperature), 'noTemperature')) %>%
+    mutate(timePoint = replace_na(as.character(timePoint), 'noTimepoint')) %>%
     mutate(fastqFileName = str_remove(fastqFileName, ".fastq.gz")) %>%
     mutate(libraryProtocol = as.factor(libraryProtocol)) %>%
     mutate(libraryDate = as.factor(libraryDate)) %>%

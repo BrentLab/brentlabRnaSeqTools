@@ -17,8 +17,8 @@ createEnvPert_epWT = function(blrs){
   # filter
   ep_meta_fastqFileNumbers = extractColData(blrs) %>%
     filter(strain == 'TDY451',
-           (treatment=="cAMP" | treatment == "noTreatment"),
-           (treatmentConc == "20" | treatmentConc == 'noTreatmentConc'),
+           treatment %in% c("cAMP","noTreatment"),
+           treatmentConc %in% c("20", 'noTreatmentConc'),
            experimentDesign == 'Environmental_Perturbation',
            purpose == "fullRNASeq",
            libraryProtocol == 'E7420L',
@@ -67,10 +67,10 @@ createEnvPertSet_titrationWT = function(blrs){
            medium == 'RPMI',
            atmosphere == "noAtmosphere",
            temperature == 30,
-           treatment == "cAMP" | treatment == "noTreatment",
+           treatment %in% c("cAMP", "noTreatment"),
            pH == "noPH",
-           experimentDesign == 'ep_cAMP_titration' |
-             experimentDesign == 'Environmental_Perturbation',
+           experimentDesign %in%
+             c('ep_cAMP_titration', 'Environmental_Perturbation'),
            purpose == "fullRNASeq",
            libraryProtocol == 'E7420L',
            !is.na(fastqFileName)) %>%
@@ -111,41 +111,45 @@ createEnvPertSet_titrationWT = function(blrs){
 #' @export
 createEnvPertSet_perturbed = function(blrs){
 
-  # filter
-  ep_meta = extractColData(blrs) %>%
+  # extract conditions in the perturbed samples ----
+  non_wt_ep_meta = extractColData(blrs) %>%
     filter(strain != 'TDY451',
-           (treatment == "cAMP" |
-              treatment=="noTreatment"),
-           (experimentDesign == 'Environmental_Perturbation' |
-              experimentDesign == 'ep_cAMP_titration'),
+           treatment %in% c("cAMP", "noTreatment"),
+           experimentDesign %in%
+             c('Environmental_Perturbation', 'ep_cAMP_titration'),
            purpose == "fullRNASeq",
            libraryProtocol == 'E7420L',
            !is.na(fastqFileName))
 
-  medium_conds = ep_meta %>%
+  medium_conds = non_wt_ep_meta %>%
     pull(medium) %>%
     unique()
 
-  temperature_conds = ep_meta %>%
+  temperature_conds = non_wt_ep_meta %>%
     pull(temperature) %>%
     unique()
 
-  atmosphere_conds = ep_meta %>%
+  atmosphere_conds = non_wt_ep_meta %>%
     pull(atmosphere) %>%
     unique()
 
-  treatment_conds = ep_meta %>%
+  treatment_conds = non_wt_ep_meta %>%
     pull(treatment) %>%
     unique()
 
-  treatmentConc_conds = ep_meta %>%
+  treatmentConc_conds = non_wt_ep_meta %>%
     pull(treatmentConc) %>%
     unique()
 
-  timePoint_conds = ep_meta %>%
+  timePoint_conds = non_wt_ep_meta %>%
     pull(timePoint) %>%
     unique()
 
+  libraryDate_conds = non_wt_ep_meta %>%
+    pull(libraryDate) %>%
+    unique()
+
+  # get all samples matching these conditions, regardless of geno ----
   set_ffn = extractColData(blrs) %>%
     filter(medium %in% medium_conds,
            temperature %in% temperature_conds,
@@ -153,14 +157,14 @@ createEnvPertSet_perturbed = function(blrs){
            treatment %in% treatment_conds,
            treatmentConc %in% treatmentConc_conds,
            timePoint %in% timePoint_conds,
-           (experimentDesign == 'Environmental_Perturbation' |
-              experimentDesign == 'ep_cAMP_titration'),
+           libraryDate %in% libraryDate_conds,
+           experimentDesign %in%
+             c('Environmental_Perturbation', 'ep_cAMP_titration'),
            purpose == "fullRNASeq",
            !is.na(fastqFileName)) %>%
-  pull(fastqFileNumber)
+    pull(fastqFileNumber)
 
-
-
+  # filter the blrs obj ----
   ep_set = blrs[,colData(blrs)$fastqFileNumber %in% set_ffn]
 
   experimental_conditions = alist(medium,

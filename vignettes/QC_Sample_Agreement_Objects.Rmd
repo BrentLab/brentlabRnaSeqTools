@@ -1,9 +1,9 @@
 ---
-title: "QC: Replicate Agreement Object Creation"
+title: "QC: Replicate Agreement"
 author: "Chase Mateusiak"
 date: "`r format(Sys.Date(), '%m/%d/%Y')`"
 abstract: >
-  Tally the 90minuteInduction experiment set.
+  Calculate RLE to evaluate replicate agreement
   brentlabRnaSeqTools package version: `r packageVersion("brentlabRnaSeqTools")`
 output:
   rmarkdown::html_document:
@@ -11,7 +11,7 @@ output:
     toc: true
     fig_width: 5
 vignette: >
-  %\VignetteIndexEntry{Creating Experiment Set Objects for Replicate Agreement QC}
+  %\VignetteIndexEntry{Conduction replicate agreement QC}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -33,7 +33,9 @@ step -- RLE -- on each of the data sets. In each case, once you have added the
 design (the last step for each set), you need to write the object to file and 
 send it to the cluster. I suggest mounting to the cluster and writing to the 
 mounted directory. See the vignette _Running DESeq on HTCF_ for instructions on 
-running DESeq on HTCF.  
+running DESeq on HTCF. Note that at the bottom of this script, there are 
+instructions on how to copy the necessary scripts to run the DESeq model using 
+MPI on htcf.
 
 You can see all defined sets by entering `?createExperimentSet`. If an experiment 
 set you are interested in does not exist as an option in `set_names`, then you'll 
@@ -152,7 +154,11 @@ lin_dep_report = caret::findLinearCombos(mm)
 ```{r}
 design(blrs_90min_grant_fltr) = mm
 rm(mm)
+```
 
+#### write out
+
+```{r}
 if(WRITE_OUT){
   
   outpath = file.path(DDS_OUTPUT_DIR,
@@ -245,7 +251,11 @@ lin_dep_report
 ```{r}
 design(blrs_grant_with_doubles_fltr) = mm
 rm(mm)
+```
 
+#### Write out
+
+```{r}
 if(WRITE_OUT){
   
   outpath = file.path(DDS_OUTPUT_DIR,
@@ -337,7 +347,11 @@ lin_dep_report
 ```{r}
 design(blrs_90min_all_fltr) = mm
 rm(mm)
+```
 
+#### Write out
+
+```{r}
 if(WRITE_OUT){
   
   outpath = file.path(DDS_OUTPUT_DIR,
@@ -358,23 +372,26 @@ if(WRITE_OUT){
 
 # Environmental Perturbation
 
-## EP_WT
-
-### Create Set
-
-If the experiment set you want is not already created, issue an 'issue report', 
-and describe the **EXACT** filter that you want to use to create the set. What 
-goes into your set depends on what you describe as your filter, so spend time 
-with the database to figure out what is there.
+### Create Sets
 
 ```{r}
-blrs_ep = createExperimentSet(blrs, 'envPert_epWT')
+ep_list = list(
+  wt = createExperimentSet(blrs, 'envPert_epWT'),
+  titration = createExperimentSet(blrs, 'envPert_titrationWT'),
+  perturbed = createExperimentSet(blrs, 'envPert_perturbed')
+)
+
+# NOTE!! AS OF 20220201 CNAG_03894 forms a linear depdendence with both 
+# concat treatment and libraryDate columns. it is being removed here to solve
+# that issue
+
+ep_list$perturbed = ep_list$perturbed[,ep_list$perturbed$genotype1 != "CNAG_03894"]
 ```
 
 ### Quality Filter
 
 ```{r}
-blrs_ep_qc_passing = qaFilter(blrs_ep)
+ep_list_qc_passing = map(ep_list, qaFilter)
 ```
 
 ### Expression Filter
@@ -384,41 +401,73 @@ blrs_ep_qc_passing = qaFilter(blrs_ep)
 # Below is an example. You need to think about the thresholds and filter method 
 # that suits your purpose best.
 
-expr_fltr <- rowSums(edgeR::cpm(counts(blrs_ep_qc_passing))>4) >= 4
+expr_fltr_list = map(ep_list, ~rowSums(edgeR::cpm(counts(.))>4) >= 4)
 
-blrs_ep_qc_passing_expr_fltr = blrs_ep_qc_passing[expr_fltr,]
+ep_list_qc_passing_fltr = map2(ep_list_qc_passing, expr_fltr_list, ~.x[.y,]) 
 ```
 
 ### Set Design
 
 ```{r}
-colData(blrs_ep_qc_passing_expr_fltr)$concat_treatment =
-  relevel(colData(blrs_ep_qc_passing_expr_fltr)$concat_treatment,
-          ref = 'YPD_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_30')
+setBaseConcatTreatmentBaseCond = function(ep_set, concat_base_cond){
+  colData(ep_set)$concat_treatment = 
+    relevel(colData(ep_set)$concat_treatment, ref = concat_base_cond)
+  
+  colData(ep_set) = droplevels(DataFrame(colData(ep_set)))
+  
+  ep_set
+  
+}
+
+setEpDesign = function(ep_set, design){
+  design(ep_set) = design
+  
+  ep_set
+}
+
+concat_base_cond_list = list(
+  
+  wt = "YPD_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_30",
+  titration = "RPMI_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_30",
+  perturbed = 'PBS_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_0'
+)
+
+ep_designs = list(
+  wt = formula(~libraryDate + concat_treatment),
+  titration = formula(~libraryDate + concat_treatment),
+  perturbed = formula(~libraryDate + concat_treatment + genotype1)
+)
+
+ep_list_qc_passing_fltr = map2(ep_list_qc_passing_fltr, 
+                               concat_base_cond_list, 
+                               setBaseConcatTreatmentBaseCond)
+
+ep_list_qc_passing_fltr = map2(ep_list_qc_passing_fltr, 
+                               ep_designs, 
+                               setEpDesign)
 
 
-colData(blrs_ep_qc_passing_expr_fltr) = 
-  droplevels(DataFrame(colData(blrs_ep_qc_passing_expr_fltr)))
-
-design(blrs_ep_qc_passing_expr_fltr) = formula(~libraryDate + concat_treatment)
 ```
 
-# Coerce back to DeseqDataObjects for proessing
+### Coerce back to DeseqDataObjects for proessing
 
 ```{r}
-blrs_ep_qc_passing_expr_fltr = coerceToDds(blrs_ep_qc_passing_expr_fltr)
+ep_dds_list = map(ep_list_qc_passing_fltr, coerceToDds)
 ```
 
 ```{r}
+DDS_OUTPUT_DIR = "/mnt/scratch/rnaseq_pipeline/experiments/epTally"
+
 if(WRITE_OUT){
   today = format(lubridate::today(),"%Y%m%d")
 
   output_dir = file.path(DDS_OUTPUT_DIR, today)
 
   dir.create(output_dir, recursive=TRUE)
-
-  write_rds(blrs_ep_qc_passing_expr_fltr,
-            file.path(output_dir,"envPert_epWT.dds"))
+  
+  map(names(ep_dds_list), ~write_rds(ep_dds_list[[.]],
+                                     file.path(output_dir,
+                                               paste0("ep_",.,".rds"))))
 }
 ```
 
@@ -442,4 +491,90 @@ if(WRITE_OUT){
 lapply(htcf_deseq_scripts, file.copy, to = DDS_OUTPUT_DIR)
 }
 
+```
+
+# After DESeq(), Calculate RLE
+
+## Environmental Perturbation
+
+## Load in the post DESeq() data sets
+
+Note: this entirely depends on what set you want to look at -- in this example, 
+I am doing the sample agreement and tallies for the EP sets
+
+```{r}
+DESEQ_OUTPUT_LIST = list(
+  ep_wt = "/mnt/scratch/rnaseq_pipeline/experiments/epTally/20220201/ep_wt_20220201_output.rds",
+  ep_titration = "/mnt/scratch/rnaseq_pipeline/experiments/epTally/20220201/ep_titration_20220201_output.rds",
+  ep_perturbed = "/mnt/scratch/rnaseq_pipeline/experiments/epTally/20220201/ep_perturbed_20220201_output.rds"
+)
+```
+
+# Environmental Perturbation
+
+### Create the set
+
+```{r read in ep sets}
+# get deseq output object
+ep_dds_list = list(
+  ep_wt = readRDS(DESEQ_OUTPUT_LIST$ep_wt),
+  ep_titr = readRDS(DESEQ_OUTPUT_LIST$ep_titration),
+  ep_pert = readRDS(DESEQ_OUTPUT_LIST$ep_perturbed)
+)
+```
+
+# add a column describing replicate groups if necessary
+
+```{r}
+ep_dds_list$ep_pert$rep_col = 
+  paste(ep_dds_list$ep_pert$genotype1, 
+        ep_dds_list$ep_pert$concat_treatment, sep = "_")
+```
+
+
+#### calculate RLE
+
+```{r}
+ep_rle_list = list(
+  ep_wt = removeLibdateByReplicate(ep_dds_list$ep_wt, "concat_treatment"),
+  ep_titr = removeLibdateByReplicate(ep_dds_list$ep_titr, "concat_treatment"),
+  ep_pert = removeLibdateByReplicate(ep_dds_list$ep_pert, "rep_col")
+)
+
+```
+
+#### Update the database
+
+```{r ep_wt update DB}
+if(UPDATE_DB){
+
+ updateRleTable = function(set_name, set_rle_summary){
+   iqr_col = paste0(set_name, "_iqr")
+   med_dev_col = paste0(set_name, "_median_dev")
+   
+   update_df = set_rle_summary %>%
+   dplyr::select(replicateAgreementNumber, rle_iqr, rle_median_deviation) %>%
+   dplyr::rename(!!quo_name(iqr_col) := rle_iqr, 
+                 !!quo_name(med_dev_col) := rle_median_deviation)
+  
+  
+ res = patchTable(
+  database_info$kn99$urls$replicateAgreement,
+  Sys.getenv("kn99_db_token"),
+  update_df,
+  "replicateAgreementNumber")
+ 
+ res
+ }
+  
+res_list = map(names(ep_rle_list), ~updateRleTable(., ep_rle_list[[.]]$without_libdate_effect$summary))
+
+# check status ----
+## failures should only be those without enough replicates to calculate RLE
+extract_status = map(res_list, ~map(., ~as.numeric(.$status_code)))
+
+extract_status[[1]][unlist(extract_status[[1]]) != 200]
+extract_status[[2]][unlist(extract_status[[2]]) != 200]
+extract_status[[3]][unlist(extract_status[[3]]) != 200]
+}
 ```

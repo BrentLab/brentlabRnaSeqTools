@@ -82,7 +82,7 @@ rowRanges(blrs) = kn99_genes[order(match(kn99_genes$ID,rownames(blrs)))]
 rownames(blrs) = rowData(blrs)$ID
 ```
 
-# Create Set
+# Create Sets
 
 If the experiment set you want is not already created, issue an 'issue report', 
 and describe the **EXACT** filter that you want to use to create the set. What 
@@ -90,94 +90,104 @@ goes into your set depends on what you describe as your filter, so spend time
 with the database to figure out what is there.
 
 ```{r}
-blrs_ep = createExperimentSet(blrs, 'envPert_epWT')
+ep_list = list(
+  wt = createExperimentSet(blrs, 'envPert_epWT'),
+  titr = createExperimentSet(blrs, 'envPert_titrationWT'),
+  pert = createExperimentSet(blrs, 'envPert_perturbed')
+)
+
+# NOTE!! AS OF 20220201 CNAG_03894 forms a linear depdendence with both 
+# concat treatment and libraryDate columns. it is being removed here to solve
+# that issue
+
+ep_list$pert = ep_list$pert[,ep_list$pert$genotype1 != "CNAG_03894"]
 ```
 
 # Quality Filter
 
 ```{r}
-blrs_ep_qc_passing = qaFilter(blrs_ep, 
-                              rle_iqr_threshold = 1, 
-                              iqr_colname = "envPert_iqr")
+
+ep_list_qc_passing = map(names(ep_list), 
+                         ~qaFilter(ep_list[[.]],1,paste0("ep_",., "_iqr")))
+
 ```
 
-# Expression filter
-
-Filter out low expression genes (and anything else you don't want in the 
-analysis set). How you do this is up to you, the analyst. [You might use the method 
-proposed in this paper](https://www.pnas.org/content/107/21/9546) by, 
-among others, Wolfgang Huber, and implemented in the 
-[bioconductor package](https://bioconductor.org/packages/release/bioc/html/genefilter.html) 
-`geneFilter` (as well as DESeq, by default), or you 
-could filter based on some number of samples having greater than some threshold 
-of expression, which is shown below.  
-
+### Expression Filter
 
 ```{r}
 # How this is done is up to you, and obviously affects what genes are left in.
 # Below is an example. You need to think about the thresholds and filter method 
 # that suits your purpose best.
 
-expr_fltr <- rowSums(edgeR::cpm(counts(blrs_ep_qc_passing))>4) >= 4
+expr_fltr_list = map(ep_list, ~rowSums(edgeR::cpm(counts(.))>4) >= 4)
 
-blrs_ep_qc_passing_expr_fltr = blrs_ep_qc_passing[expr_fltr,]
+ep_list_qc_passing_fltr = map2(ep_list_qc_passing, expr_fltr_list, ~.x[.y,]) 
 ```
 
-# Set Design
+### Set Design
 
 ```{r}
-colData(blrs_ep_qc_passing_expr_fltr)$concat_treatment =
-  relevel(colData(blrs_ep_qc_passing_expr_fltr)$concat_treatment,
-          ref = 'YPD_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_30')
+setBaseConcatTreatmentBaseCond = function(ep_set, concat_base_cond){
+  colData(ep_set)$concat_treatment = 
+    relevel(colData(ep_set)$concat_treatment, ref = concat_base_cond)
+  
+  colData(ep_set) = droplevels(DataFrame(colData(ep_set)))
+  
+  ep_set
+  
+}
+
+setEpDesign = function(ep_set, design){
+  design(ep_set) = design
+  
+  ep_set
+}
+
+concat_base_cond_list = list(
+  
+  wt = "YPD_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_30",
+  titr = "RPMI_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_30",
+  pert = 'PBS_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_0'
+)
+
+ep_designs = list(
+  wt = formula(~libraryDate + concat_treatment),
+  titr = formula(~libraryDate + concat_treatment),
+  pert = formula(~libraryDate + concat_treatment + genotype1)
+)
+
+ep_list_qc_passing_fltr = map2(ep_list_qc_passing_fltr, 
+                               concat_base_cond_list, 
+                               setBaseConcatTreatmentBaseCond)
+
+ep_list_qc_passing_fltr = map2(ep_list_qc_passing_fltr, 
+                               ep_designs, 
+                               setEpDesign)
 
 
-colData(blrs_ep_qc_passing_expr_fltr) = 
-  droplevels(DataFrame(colData(blrs_ep_qc_passing_expr_fltr)))
-
-design(blrs_ep_qc_passing_expr_fltr) = formula(~libraryDate + concat_treatment)
 ```
 
-# Coerce back to DeseqDataObjects for proessing
+### Coerce back to DeseqDataObjects for proessing
 
 ```{r}
-blrs_ep_qc_passing_expr_fltr = coerceToDds(blrs_ep_qc_passing_expr_fltr)
+ep_dds_list = map(ep_list_qc_passing_fltr, coerceToDds)
+names(ep_dds_list) = names(ep_list)
 ```
 
-
-# Write out
-
 ```{r}
+DDS_OUTPUT_DIR = "/mnt/scratch/rnaseq_pipeline/experiments/epDatafreeze"
+
+WRITE_OUT = TRUE
+
 if(WRITE_OUT){
   today = format(lubridate::today(),"%Y%m%d")
 
   output_dir = file.path(DDS_OUTPUT_DIR, today)
 
   dir.create(output_dir, recursive=TRUE)
-
-  write_rds(fltr_full_set_90min$E7420L,
-            file.path(output_dir,"envPert_epWT.dds"))
+  
+  map(names(ep_dds_list), ~write_rds(ep_dds_list[[.]],
+                                     file.path(output_dir,
+                                               paste0("ep_",.,".rds"))))
 }
 ```
-
-# Copy the HTCF DESeq scripts to the working directory
-
-These scripts will run DESeq in parallel on HTCF. The only items you'l need to 
-edit is the path to the lookup file (if you are running more than one model), 
-and to the dds_input in deseq_mpi.sh. If you do not keep deseq_de.R in the same 
-directory as deseq_mpi.sh, then you'll need to update the path to the deseq_de.R 
-script, also.
-
-```{r}
-if(WRITE_OUT){
-  htcf_deseq_scripts = c(system.file('bash', 
-                            'htcf_parallel_deseq.sh', 
-                            package = "brentlabRnaSeqTools"),
-                       system.file('R_executable', 
-                               'deseq_de.R', 
-                                package = "brentlabRnaSeqTools"))
-
-lapply(htcf_deseq_scripts, file.copy, to = DDS_OUTPUT_DIR)
-}
-
-```
-

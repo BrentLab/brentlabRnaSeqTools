@@ -10,3 +10,4 @@ brentlabRnaSeqTools.sif
 ^docs$
 ^pkgdown$
 ^brentlabRnaSeqTools\R/test.R
+^local$

@@ -193,6 +193,10 @@ addRleSummaryStats = function(object){
 #'
 #' calculate RLE by replicate groups
 #'
+#' @importFrom tibble as_tibble
+#' @importFrom purrr map
+#' @importFrom dplyr select all_of
+#'
 #' @param replicates_vector a list of lists where each sublist represents a replicate group. Entries must be a metadata
 #'                               parameter, such as fastqFileName, that corresponds to the columns of the counts.
 #'                               Suggestion: use something like these dplyr functions to create the list of lists group_by() %>% group_split %>% pull(fastqFileName)
@@ -206,11 +210,11 @@ addRleSummaryStats = function(object){
 #' @export
 rleByReplicateGroup = function(replicates_vector, gene_quants, log2_transformed_flag){
 
+  gene_quants_df = as_tibble(gene_quants)
 
-  lapply(replicates_vector,
-         function(x)
-           calculateRLE(gene_quants[, x, drop=FALSE],
-                        log2_transformed_flag=log2_transformed_flag))
+  map(replicates_vector,
+      ~calculateRLE(select(gene_quants_df, all_of(.)),
+                    log2_transformed_flag=log2_transformed_flag))
 
 }
 
@@ -334,4 +338,97 @@ rlePlotCompareEffectRemoved = function(norm_counts_rle, removed_effect_rle, meta
 #     theme(axis.title.x=element_blank())+
 #     facet_wrap('rle_stat', scales="free_x", dir='v')
 # }
+
+#'
+#' Remove the libraryDate effects from KN99 dds objs
+#'
+#' @param dds a deseq data object with either a formula or matrix in the design
+#'   note that if libraryDate is not included in the design, then this function
+#'   doesn't remove anything
+#' @param replicate_colname which column to use as the replicate grouping. If
+#'   your replicates are described by more than 1 column, for this purpose,
+#'   group them to create 1 column. does not need to be the same as what is in
+#'   the design slot of the dds
+#'
+#' @return a list with both the unremoved and removed effect rle and summary
+#'
+#' @export
+removeLibdateByReplicate = function(dds, replicate_colname){
+
+  message(paste0("WARNING! This removes only the libraryDate effect. If there are ",
+                 "no columns in the design matrix that start with library, this ",
+                 "removes NOTHING."))
+
+  mm = NA
+
+  if(is_formula(design(dds))){
+    mm = model.matrix(design(dds), as_tibble(colData(dds)))
+  } else if(is.matrix(design(dds))){
+    mm = design(dds)
+  }
+
+  if(!is.matrix(mm)){
+    stop(paste0("Can't extract design matrix from DeseqDataSet -- ",
+                "design slot filled ",
+                "with neither a formula or a matrix."))
+  }
+
+  unwanted_indicies = which(startsWith(colnames(mm), "library"))
+
+  replicate_split =
+    as_tibble(colData(dds)) %>%
+    group_by(!!rlang::sym(replicate_colname)) %>%
+    group_split()
+
+  replicate_names =
+    lapply(replicate_split,
+           function(x)
+             as.character(unique(pull(x,!! rlang::sym(replicate_colname)))))
+
+  replicate_sample_list =
+    lapply(replicate_split, function(x)
+      as.vector(pull(x,fastqFileName)))
+
+  names(replicate_sample_list) = replicate_names
+
+
+  removed_effect_log_norm = removeParameterEffects(dds, unwanted_indicies)
+
+  removed_effect_rle_by_replicate_group =
+    rleByReplicateGroup(replicate_sample_list,
+         removed_effect_log_norm,
+         log2_transformed_flag = TRUE)
+
+  removed_effect_rle_summary =
+    as_tibble(bind_rows(lapply(removed_effect_rle_by_replicate_group,
+                               rleSummary)),
+              rownames = "fastqFileName") %>%
+    left_join(as_tibble(colData(dds)),
+              by='fastqFileName')
+
+  log_norm_rle = calculateRLE(counts(dds),
+                              log2_transformed_flag = FALSE)
+
+  log_norm_rle_by_replicate_group =
+    rleByReplicateGroup(replicate_sample_list,
+                        log_norm_rle,
+                        log2_transformed_flag = TRUE)
+
+  log_norm_rle_summary =
+    as_tibble(bind_rows(lapply(log_norm_rle_by_replicate_group,
+                               rleSummary)), rownames = "fastqFileName") %>%
+    left_join(as_tibble(colData(dds)),
+              by='fastqFileName')
+
+  list(
+    with_libdate_effect = list(
+      rle = log_norm_rle,
+      summary = log_norm_rle_summary
+    ),
+    without_libdate_effect = list(
+      rle = removed_effect_log_norm,
+      summary = removed_effect_rle_summary
+    )
+  )
+}
 

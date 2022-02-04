@@ -1,6 +1,7 @@
 #!/bin/bash
 
-#SBATCH --mem-per-cpu=3G
+#SBATCH --time=3:00:00   # walltime
+#SBATCH --mem-per-cpu=2G
 #SBATCH -n 30
 #SBATCH --cpus-per-task=1
 #SBATCH --mail-type=begin        # send email when job begins
