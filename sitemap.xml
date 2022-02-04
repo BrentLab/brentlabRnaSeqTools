@@ -16,9 +16,6 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/QC_Library_Quality.html</loc>
   </url>
   <url>
-    <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/QC_Sample_Agreement_Analysis_Tally.html</loc>
-  </url>
-  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/QC_Sample_Agreement_Objects.html</loc>
   </url>
   <url>
@@ -233,6 +230,9 @@
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/readInData.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/removeLibdateByReplicate.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/removeParameterEffects.html</loc>

@@ -43,8 +43,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/ProccessRun.html">Process a New Run From MGI</a>
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
-    <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Analysis_Tally.html">QC: Replicate Agreement Analysis and tally</a>
-    <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement Object Creation</a>
+    <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement</a>
     <a class="dropdown-item" href="../articles/UsingRstudioProjects.html">UsingRstudioProjects</a>
     <a class="dropdown-item" href="../articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
     <a class="dropdown-item" href="../articles/ninetyMinInduction_tally.html">90 Minute Induction Tally</a>
@@ -70,7 +69,7 @@
       <img src="" class="logo" alt=""><h1>Environmental Perturbation Analysis Data Creation</h1>
                         <h4 data-toc-skip class="author">Chase Mateusiak</h4>
             
-            <h4 data-toc-skip class="date">02/01/2022</h4>
+            <h4 data-toc-skip class="date">02/04/2022</h4>
       
       
       <div class="d-none name"><code>envPerturbation.Rmd</code></div>
@@ -128,83 +127,105 @@
 <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">$</span><span class="va">ID</span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="create-set">Create Set<a class="anchor" aria-label="anchor" href="#create-set"></a>
+<h2 id="create-sets">Create Sets<a class="anchor" aria-label="anchor" href="#create-sets"></a>
 </h2>
 <p>If the experiment set you want is not already created, issue an ‘issue report’, and describe the <strong>EXACT</strong> filter that you want to use to create the set. What goes into your set depends on what you describe as your filter, so spend time with the database to figure out what is there.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">blrs_ep</span> <span class="op">=</span> <span class="fu"><a href="../reference/createExperimentSet.html">createExperimentSet</a></span><span class="op">(</span><span class="va">blrs</span>, <span class="st">'envPert_epWT'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">ep_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+  wt <span class="op">=</span> <span class="fu"><a href="../reference/createExperimentSet.html">createExperimentSet</a></span><span class="op">(</span><span class="va">blrs</span>, <span class="st">'envPert_epWT'</span><span class="op">)</span>,
+  titr <span class="op">=</span> <span class="fu"><a href="../reference/createExperimentSet.html">createExperimentSet</a></span><span class="op">(</span><span class="va">blrs</span>, <span class="st">'envPert_titrationWT'</span><span class="op">)</span>,
+  pert <span class="op">=</span> <span class="fu"><a href="../reference/createExperimentSet.html">createExperimentSet</a></span><span class="op">(</span><span class="va">blrs</span>, <span class="st">'envPert_perturbed'</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="co"># NOTE!! AS OF 20220201 CNAG_03894 forms a linear depdendence with both </span>
+<span class="co"># concat treatment and libraryDate columns. it is being removed here to solve</span>
+<span class="co"># that issue</span>
+
+<span class="va">ep_list</span><span class="op">$</span><span class="va">pert</span> <span class="op">=</span> <span class="va">ep_list</span><span class="op">$</span><span class="va">pert</span><span class="op">[</span>,<span class="va">ep_list</span><span class="op">$</span><span class="va">pert</span><span class="op">$</span><span class="va">genotype1</span> <span class="op">!=</span> <span class="st">"CNAG_03894"</span><span class="op">]</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="quality-filter">Quality Filter<a class="anchor" aria-label="anchor" href="#quality-filter"></a>
 </h2>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">blrs_ep_qc_passing</span> <span class="op">=</span> <span class="fu"><a href="../reference/qaFilter.html">qaFilter</a></span><span class="op">(</span><span class="va">blrs_ep</span>, 
-                              rle_iqr_threshold <span class="op">=</span> <span class="fl">1</span>, 
-                              iqr_colname <span class="op">=</span> <span class="st">"envPert_iqr"</span><span class="op">)</span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="expression-filter">Expression filter<a class="anchor" aria-label="anchor" href="#expression-filter"></a>
-</h2>
-<p>Filter out low expression genes (and anything else you don’t want in the analysis set). How you do this is up to you, the analyst. <a href="https://www.pnas.org/content/107/21/9546" class="external-link">You might use the method proposed in this paper</a> by, among others, Wolfgang Huber, and implemented in the <a href="https://bioconductor.org/packages/release/bioc/html/genefilter.html" class="external-link">bioconductor package</a> <code>geneFilter</code> (as well as DESeq, by default), or you could filter based on some number of samples having greater than some threshold of expression, which is shown below.</p>
+<code class="sourceCode R">
+<span class="va">ep_list_qc_passing</span> <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">ep_list</span><span class="op">)</span>, 
+                         <span class="op">~</span><span class="fu"><a href="../reference/qaFilter.html">qaFilter</a></span><span class="op">(</span><span class="va">ep_list</span><span class="op">[[</span><span class="va">.</span><span class="op">]</span><span class="op">]</span>,<span class="fl">1</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"ep_"</span>,<span class="va">.</span>, <span class="st">"_iqr"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="section level4">
+<h4 id="expression-filter">Expression Filter<a class="anchor" aria-label="anchor" href="#expression-filter"></a>
+</h4>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># How this is done is up to you, and obviously affects what genes are left in.</span>
 <span class="co"># Below is an example. You need to think about the thresholds and filter method </span>
 <span class="co"># that suits your purpose best.</span>
 
-<span class="va">expr_fltr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu">edgeR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="fu">counts</span><span class="op">(</span><span class="va">blrs_ep_qc_passing</span><span class="op">)</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">4</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">4</span>
+<span class="va">expr_fltr_list</span> <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">ep_list</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="fu">edgeR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/edgeR/man/cpm.html" class="external-link">cpm</a></span><span class="op">(</span><span class="fu">counts</span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">4</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">4</span><span class="op">)</span>
 
-<span class="va">blrs_ep_qc_passing_expr_fltr</span> <span class="op">=</span> <span class="va">blrs_ep_qc_passing</span><span class="op">[</span><span class="va">expr_fltr</span>,<span class="op">]</span></code></pre></div>
+<span class="va">ep_list_qc_passing_fltr</span> <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2</a></span><span class="op">(</span><span class="va">ep_list_qc_passing</span>, <span class="va">expr_fltr_list</span>, <span class="op">~</span><span class="va">.x</span><span class="op">[</span><span class="va">.y</span>,<span class="op">]</span><span class="op">)</span> </code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="set-design">Set Design<a class="anchor" aria-label="anchor" href="#set-design"></a>
-</h2>
+<div class="section level4">
+<h4 id="set-design">Set Design<a class="anchor" aria-label="anchor" href="#set-design"></a>
+</h4>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing_expr_fltr</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span> <span class="op">=</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/relevel.html" class="external-link">relevel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing_expr_fltr</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span>,
-          ref <span class="op">=</span> <span class="st">'YPD_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_30'</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">setBaseConcatTreatmentBaseCond</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">ep_set</span>, <span class="va">concat_base_cond</span><span class="op">)</span><span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span> <span class="op">=</span> 
+    <span class="fu"><a href="https://rdrr.io/r/stats/relevel.html" class="external-link">relevel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span>, ref <span class="op">=</span> <span class="va">concat_base_cond</span><span class="op">)</span>
+  
+  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu">DataFrame</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+  
+  <span class="va">ep_set</span>
+  
+<span class="op">}</span>
 
+<span class="va">setEpDesign</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">ep_set</span>, <span class="va">design</span><span class="op">)</span><span class="op">{</span>
+  <span class="fu">design</span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span> <span class="op">=</span> <span class="va">design</span>
+  
+  <span class="va">ep_set</span>
+<span class="op">}</span>
 
-<span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing_expr_fltr</span><span class="op">)</span> <span class="op">=</span> 
-  <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu">DataFrame</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing_expr_fltr</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">concat_base_cond_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+  
+  wt <span class="op">=</span> <span class="st">"YPD_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_30"</span>,
+  titr <span class="op">=</span> <span class="st">"RPMI_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_30"</span>,
+  pert <span class="op">=</span> <span class="st">'PBS_noAtmosphere_30_noTreatment_noTreatmentConc_noPH_0'</span>
+<span class="op">)</span>
 
-<span class="fu">design</span><span class="op">(</span><span class="va">blrs_ep_qc_passing_expr_fltr</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></span><span class="op">(</span><span class="op">~</span><span class="va">libraryDate</span> <span class="op">+</span> <span class="va">concat_treatment</span><span class="op">)</span></code></pre></div>
+<span class="va">ep_designs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+  wt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></span><span class="op">(</span><span class="op">~</span><span class="va">libraryDate</span> <span class="op">+</span> <span class="va">concat_treatment</span><span class="op">)</span>,
+  titr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></span><span class="op">(</span><span class="op">~</span><span class="va">libraryDate</span> <span class="op">+</span> <span class="va">concat_treatment</span><span class="op">)</span>,
+  pert <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></span><span class="op">(</span><span class="op">~</span><span class="va">libraryDate</span> <span class="op">+</span> <span class="va">concat_treatment</span> <span class="op">+</span> <span class="va">genotype1</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="va">ep_list_qc_passing_fltr</span> <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2</a></span><span class="op">(</span><span class="va">ep_list_qc_passing_fltr</span>, 
+                               <span class="va">concat_base_cond_list</span>, 
+                               <span class="va">setBaseConcatTreatmentBaseCond</span><span class="op">)</span>
+
+<span class="va">ep_list_qc_passing_fltr</span> <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2</a></span><span class="op">(</span><span class="va">ep_list_qc_passing_fltr</span>, 
+                               <span class="va">ep_designs</span>, 
+                               <span class="va">setEpDesign</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="coerce-back-to-deseqdataobjects-for-proessing">Coerce back to DeseqDataObjects for proessing<a class="anchor" aria-label="anchor" href="#coerce-back-to-deseqdataobjects-for-proessing"></a>
-</h2>
+<div class="section level4">
+<h4 id="coerce-back-to-deseqdataobjects-for-proessing">Coerce back to DeseqDataObjects for proessing<a class="anchor" aria-label="anchor" href="#coerce-back-to-deseqdataobjects-for-proessing"></a>
+</h4>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">blrs_ep_qc_passing_expr_fltr</span> <span class="op">=</span> <span class="fu"><a href="../reference/coerceToDds.html">coerceToDds</a></span><span class="op">(</span><span class="va">blrs_ep_qc_passing_expr_fltr</span><span class="op">)</span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="write-out">Write out<a class="anchor" aria-label="anchor" href="#write-out"></a>
-</h2>
+<code class="sourceCode R"><span class="va">ep_dds_list</span> <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">ep_list_qc_passing_fltr</span>, <span class="va">coerceToDds</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">ep_dds_list</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">ep_list</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="va">WRITE_OUT</span><span class="op">)</span><span class="op">{</span>
+<code class="sourceCode R"><span class="va">DDS_OUTPUT_DIR</span> <span class="op">=</span> <span class="st">"/mnt/scratch/rnaseq_pipeline/experiments/epDatafreeze"</span>
+
+<span class="va">WRITE_OUT</span> <span class="op">=</span> <span class="cn">TRUE</span>
+
+<span class="kw">if</span><span class="op">(</span><span class="va">WRITE_OUT</span><span class="op">)</span><span class="op">{</span>
   <span class="va">today</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/now.html" class="external-link">today</a></span><span class="op">(</span><span class="op">)</span>,<span class="st">"%Y%m%d"</span><span class="op">)</span>
 
   <span class="va">output_dir</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">DDS_OUTPUT_DIR</span>, <span class="va">today</span><span class="op">)</span>
 
   <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">output_dir</span>, recursive<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
-
-  <span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">write_rds</a></span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">E7420L</span>,
-            <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>,<span class="st">"envPert_epWT.dds"</span><span class="op">)</span><span class="op">)</span>
+  
+  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">ep_dds_list</span><span class="op">)</span>, <span class="op">~</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_rds.html" class="external-link">write_rds</a></span><span class="op">(</span><span class="va">ep_dds_list</span><span class="op">[[</span><span class="va">.</span><span class="op">]</span><span class="op">]</span>,
+                                     <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">output_dir</span>,
+                                               <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"ep_"</span>,<span class="va">.</span>,<span class="st">".rds"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="copy-the-htcf-deseq-scripts-to-the-working-directory">Copy the HTCF DESeq scripts to the working directory<a class="anchor" aria-label="anchor" href="#copy-the-htcf-deseq-scripts-to-the-working-directory"></a>
-</h2>
-<p>These scripts will run DESeq in parallel on HTCF. The only items you’l need to edit is the path to the lookup file (if you are running more than one model), and to the dds_input in deseq_mpi.sh. If you do not keep deseq_de.R in the same directory as deseq_mpi.sh, then you’ll need to update the path to the deseq_de.R script, also.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="va">WRITE_OUT</span><span class="op">)</span><span class="op">{</span>
-  <span class="va">htcf_deseq_scripts</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'bash'</span>, 
-                            <span class="st">'htcf_parallel_deseq.sh'</span>, 
-                            package <span class="op">=</span> <span class="st">"brentlabRnaSeqTools"</span><span class="op">)</span>,
-                       <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'R_executable'</span>, 
-                               <span class="st">'deseq_de.R'</span>, 
-                                package <span class="op">=</span> <span class="st">"brentlabRnaSeqTools"</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">htcf_deseq_scripts</span>, <span class="va">file.copy</span>, to <span class="op">=</span> <span class="va">DDS_OUTPUT_DIR</span><span class="op">)</span>
-<span class="op">}</span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
