@@ -35,12 +35,15 @@ annotations. default is c("NAT", "G418")}
 \item{novolog_suffix}{suffix appended to log files. default is
 "_novoalign.log"}
 
+\item{exon_counts_suffix}{suffix appended to exon count files. default is
+'_read_count.tsv'}
+
+\item{cds_counts_suffix}{suffix appended to cds count files. default is
+'_read_count.tsv'}
+
 \item{num_nodes}{number of cpus(by slurm definition)/threads(on your local).
 the argument in the parallel function is nnodes, hence the name of the
 argument. Default is 10}
-
-\item{count_suffix}{suffix appended to count files. default is
-'_read_count.tsv'}
 }
 \value{
 a dataframe, long format, with columns fastqFileNumber, perturbed

@@ -49,7 +49,9 @@ misc = c("strain_status", "qc_passing_iqr_filtered",
          "V1", "V2", "destination", "replicate_group","genotype", "colData<-", 'nn', 'pivot_wider', 'E7420L', 'SolexaPrep',
          'RLE', 'replicate_group_counts', 'feature', 'colname', 'assay<-',
          'unique_identifier', 'replicate_group_rle', 'total', 'head', 'metric',
-         'reads', 'percent', 'Var1', 'Var2', 'fastqFilePath')
+         'reads', 'percent', 'Var1', 'Var2', 'fastqFilePath', 'locus', 'perturbedCoverage',
+         'perturbedLog2cpm', 'kn99_novo_htseq_thresholds', 'gene_id', 'kn99_novo_htseq_status',
+         'rle_stat', 'value')
 
 package_data_variables = c("test_metadata",
                            "run_numbers_with_leading_zero",

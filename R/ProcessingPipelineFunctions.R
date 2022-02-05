@@ -355,14 +355,6 @@ htseq_locusLog2cpm = function(htseq_filename, gene_id,
 #
 # }
 
-novoalignPipelineQC = function(meta_df, pipeline_output_dirpath){
-
-  meta_df_longer = meta_df %>%
-    pivot_longer(cols = starts_with("marker|genotype"),
-                 names_to = "locus")
-
-}
-
 #'
 #' QC a crypto run output by the novoalign+htseq pipeline
 #'
@@ -386,7 +378,9 @@ novoalignPipelineQC = function(meta_df, pipeline_output_dirpath){
 #'   "_sorted_aligned_reads_with_annote.bam"
 #' @param novolog_suffix suffix appended to log files. default is
 #'   "_novoalign.log"
-#' @param count_suffix suffix appended to count files. default is
+#' @param exon_counts_suffix suffix appended to exon count files. default is
+#'   '_read_count.tsv'
+#' @param cds_counts_suffix suffix appended to cds count files. default is
 #'   '_read_count.tsv'
 #' @param num_nodes number of cpus(by slurm definition)/threads(on your local).
 #'   the argument in the parallel function is nnodes, hence the name of the

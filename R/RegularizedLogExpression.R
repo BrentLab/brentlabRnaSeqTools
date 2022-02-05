@@ -329,15 +329,15 @@ rlePlotCompareEffectRemoved = function(norm_counts_rle, removed_effect_rle, meta
 #'
 #' @return a plot with three horizontal panels for each of the rle stats
 #'
-# plotRLEhistograms = function(rle_df){
-#   rle_df %>%
-#     pivot_longer(-FASTQFILENAME, names_to="rle_stat", values_to="value") %>%
-#     mutate(rle_stat = factor(rle_stat, levels=c("SAMPLE_DEVIATION_MEDIAN", "ABS_SAMPLE_DEVIATION_MEDIAN", "INTERQUARTILE_RANGE"))) %>%
-#     ggplot() +
-#     geom_histogram(aes(value))+
-#     theme(axis.title.x=element_blank())+
-#     facet_wrap('rle_stat', scales="free_x", dir='v')
-# }
+plotRLEhistograms = function(rle_df){
+  rle_df %>%
+    pivot_longer(-FASTQFILENAME, names_to="rle_stat", values_to="value") %>%
+    mutate(rle_stat = factor(rle_stat, levels=c("SAMPLE_DEVIATION_MEDIAN", "ABS_SAMPLE_DEVIATION_MEDIAN", "INTERQUARTILE_RANGE"))) %>%
+    ggplot() +
+    geom_histogram(aes(value))+
+    theme(axis.title.x=element_blank())+
+    facet_wrap('rle_stat', scales="free_x", dir='v')
+}
 
 #'
 #' Remove the libraryDate effects from KN99 dds objs
