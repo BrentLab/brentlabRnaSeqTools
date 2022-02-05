@@ -64,7 +64,8 @@
 
 
 
-<script src="QC_Library_Quality_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+
+<div class="row">
   <main id="main"><div class="page-header">
       <img src="" class="logo" alt=""><h1>QC: Library Quality</h1>
                         <h4 data-toc-skip class="author">Chase Mateusiak</h4>
@@ -291,17 +292,17 @@
 <h2 id="running-the-igv-batch-scripts">Running the IGV batch scripts<a class="anchor" aria-label="anchor" href="#running-the-igv-batch-scripts"></a>
 </h2>
 <p>It is likely easiest just to cd into the place where you output the scripts</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1"></a><span class="bu">cd</span> /home/oguzkhan/Desktop/tmp/igv/scripts</span>
-<span id="cb11-2"><a href="#cb11-2"></a></span>
-<span id="cb11-3"><a href="#cb11-3"></a><span class="kw">for</span> <span class="ex">batch_script</span> in <span class="va">$(</span><span class="fu">ls</span> .<span class="va">)</span><span class="kw">;</span> <span class="kw">do</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a>  <span class="ex">xvfb-run</span> --auto-servernum igv.sh -b batch_script</span>
-<span id="cb11-5"><a href="#cb11-5"></a><span class="kw">done</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /home/oguzkhan/Desktop/tmp/igv/scripts</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> batch_script <span class="kw">in</span> <span class="va">$(</span><span class="fu">ls</span> .<span class="va">)</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">xvfb-run</span> <span class="at">--auto-servernum</span> igv.sh <span class="at">-b</span> batch_script</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
 <p>I then scp these into the run directory before moving the run directory over to <code>lts</code></p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">scp</span> -r /home/oguzkhan/Desktop/tmp/igv chasem@htcf.wustl.edu:/mnt/scratch/rnaseq_pipeline/align_count_results/run_5500/rnaseq_pipeline_results/run_5500_samples/</span>
-<span id="cb12-2"><a href="#cb12-2"></a></span>
-<span id="cb12-3"><a href="#cb12-3"></a><span class="co"># then log into htcf, go to the pipeline output and move the whole run directory to lts</span></span>
-<span id="cb12-4"><a href="#cb12-4"></a></span>
-<span id="cb12-5"><a href="#cb12-5"></a><span class="fu">rsync</span> -aHv run_5500_samples /lts/mblab/sequence_data/rnaseq_data/lts_align_count/</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> <span class="at">-r</span> /home/oguzkhan/Desktop/tmp/igv chasem@htcf.wustl.edu:/mnt/scratch/rnaseq_pipeline/align_count_results/run_5500/rnaseq_pipeline_results/run_5500_samples/</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># then log into htcf, go to the pipeline output and move the whole run directory to lts</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-aHv</span> run_5500_samples /lts/mblab/sequence_data/rnaseq_data/lts_align_count/</span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

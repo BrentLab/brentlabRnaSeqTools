@@ -64,7 +64,8 @@
 
 
 
-<script src="ProccessRun_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+
+<div class="row">
   <main id="main"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Process a New Run From MGI</h1>
                         <h4 data-toc-skip class="author">Chase Mateusiak</h4>
@@ -109,82 +110,84 @@
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">run_df</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="write-out-and-move-it-to-the-cluster">Write out and move it to the cluster<a class="anchor" aria-label="anchor" href="#write-out-and-move-it-to-the-cluster"></a>
+<h2 id="write-out">Write out<a class="anchor" aria-label="anchor" href="#write-out"></a>
 </h2>
+<p>If you have mounted your local to HTCF, you can write directly to HTCF. Otherwise, write to your computer and follow the directions below to move it to HTCF.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sample_sheet</span> <span class="op">=</span> <span class="fu"><a href="../reference/createNovoalignPipelineSamplesheet.html">createNovoalignPipelineSamplesheet</a></span><span class="op">(</span><span class="va">run_df</span>, <span class="st">"/scratch/mblab/chasem/rnaseq_pipeline/scratch_sequence"</span><span class="op">)</span>
 
 <span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span><span class="va">sample_sheet</span>, <span class="st">"/path/to/where/you/write_things/run_&lt;some_identifier&gt;.csv"</span><span class="op">)</span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="move-it-to-htcf">Move it to HTCF<a class="anchor" aria-label="anchor" href="#move-it-to-htcf"></a>
-</h2>
+<div class="section level3">
+<h3 id="move-a-file-to-htcf">Move a file to HTCF<a class="anchor" aria-label="anchor" href="#move-a-file-to-htcf"></a>
+</h3>
 <p>Log into HTCF and make a directory that will store the input/output for this run. For example, if I were processing <code>run_1234</code>, I would log into HTCF and make a directory like so:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a>$ <span class="fu">mkdir</span> /scratch/mblab/chasem/rnaseq_pipeline/align_count_results/run_1234</span></code></pre></div>
-<p>You could mount HTCf and write to some scratch directly as if it were on your computer. Another way is to write to your computer, and then send it to htcf with <code>scp</code>. To do this, open a terminal and enter the following:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># copy the file from your computer to a directory in your personal subdirectory </span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="co"># of the lab scratch space</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a>$ <span class="fu">scp</span> /path/to/where/you/write_things/run_<span class="op">&lt;</span>some_identifier<span class="op">&gt;</span>.csv <span class="dt">\ </span></span>
-<span id="cb7-4"><a href="#cb7-4"></a>      <span class="op">&lt;</span><span class="ex">your_username</span><span class="op">&gt;</span>@htcf.wustl.edu:/scratch/mblab/<span class="op">&lt;</span>your_username<span class="op">&gt;</span>/rnaseq_pipeline/align_count_results/run_1234</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> mkdir /scratch/mblab/chasem/rnaseq_pipeline/align_count_results/run_1234</span></code></pre></div>
+<p>Back on your local computer, send the file from your local to HTCF with <code>scp</code></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># copy the file from your computer to a directory in your personal subdirectory </span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># of the lab scratch space</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scp /path/to/where/you/write_things/run_<span class="op">&lt;</span>some_identifier<span class="op">&gt;</span>.csv <span class="dt">\ </span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>      <span class="op">&lt;</span>your_username<span class="op">&gt;</span>@htcf.wustl.edu:/scratch/mblab/<span class="op">&lt;</span>your_username<span class="op">&gt;</span>/rnaseq_pipeline/align_count_results/run_1234</span></code></pre></div>
 <p>Please note that there is no requirement that the path look like this: <code>&lt;your_username&gt;/rnaseq_pipeline/align_count_results/run_1234</code>. It is just an example of what it might look like.</p>
 </div>
+</div>
 <div class="section level2">
-<h2 id="login-to-htcf-and-start-the-pipeline">Login to HTCF and start the pipeline<a class="anchor" aria-label="anchor" href="#login-to-htcf-and-start-the-pipeline"></a>
+<h2 id="on-htcf-start-the-pipeline">On HTCF, start the pipeline<a class="anchor" aria-label="anchor" href="#on-htcf-start-the-pipeline"></a>
 </h2>
 <p>The first time you do this, navigate to your scratch space and do this:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1"></a>$ <span class="fu">git</span> clone https://github.com/cmatKhan/brentlab_rnaseq_nf.git</span></code></pre></div>
-<p>If you have done this before, navigate into your brentlab_rnaseq_nf directory and do this:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1"></a>$ <span class="fu">git</span> pull https://github.com/cmatKhan/brentlab_rnaseq_nf.git</span></code></pre></div>
-<p>If you get some sort of error that says something like, “this is not a git directory”, then HTCF deleted some files. In that case, navigate out of <code>brentlab_rnaseq_nf</code>, delete it (<code>rm -rf brentlab_rnaseq_nf</code>), and use the <code>git clone</code> command described above.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git clone https://github.com/cmatKhan/brentlab_rnaseq_nf.git</span></code></pre></div>
+<p>If you have done this before, navigate into your brentlab_rnaseq_nf directory and do this to pull any possible updates:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git pull https://github.com/cmatKhan/brentlab_rnaseq_nf.git</span></code></pre></div>
+<p>If you get some sort of error that says something like, “this is not a git directory”, when you know it is, in fact, a git directory, then HTCF deleted some files. In that case, navigate out of <code>brentlab_rnaseq_nf</code>, delete it (<code>rm -rf brentlab_rnaseq_nf</code>), and use the <code>git clone</code> command described above.</p>
 </div>
 <div class="section level2">
 <h2 id="copy-the-fastq-files-into-scratch">Copy the fastq files into scratch<a class="anchor" aria-label="anchor" href="#copy-the-fastq-files-into-scratch"></a>
 </h2>
 <p>I suggest having a <code>rnaseq_pipeline</code> directory in your personal scratch space. If you don’t have one, make one, or otherwise navigate to where ever you are keeping rnaseq type data. <a href="https://github.com/BrentLab/brentlabRnaSeqTools/blob/main/inst/bash/fastqFilesToScratchFromSamplesheet.sh" class="external-link">You can use the script here for the job</a>. Ask if you need help setting this up to use on HTCF. Here is an example, assuming that you have this scriptin your <code>$PWD</code></p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1"></a>$ <span class="ex">./fastqFilesToScratchFromSamplesheet.sh</span> path/to/sample_sheet.csv /lts/mblab/sequence_data/rnaseq_data/lts_sequence</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ./fastqFilesToScratchFromSamplesheet.sh path/to/sample_sheet.csv /lts/mblab/sequence_data/rnaseq_data/lts_sequence</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="run-the-pipeline">Run the pipeline<a class="anchor" aria-label="anchor" href="#run-the-pipeline"></a>
 </h2>
 <p>Navigate into the directory into which you are going to store the input/output of the pipeline, eg:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1"></a>$ <span class="bu">cd</span> rnaseq_pipeline/align_count_results/run_1234</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd rnaseq_pipeline/align_count_results/run_1234</span></code></pre></div>
 <div class="section level3">
 <h3 id="make-the-params-file">Make the params file<a class="anchor" aria-label="anchor" href="#make-the-params-file"></a>
 </h3>
 <p>You will need a file describing the experiment. This should go into the directory where the input/output is stored. It must look like this, and the paths must be correct. Save this as, eg, params_run1234.json. <a href="https://github.com/BrentLab/brentlabRnaSeqTools/blob/main/inst/params_example.json" class="external-link">The example below is also shown here</a></p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">{</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="dt">"output_dir"</span><span class="fu">:</span> <span class="st">"."</span><span class="fu">,</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a><span class="dt">"sample_sheet"</span><span class="fu">:</span> <span class="st">"path/to/sample_sheet.csv"</span><span class="fu">,</span></span>
-<span id="cb12-4"><a href="#cb12-4"></a><span class="dt">"run_number"</span><span class="fu">:</span> <span class="st">"1234"</span><span class="fu">,</span></span>
-<span id="cb12-5"><a href="#cb12-5"></a><span class="dt">"KN99_novoalign_index"</span><span class="fu">:</span> <span class="st">"/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_genome_fungidb.nix"</span><span class="fu">,</span></span>
-<span id="cb12-6"><a href="#cb12-6"></a><span class="dt">"KN99_fasta"</span><span class="fu">:</span> <span class="st">"/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_genome_fungidb.fasta"</span><span class="fu">,</span></span>
-<span id="cb12-7"><a href="#cb12-7"></a><span class="dt">"KN99_stranded_annotation_file"</span><span class="fu">:</span> <span class="st">"/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_stranded_annotations_fungidb_augment.gff"</span><span class="fu">,</span></span>
-<span id="cb12-8"><a href="#cb12-8"></a><span class="dt">"KN99_unstranded_annotation_file"</span><span class="fu">:</span> <span class="st">"/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_no_strand_annotations_fungidb_augment.gff"</span><span class="fu">,</span></span>
-<span id="cb12-9"><a href="#cb12-9"></a><span class="dt">"htseq_count_feature"</span><span class="fu">:</span> <span class="st">"exon"</span></span>
-<span id="cb12-10"><a href="#cb12-10"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="dt">"output_dir"</span><span class="fu">:</span> <span class="st">"."</span><span class="fu">,</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="dt">"sample_sheet"</span><span class="fu">:</span> <span class="st">"path/to/sample_sheet.csv"</span><span class="fu">,</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="dt">"run_number"</span><span class="fu">:</span> <span class="st">"1234"</span><span class="fu">,</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="dt">"KN99_novoalign_index"</span><span class="fu">:</span> <span class="st">"/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_genome_fungidb.nix"</span><span class="fu">,</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="dt">"KN99_fasta"</span><span class="fu">:</span> <span class="st">"/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_genome_fungidb.fasta"</span><span class="fu">,</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="dt">"KN99_stranded_annotation_file"</span><span class="fu">:</span> <span class="st">"/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_stranded_annotations_fungidb_augment.gff"</span><span class="fu">,</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="dt">"KN99_unstranded_annotation_file"</span><span class="fu">:</span> <span class="st">"/scratch/mblab/chasem/rnaseq_pipeline/genome_files/KN99/KN99_no_strand_annotations_fungidb_augment.gff"</span><span class="fu">,</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="dt">"htseq_count_feature"</span><span class="fu">:</span> <span class="st">"exon"</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="run-nextflow">Run nextflow<a class="anchor" aria-label="anchor" href="#run-nextflow"></a>
 </h3>
-<p>Next, make a script to run the pipeline. [An example may be found here]((<a href="https://github.com/BrentLab/brentlabRnaSeqTools/blob/main/inst/bash/run_novo_nf_pipeline.sh" class="external-link uri">https://github.com/BrentLab/brentlabRnaSeqTools/blob/main/inst/bash/run_novo_nf_pipeline.sh</a>), or you can copy/paste what is below into a file.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a></span>
-<span id="cb13-3"><a href="#cb13-3"></a><span class="co">#SBATCH --time=15:00:00  # right now, 15 hours. change depending on time expectation to run</span></span>
-<span id="cb13-4"><a href="#cb13-4"></a><span class="co">#SBATCH --mem-per-cpu=10G</span></span>
-<span id="cb13-5"><a href="#cb13-5"></a><span class="co">#SBATCH -J your_jobname.out</span></span>
-<span id="cb13-6"><a href="#cb13-6"></a><span class="co">#SBATCH -o your_jobname.out</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a></span>
-<span id="cb13-8"><a href="#cb13-8"></a><span class="ex">ml</span> miniconda</span>
-<span id="cb13-9"><a href="#cb13-9"></a></span>
-<span id="cb13-10"><a href="#cb13-10"></a><span class="co"># until HTCF updates and spack is available, this works. When HTCF updates and </span></span>
-<span id="cb13-11"><a href="#cb13-11"></a><span class="co"># we have spack, ill update this...though at that point, hopefully we are no </span></span>
-<span id="cb13-12"><a href="#cb13-12"></a><span class="co"># longer using this pipeline</span></span>
-<span id="cb13-13"><a href="#cb13-13"></a><span class="bu">source</span> activate /scratch/mblab/chasem/rnaseq_pipeline/conda_envs/nextflow</span>
-<span id="cb13-14"><a href="#cb13-14"></a></span>
-<span id="cb13-15"><a href="#cb13-15"></a><span class="fu">mkdir</span> tmp</span>
-<span id="cb13-16"><a href="#cb13-16"></a></span>
-<span id="cb13-17"><a href="#cb13-17"></a><span class="ex">nextflow</span> run /path/to/brentlab_rnaseq_nf/main.nf <span class="dt">\ </span></span>
-<span id="cb13-18"><a href="#cb13-18"></a>             <span class="ex">-params-file</span> /path/to/your_params.json</span></code></pre></div>
+<p><strong>NOTE:</strong> both in the params file, and in the run script below, you <em>must</em> make sure that the paths are correct. They won’t be, unless you change them to make them correct for you.</p>
+<p>Next, make a script to run the pipeline. [An example may be found here]((<a href="https://github.com/BrentLab/brentlabRnaSeqTools/blob/main/inst/bash/run_novo_nf_pipeline.sh" class="external-link uri">https://github.com/BrentLab/brentlabRnaSeqTools/blob/main/inst/bash/run_novo_nf_pipeline.sh</a>), or you can copy/paste what is below into a file. Remember to update the paths.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --time=15:00:00  # right now, 15 hours. change depending on time expectation to run</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem-per-cpu=10G</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -J your_jobname.out</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o your_jobname.out</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="ex">ml</span> miniconda</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co"># until HTCF updates and spack is available, this works. When HTCF updates and </span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co"># we have spack, ill update this...though at that point, hopefully we are no </span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co"># longer using this pipeline</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> activate /scratch/mblab/chasem/rnaseq_pipeline/conda_envs/nextflow</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> tmp</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="ex">nextflow</span> run /path/to/brentlab_rnaseq_nf/main.nf <span class="dt">\ </span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>             <span class="ex">-params-file</span> /path/to/your_params.json</span></code></pre></div>
 <p>You can check progress by looking at the squeue and the <code>&lt;your_jobname&gt;.out</code>. Right now, it is taking a very long time for HTCF to launch nextflow. When HTCF updates to the ‘new’ implementation, it starts much faster.</p>
 </div>
 </div>
