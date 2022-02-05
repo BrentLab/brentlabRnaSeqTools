@@ -33,7 +33,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div id="navbar" class="collapse navbar-collapse ms-2">
+    <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
@@ -41,10 +41,9 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/ProccessRun.html">Process a New Run From MGI</a>
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
-    <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Analysis_Tally.html">QC: Replicate Agreement Analysis and tally</a>
-    <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement Object Creation</a>
-    <a class="dropdown-item" href="../articles/Replicate_Tallies.html">Replicate_Tallies</a>
+    <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement</a>
     <a class="dropdown-item" href="../articles/UsingRstudioProjects.html">UsingRstudioProjects</a>
     <a class="dropdown-item" href="../articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
     <a class="dropdown-item" href="../articles/ninetyMinInduction_tally.html">90 Minute Induction Tally</a>
@@ -63,12 +62,15 @@
   </div>
 </nav><div class="container template-article">
 
+
+
+
 <div class="row">
   <main id="main"><div class="page-header">
       <img src="" class="logo" alt=""><h1>90 Minute Induction Analysis Data Creation</h1>
                         <h4 data-toc-skip class="author">Chase Mateusiak</h4>
             
-            <h4 data-toc-skip class="date">01/05/2022</h4>
+            <h4 data-toc-skip class="date">02/04/2022</h4>
       
       
       <div class="d-none name"><code>ninetyMinuteInduction_analysis.Rmd</code></div>
@@ -80,15 +82,15 @@
       <p>Create a data object ready for analysis for the 90 Minute Induction experiment set. brentlabRnaSeqTools package version: 0.0.0.0</p>
     </div>
     
-<div class="section level1">
-<h1 id="brentlabrnaseqset">BrentlabRnaSeqSet<a class="anchor" aria-label="anchor" href="#brentlabrnaseqset"></a>
-</h1>
+<div class="section level2">
+<h2 id="brentlabrnaseqset">BrentlabRnaSeqSet<a class="anchor" aria-label="anchor" href="#brentlabrnaseqset"></a>
+</h2>
 <p>The <code>BrentlabRnaSeqSet</code> is a child of the <a href="http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#the-deseqdataset" class="external-link">DESeqDataSet</a>, which is a child of <a href="https://bioconductor.org/packages/release/bioc/vignettes/SummarizedExperiment/inst/doc/SummarizedExperiment.html" class="external-link">SummarizedExperiment</a>.</p>
 <p>Therefore, the <code>brentlabRnaSeqSet</code> has all of the DESeq functionality – eg, DESeq size factor normalization, or the <code>DESeq()</code> function – as well as all of the SummarizedExperiment methods, and some more ‘custom’ methods more suited to our purposes. It is easily extensible – for those more computationally minded users, it would be a good idea to learn and use the object oriented programming tools. There are many cases in which doing so will make your code less error prone, easier to test, more reproducible, and easier to maintain long term.</p>
 </div>
-<div class="section level1">
-<h1 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
-</h1>
+<div class="section level2">
+<h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">brentlabRnaSeqTools</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">rtracklayer</span><span class="op">)</span>
@@ -129,12 +131,12 @@
 <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">$</span><span class="va">ID</span></code></pre></div>
 <p>If the experiment set you want is not already created, issue an ‘issue report’, and describe the <strong>EXACT</strong> filter that you want to use to create the set. What goes into your set depends on what you describe as your filter, so spend time with the database to figure out what is there.</p>
 </div>
-<div class="section level1">
-<h1 id="minute-induction">90 minute induction<a class="anchor" aria-label="anchor" href="#minute-induction"></a>
-</h1>
 <div class="section level2">
-<h2 id="grant-set-singles">2016 Grant set, singles<a class="anchor" aria-label="anchor" href="#grant-set-singles"></a>
+<h2 id="minute-induction">90 minute induction<a class="anchor" aria-label="anchor" href="#minute-induction"></a>
 </h2>
+<div class="section level3">
+<h3 id="grant-set-singles">2016 Grant set, singles<a class="anchor" aria-label="anchor" href="#grant-set-singles"></a>
+</h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">blrs_90min</span> <span class="op">=</span> <span class="fu"><a href="../reference/createExperimentSet.html">createExperimentSet</a></span><span class="op">(</span><span class="va">blrs</span>, <span class="st">'ninetyMin_2016Grant'</span><span class="op">)</span>
 
@@ -145,15 +147,15 @@
                                  iqr_colname <span class="op">=</span> <span class="st">"ninetyMin_iqr"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
-<div class="section level1">
-<h1 id="set-perturbed-loci-to-zero">Set perturbed loci to zero<a class="anchor" aria-label="anchor" href="#set-perturbed-loci-to-zero"></a>
-</h1>
+<div class="section level2">
+<h2 id="set-perturbed-loci-to-zero">Set perturbed loci to zero<a class="anchor" aria-label="anchor" href="#set-perturbed-loci-to-zero"></a>
+</h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">blrs_90min_qc_passing</span> <span class="op">=</span> <span class="fu"><a href="../reference/setPerturbedLociToZero.html">setPerturbedLociToZero</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="expression-filtering">Expression filtering<a class="anchor" aria-label="anchor" href="#expression-filtering"></a>
-</h1>
+<div class="section level2">
+<h2 id="expression-filtering">Expression filtering<a class="anchor" aria-label="anchor" href="#expression-filtering"></a>
+</h2>
 <p>Filter out low expression genes (and anything else you don’t want in the analysis set). How you do this is up to you, the analyst. <a href="https://www.pnas.org/content/107/21/9546" class="external-link">You might use the method proposed in this paper</a> by, among others, Wolfgang Huber, and implemented in the <a href="https://bioconductor.org/packages/release/bioc/html/genefilter.html" class="external-link">bioconductor package</a> <code>geneFilter</code> (as well as DESeq, by default), or you could filter based on some number of samples having greater than some threshold of expression, which is shown below.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># How this is done is up to you, and obviously affects what genes are left in.</span>
@@ -166,9 +168,9 @@
 
 <span class="va">blrs_90min_qc_passing</span> <span class="op">=</span> <span class="va">blrs_90min_qc_passing</span><span class="op">[</span><span class="va">high_disp_fltr</span>,<span class="op">]</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="split-the-replicate-groups">Split the replicate groups<a class="anchor" aria-label="anchor" href="#split-the-replicate-groups"></a>
-</h1>
+<div class="section level2">
+<h2 id="split-the-replicate-groups">Split the replicate groups<a class="anchor" aria-label="anchor" href="#split-the-replicate-groups"></a>
+</h2>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># note, qaFilter returns those samples with less than 3 replicates, which have NA</span>
 <span class="co"># in the RLE stats. Filter those out, also</span>
@@ -201,9 +203,9 @@
 
 <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span> <span class="op">=</span>
   <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span><span class="op">)</span></code></pre></div>
-<div class="section level2">
-<h2 id="re-examine-tallies-after-separating-the-protocol-groups">Re-examine tallies after separating the protocol groups<a class="anchor" aria-label="anchor" href="#re-examine-tallies-after-separating-the-protocol-groups"></a>
-</h2>
+<div class="section level3">
+<h3 id="re-examine-tallies-after-separating-the-protocol-groups">Re-examine tallies after separating the protocol groups<a class="anchor" aria-label="anchor" href="#re-examine-tallies-after-separating-the-protocol-groups"></a>
+</h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># note that the column names may not reflect what is actually pasesd -- this </span>
 <span class="co"># function needs some updating due to hard coding colnames. Columns are in order of the</span>
@@ -214,9 +216,9 @@
                           <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr</span><span class="op">)</span><span class="op">)</span>,
                           <span class="va">grant_df</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="split">Split<a class="anchor" aria-label="anchor" href="#split"></a>
-</h2>
+<div class="section level3">
+<h3 id="split">Split<a class="anchor" aria-label="anchor" href="#split"></a>
+</h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">blrs_90min_qc_passing_protocol_fltr_split</span> <span class="op">=</span>
   <span class="fu"><a href="../reference/splitProtocolGroups.html">splitProtocolGroups</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr</span><span class="op">)</span>
@@ -231,9 +233,9 @@
   <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr_split</span><span class="op">$</span><span class="va">E7420L</span><span class="op">$</span><span class="va">genotype1</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
-<div class="section level1">
-<h1 id="examine-replicate-tallies-by-protocol-group">Examine replicate tallies by protocol group<a class="anchor" aria-label="anchor" href="#examine-replicate-tallies-by-protocol-group"></a>
-</h1>
+<div class="section level2">
+<h2 id="examine-replicate-tallies-by-protocol-group">Examine replicate tallies by protocol group<a class="anchor" aria-label="anchor" href="#examine-replicate-tallies-by-protocol-group"></a>
+</h2>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># filter out those samples with less than 3 replicates in either libraryDate or</span>
 <span class="co"># genotype1</span>
@@ -302,9 +304,9 @@
 <span class="va">fltr_full_set_mm</span> <span class="op">=</span> <span class="fu">createFullSetModelMatricies</span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">)</span>
 
 <span class="va">low_rep_parameters_2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">fltr_full_set_mm</span>, <span class="va">lowReplicateParams</span><span class="op">)</span></code></pre></div>
-<div class="section level2">
-<h2 id="recheck-tallies-again">Recheck tallies again<a class="anchor" aria-label="anchor" href="#recheck-tallies-again"></a>
-</h2>
+<div class="section level3">
+<h3 id="recheck-tallies-again">Recheck tallies again<a class="anchor" aria-label="anchor" href="#recheck-tallies-again"></a>
+</h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">protocol_fltr_tally</span> <span class="op">=</span>
   <span class="fu"><a href="../reference/createInductionSetTally.html">createInductionSetTally</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min</span><span class="op">)</span><span class="op">)</span>,
@@ -314,9 +316,9 @@
                           <span class="va">grant_df</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
-<div class="section level1">
-<h1 id="create-hold-out-set">Create hold out set<a class="anchor" aria-label="anchor" href="#create-hold-out-set"></a>
-</h1>
+<div class="section level2">
+<h2 id="create-hold-out-set">Create hold out set<a class="anchor" aria-label="anchor" href="#create-hold-out-set"></a>
+</h2>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">min_set_size</span> <span class="op">=</span> <span class="fl">1</span>
 
@@ -325,9 +327,9 @@
   E7420L <span class="op">=</span> <span class="fu"><a href="../reference/createTestTrainSet.html">createTestTrainSet</a></span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">E7420L</span>, <span class="va">min_set_size</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="set-the-experiment-designs">Set the experiment designs<a class="anchor" aria-label="anchor" href="#set-the-experiment-designs"></a>
-</h1>
+<div class="section level2">
+<h2 id="set-the-experiment-designs">Set the experiment designs<a class="anchor" aria-label="anchor" href="#set-the-experiment-designs"></a>
+</h2>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">setNinetyMinDesign</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">obj</span><span class="op">)</span><span class="op">{</span>
   <span class="va">obj</span><span class="op">$</span><span class="va">genotype1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">obj</span><span class="op">$</span><span class="va">genotype1</span><span class="op">)</span>
@@ -346,18 +348,18 @@
 <span class="va">hold_out_set</span><span class="op">$</span><span class="va">SolexaPrep</span><span class="op">$</span><span class="va">train</span> <span class="op">=</span> <span class="fu">setNinetyMinDesign</span><span class="op">(</span><span class="va">hold_out_set</span><span class="op">$</span><span class="va">SolexaPrep</span><span class="op">$</span><span class="va">train</span><span class="op">)</span>
 <span class="va">hold_out_set</span><span class="op">$</span><span class="va">E7420L</span><span class="op">$</span><span class="va">train</span> <span class="op">=</span> <span class="fu">setNinetyMinDesign</span><span class="op">(</span><span class="va">hold_out_set</span><span class="op">$</span><span class="va">E7420L</span><span class="op">$</span><span class="va">train</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="convert-everything-back-to-deseqdataobjects-for-the-time-being">convert everything back to DESeqDataObjects for the time being<a class="anchor" aria-label="anchor" href="#convert-everything-back-to-deseqdataobjects-for-the-time-being"></a>
-</h1>
+<div class="section level2">
+<h2 id="convert-everything-back-to-deseqdataobjects-for-the-time-being">convert everything back to DESeqDataObjects for the time being<a class="anchor" aria-label="anchor" href="#convert-everything-back-to-deseqdataobjects-for-the-time-being"></a>
+</h2>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">hold_out_set</span><span class="op">$</span><span class="va">SolexaPrep</span> <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">hold_out_set</span><span class="op">$</span><span class="va">SolexaPrep</span>, <span class="va">coerceToDds</span><span class="op">)</span>
 <span class="va">hold_out_set</span><span class="op">$</span><span class="va">E7420L</span> <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">hold_out_set</span><span class="op">$</span><span class="va">E7420L</span>, <span class="va">coerceToDds</span><span class="op">)</span>
 
 <span class="va">fltr_full_set_90min</span> <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">fltr_full_set_90min</span>, <span class="va">coerceToDds</span><span class="op">)</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="combine-protocol-groups">combine protocol groups<a class="anchor" aria-label="anchor" href="#combine-protocol-groups"></a>
-</h1>
+<div class="section level2">
+<h2 id="combine-protocol-groups">combine protocol groups<a class="anchor" aria-label="anchor" href="#combine-protocol-groups"></a>
+</h2>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">refactorDesign</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">dds</span><span class="op">)</span><span class="op">{</span>
@@ -420,9 +422,9 @@
   E7420L <span class="op">=</span> <span class="va">hold_out_set</span><span class="op">$</span><span class="va">E7420L</span><span class="op">$</span><span class="va">test</span>
 <span class="op">)</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="write-out">Write out<a class="anchor" aria-label="anchor" href="#write-out"></a>
-</h1>
+<div class="section level2">
+<h2 id="write-out">Write out<a class="anchor" aria-label="anchor" href="#write-out"></a>
+</h2>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="va">WRITE_OUT</span><span class="op">)</span><span class="op">{</span>
   <span class="va">today</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/now.html" class="external-link">today</a></span><span class="op">(</span><span class="op">)</span>,<span class="st">"%Y%m%d"</span><span class="op">)</span>
@@ -456,9 +458,9 @@
   
 <span class="op">}</span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="copy-the-htcf-deseq-scripts-to-the-working-directory">Copy the HTCF DESeq scripts to the working directory<a class="anchor" aria-label="anchor" href="#copy-the-htcf-deseq-scripts-to-the-working-directory"></a>
-</h1>
+<div class="section level2">
+<h2 id="copy-the-htcf-deseq-scripts-to-the-working-directory">Copy the HTCF DESeq scripts to the working directory<a class="anchor" aria-label="anchor" href="#copy-the-htcf-deseq-scripts-to-the-working-directory"></a>
+</h2>
 <p>These scripts will run DESeq in parallel on HTCF. The only items you’l need to edit is the path to the lookup file (if you are running more than one model), and to the dds_input in deseq_mpi.sh. If you do not keep deseq_de.R in the same directory as deseq_mpi.sh, then you’ll need to update the path to the deseq_de.R script, also.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="va">WRITE_OUT</span><span class="op">)</span><span class="op">{</span>
@@ -485,7 +487,7 @@
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
     </footer>

@@ -10,6 +10,9 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/ProccessRun.html</loc>
+  </url>
+  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/QC_Library_Quality.html</loc>
   </url>
   <url>
@@ -43,10 +46,16 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/index.html</loc>
   </url>
   <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/addQcColsToMeta.html</loc>
+  </url>
+  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/addRleSummaryStats.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/archiveDatabase.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/autoAuditQcTable.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/brentlabRnaSeqExperiment.html</loc>
@@ -103,6 +112,9 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/createNinetyMinuteInduction_non2016grant.html</loc>
   </url>
   <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/createNovoalignPipelineSamplesheet.html</loc>
+  </url>
+  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/createTestTrainSet.html</loc>
   </url>
   <url>
@@ -110,6 +122,9 @@
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/database_info.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/decomposeStatus2Bit.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/estimateSizeFactorsByProtocol.html</loc>
@@ -169,6 +184,12 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/is_integer64.html</loc>
   </url>
   <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/kn99_novo_htseq_status.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/kn99_novo_htseq_thresholds.html</loc>
+  </url>
+  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/listTables.html</loc>
   </url>
   <url>
@@ -179,6 +200,9 @@
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/moveNfCoFastqFiles.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/novoalignPipelineQC.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/parseComparatives.html</loc>
@@ -212,6 +236,9 @@
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/readInData.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/removeLibdateByReplicate.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/removeParameterEffects.html</loc>

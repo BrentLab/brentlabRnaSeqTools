@@ -55,7 +55,10 @@ run_df = meta %>%
 View(run_df)
 ```
 
-# Write out and move it to the cluster
+# Write out
+
+If you have mounted your local to HTCF, you can write directly to HTCF. Otherwise,
+write to your computer and follow the directions below to move it to HTCF.
 
 ```{r}
 sample_sheet = createNovoalignPipelineSamplesheet(run_df, "/scratch/mblab/chasem/rnaseq_pipeline/scratch_sequence")
@@ -63,7 +66,7 @@ sample_sheet = createNovoalignPipelineSamplesheet(run_df, "/scratch/mblab/chasem
 write_csv(sample_sheet, "/path/to/where/you/write_things/run_<some_identifier>.csv")
 ```
 
-# Move it to HTCF
+## Move a file to HTCF
 
 Log into HTCF and make a directory that will store the input/output for this 
 run. For example, if I were processing 
@@ -73,9 +76,7 @@ run. For example, if I were processing
 $ mkdir /scratch/mblab/chasem/rnaseq_pipeline/align_count_results/run_1234
 ```
 
-You could mount HTCf and write to some scratch directly as if it were on your 
-computer. Another way is to write to your computer, and then send it to htcf 
-with `scp`. To do this, open a terminal and enter the following:
+Back on your local computer, send the file from your local to HTCF with `scp`
 
 ```{bash}
 # copy the file from your computer to a directory in your personal subdirectory 
@@ -88,7 +89,7 @@ Please note that there is no requirement that the path look like this:
 `<your_username>/rnaseq_pipeline/align_count_results/run_1234`. It is just an 
 example of what it might look like.
 
-# Login to HTCF and start the pipeline
+# On HTCF, start the pipeline
 
 The first time you do this, navigate to your scratch space and do this:
 
@@ -97,16 +98,16 @@ $ git clone https://github.com/cmatKhan/brentlab_rnaseq_nf.git
 ```
 
 If you have done this before, navigate into your brentlab_rnaseq_nf directory 
-and do this:
+and do this to pull any possible updates:
 
 ```{bash}
 $ git pull https://github.com/cmatKhan/brentlab_rnaseq_nf.git
 ```
 
-If you get some sort of error that says something like, "this is not a git directory", 
-then HTCF deleted some files. In that case, navigate out of `brentlab_rnaseq_nf`, 
-delete it (`rm -rf brentlab_rnaseq_nf`), and use the `git clone` command 
-described above.
+If you get some sort of error that says something like, "this is not a git directory",
+when you know it is, in fact, a git directory, then HTCF deleted some files. 
+In that case, navigate out of `brentlab_rnaseq_nf`, delete it 
+(`rm -rf brentlab_rnaseq_nf`), and use the `git clone` command described above.
 
 # Copy the fastq files into scratch
 
@@ -153,8 +154,12 @@ here](https://github.com/BrentLab/brentlabRnaSeqTools/blob/main/inst/params_exam
 
 ## Run nextflow
 
+__NOTE:__ both in the params file, and in the run script below, you _must_ make 
+sure that the paths are correct. They won't be, unless you change them to make 
+them correct for you.
+
 Next, make a script to run the pipeline. [An example may be found here]((https://github.com/BrentLab/brentlabRnaSeqTools/blob/main/inst/bash/run_novo_nf_pipeline.sh), 
-or you can copy/paste what is below into a file.
+or you can copy/paste what is below into a file. Remember to update the paths.
 
 ```{bash}
 #!/bin/bash
