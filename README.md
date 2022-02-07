@@ -2,7 +2,7 @@
 # brentlabRnaSeqTools
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/BrentLab/brentlabRnaSeqTools/workflows/R-CMD-check/badge.svg)](https://github.com/BrentLab/brentlabRnaSeqTools/actions)
+[![R-CMD-check](https://github.com/BrentLab/brentlabRnaSeqTools/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/BrentLab/brentlabRnaSeqTools/actions)
 <!-- badges: end -->
 
 The goal of the brentlabRnaSeqTools is to facilitate analysis of data stored 
