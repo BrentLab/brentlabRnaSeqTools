@@ -34,6 +34,11 @@ name: R-CMD-check-bioc
 ## Note that you can always run a GHA test without the cache by using the word
 ## "/nocache" in the commit message.
 env:
+  # note: I manually added this, along with the conditional in the run script
+  # below, so conditionally turn off the bioconductor check for packages that
+  # are not going to be submitted. bioconductor has requirements beyond the
+  # R CMD Check
+  biocCheck: 'false'
   has_testthat: 'false'
   run_covr: 'false'
   run_pkgdown: 'true'
@@ -254,6 +259,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Run BiocCheck
+        if:  env.biocCheck == 'true'
         env:
           DISPLAY: 99.0
         run: |

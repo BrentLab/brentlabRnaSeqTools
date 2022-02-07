@@ -51,7 +51,7 @@ misc = c("strain_status", "qc_passing_iqr_filtered",
          'unique_identifier', 'replicate_group_rle', 'total', 'head', 'metric',
          'reads', 'percent', 'Var1', 'Var2', 'fastqFilePath', 'locus', 'perturbedCoverage',
          'perturbedLog2cpm', 'kn99_novo_htseq_thresholds', 'gene_id', 'kn99_novo_htseq_status',
-         'rle_stat', 'value')
+         'rle_stat', 'value', 'iqr_filter_qc1_passing_tally', 'qc1_passing_tally')
 
 package_data_variables = c("test_metadata",
                            "run_numbers_with_leading_zero",

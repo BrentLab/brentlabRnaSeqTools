@@ -1,0 +1,423 @@
+---
+title: "Tally Experiment Sets"
+author: "Chase Mateusiak"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+  Tally Experiment sets.
+  brentlabRnaSeqTools package version: `r packageVersion("brentlabRnaSeqTools")`
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{Tally Experiment Sets}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  include = TRUE,
+  eval = FALSE
+)
+```
+
+# Introduction
+
+The purpose of tallying the experiment sets is to track the development of a 
+given set. These are meant as examples -- if you are the analyst consuming a 
+given data set, it is a good idea to figure out how to tally your set to see 
+how close it is to being done.
+
+For each set (eg, the Environmental Perturbation), if you extract the code 
+and paste it into a clean notebook, a somewhat formatted html document will 
+be created. You can publish this to Rpubs, a free server for rendered Rmd 
+notebooks, which is a nice way of sharing the set progress as well as a method 
+of tracking progress over time, as the rendered results are saved on the Rpubs 
+server.
+
+# Setup
+
+```{r setup}
+library(brentlabRnaSeqTools)
+library(rtracklayer)
+library(tidyverse)
+
+# set variables 
+
+KN99_GFF_RDS = Sys.getenv("kn99_stranded_gff_rds")
+DB_USERNAME = Sys.getenv("db_username")
+DB_PASSWORD = Sys.getenv("db_password")
+
+# note: I mount to the cluster and output directly to it
+DDS_OUTPUT_DIR = "."
+
+# controls whether dds objects are written
+WRITE_OUT = FALSE
+```
+
+# pull the database as a brentlabRnaSeqSet object
+Note: you really only need the metadata for this task. You could use 
+`getMetadata`.
+
+```{r}
+blrs = brentlabRnaSeqSetFromDatabase('kn99',DB_USERNAME, DB_PASSWORD)
+```
+
+# Add gene level data (optional)
+
+this adds all of the data regarding each locus as a GRange object to the
+gene data slot of the brentlabRnaSeqSet object. Useful if you are going to
+use other Bioconductor packages.
+
+```{r}
+kn99_gff = readRDS(KN99_GFF_RDS)
+
+kn99_genes = kn99_gff[kn99_gff$ID %in% rownames(blrs)]
+
+rowRanges(blrs) = kn99_genes[order(match(kn99_genes$ID,rownames(blrs)))]
+
+rownames(blrs) = rowData(blrs)$ID
+```
+
+# Environmental Perturbation
+
+## Create Sets
+
+```{r}
+ep_list = list(
+  wt = createExperimentSet(blrs, 'envPert_epWT'),
+  titr = createExperimentSet(blrs, 'envPert_titrationWT'),
+  pert = createExperimentSet(blrs, 'envPert_perturbed')
+)
+
+# NOTE!! AS OF 20220201 CNAG_03894 forms a linear depdendence with both 
+# concat treatment and libraryDate columns. it is being removed here to solve
+# that issue
+
+ep_list$pert = ep_list$pert[,ep_list$pert$genotype1 != "CNAG_03894"]
+
+
+ep_list_qc_passing = map(ep_list,qaFilter)
+
+ep_list_qc_passing_with_iqr = map(names(ep_list), 
+                         ~qaFilter(ep_list[[.]],1,paste0("ep_",., "_iqr")))
+names(ep_list_qc_passing_with_iqr) = names(ep_list)
+```
+
+
+```{r}
+condition_lists = list(
+  wt = alist(medium,
+             atmosphere,
+             temperature, 
+             timePoint, 
+             treatment, 
+             treatmentConc, 
+             pH),
+  titr = alist(medium,
+               atmosphere,
+               temperature, 
+               timePoint, 
+               treatment, 
+               treatmentConc, 
+               pH),
+  pert = alist(genotype1,
+               medium,
+               atmosphere,
+               temperature, 
+               timePoint, 
+               treatment, 
+               treatmentConc, 
+               pH))
+
+ep_tally_list = map2(names(ep_list), condition_lists, 
+                     ~createEPTally(ep_list[[.x]], 
+                                    ep_list_qc_passing[[.x]], 
+                                    ep_list_qc_passing_with_iqr[[.x]],
+                                    .y))
+names(ep_tally_list) = names(ep_list)
+
+
+names(ep_list_qc_passing_with_iqr) = names(ep_list)
+
+# write_csv(env_pert_tally, 
+#           '../../../datafreeze_202111/data/env_pert_tally_20211122.csv')
+# 
+# # add those samples with less than 2 replicates
+# iqr_fltr_rle_summary_mod = removed_effect_rle_summary %>% 
+#   filter(INTERQUARTILE_RANGE<iqr_threshold | is.na(INTERQUARTILE_RANGE))
+# 
+# write_csv(iqr_fltr_rle_summary_mod, 
+#           '../../../datafreeze_202111/data/iqr_fltr_rle_summary_20211122.csv')
+
+```
+
+```{r ep wt list, include=FALSE}
+
+reshapeEnvPertTallies = function(qc_stage, env_pert_tally){
+
+  env_pert_tally = env_pert_tally %>%
+    filter(medium %in% c("DMEM", "RPMI", "YPD"),
+           timePoint %in% c(30, 90, 180, 1440))
+
+  env_pert_tally$key = paste(env_pert_tally$medium,
+                             env_pert_tally$temperature,
+                             env_pert_tally$timePoint, sep="_")
+
+  reshape_env_pert_tally = env_pert_tally %>%
+    group_by(key) %>%
+    select(-c(medium, temperature, timePoint)) %>%
+    gather(`unfiltered_tally`,
+           `qc1_passing_tally`,
+           `iqr_filter_qc1_passing_tally`,
+           key='qc_stage',
+           value='tally') %>%
+    fill(tally)
+
+  # note: may have to wrap these individually in unfactor() if they are factors
+  reshape_env_pert_tally$experiment =
+    paste(reshape_env_pert_tally$treatment,
+          reshape_env_pert_tally$treatmentConc,
+          reshape_env_pert_tally$atmosphere,
+          reshape_env_pert_tally$pH,
+          sep="_")
+
+  reshape_env_pert_tally = reshape_env_pert_tally %>%
+    select(-c(treatment, treatmentConc, atmosphere, pH)) %>%
+    spread(key=experiment, value=tally) %>%
+    filter(qc_stage == rlang::sym(!! qc_stage))
+
+  return(reshape_env_pert_tally)
+}
+```
+
+### ep_wt tallies
+
+```{r}
+tally_type_list = c('unfiltered_tally',
+                    'qc1_passing_tally',
+                    'iqr_filter_qc1_passing_tally')
+
+ep_tally = map(ep_tally_list, ~map(tally_type_list, reshapeEnvPertTallies, .))
+
+ep_tally = map(ep_tally, setNames, tally_type_list)
+
+```
+
+
+```{r grant data, include=FALSE}
+
+grantTally = function(ep_tally_table){
+  sum(rowSums(ep_tally_table[,4:ncol(ep_tally_table)], na.rm = TRUE))
+}
+
+grant_summary = tibble(
+  Experiment = c("Environmental_Perturbation", "Titration", "Perturbed_EP"),
+  Samples_that_pass_QC = 
+    c(sum(rowSums(ep_tally$wt$qc1_passing_tally[,4:ncol(ep_tally$wt$qc1_passing_tally)])),
+      sum(rowSums(ep_tally$titr$qc1_passing_tally[,4:ncol(ep_tally$titr$qc1_passing_tally)], na.rm = TRUE)),
+      sum(rowSums(ep_perturbed_list$qc1_filter_tally_reshape[,4:ncol(ep_perturbed_list$qc1_filter_tally_reshape)], na.rm = TRUE)))
+)
+
+grant_summary = tibble(
+  Experiment = c("Environmental_Perturbation", "Titration", "Perturbed_EP"),
+  Samples_that_pass_QC = 
+    c(grantTally(ep_tally$wt$qc1_passing_tally),
+      grantTally(ep_tally$titr$qc1_passing_tally),
+      grantTally(ep_tally$pert$iqr_filter_qc1_passing_tally)))
+
+
+```
+
+# RLE results
+
+## Norm Counts Iqr
+
+## column 3
+
+```{r}
+# note that this function requires that ep_list and ep_list_qc_passing_with_iqr
+# be in the namespace already (see the setup section)
+# TODO: save the norm count rle from the sample agreement step for this function
+cumDistIqr = function(set_name){
+  plot(ggplot() + 
+       stat_ecdf(data = norm_count_rle), 
+                 aes(!!rlang::sym(paste0("ep_",set_name, "_iqr"))), 
+                 color = 'orange') + 
+       stat_ecdf(data = extractColData(ep_list_qc_passing_with_iqr[[set_name]]), 
+                 aes(!!rlang::sym(paste0("ep_", set_name, "_iqr"))), 
+                 color = "blue") + 
+       ggtitle("orange = normalized counts; blue = libdate_model_removed_libdate")) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,.05))+
+  scale_y_continuous(limits = c(0,1), breaks = seq(0,1,.05))
+}
+
+ 
+```
+
+# Environmental Perturbation -- WT
+
+## Column {.tabset .tabset-fade data-width="500"}
+
+### unfiltered tallies
+
+```{r}
+ep_tally$wt$unfiltered_tally %>%
+  DT::datatable(
+    options = list(
+    pageLength=50, 
+    scrollX='400px', 
+    fixedColumns = list(leftColumns = 2),
+    autoWidth = TRUE)
+)
+```
+
+### qc1 passing
+
+```{r}
+ep_tally$wt$qc1_passing_tally %>%
+  DT::datatable(
+    options = list(
+    pageLength=50, 
+    scrollX='400px', 
+    fixedColumns = list(leftColumns = 2),
+    autoWidth = TRUE)
+)
+```
+
+### iqr filtered
+
+```{r}
+ep_tally$wt$iqr_filter_qc1_passing_tally %>%
+  DT::datatable(
+    options = list(
+    pageLength=50, 
+    scrollX='400px', 
+    fixedColumns = list(leftColumns = 2),
+    autoWidth = TRUE)
+)
+```
+
+# Environmental Perturbation -- Perturbed
+
+## Column {.tabset .tabset-fade data-width="500"}
+
+### unfiltered tallies
+
+```{r}
+ep_tally$pert$unfiltered_tally %>%
+  DT::datatable(
+    options = list(
+    pageLength=50, 
+    scrollX='400px', 
+    fixedColumns = list(leftColumns = 2),
+    autoWidth = TRUE)
+)
+```
+
+### qc1 passing
+
+```{r}
+ep_tally$pert$qc1_passing_tally %>%
+  DT::datatable(
+    options = list(
+    pageLength=50, 
+    scrollX='400px', 
+    fixedColumns = list(leftColumns = 2),
+    autoWidth = TRUE)
+)
+```
+
+### iqr filtered
+
+```{r}
+ep_tally$pert$iqr_filter_qc1_passing_tally  %>%
+  DT::datatable(
+    options = list(
+    pageLength=50, 
+    scrollX='400px', 
+    fixedColumns = list(leftColumns = 2),
+    autoWidth = TRUE)
+)
+```
+
+# Titration Tallies -- WT
+
+## Column {.tabset .tabset-fade data-width="500"}
+
+### unfiltered tallies
+
+```{r}
+ep_tally$titr$unfiltered_tally %>%
+  DT::datatable(
+    options = list(
+    pageLength=50, 
+    scrollX='400px', 
+    fixedColumns = list(leftColumns = 2),
+    autoWidth = TRUE)
+)
+```
+
+### qc1 passing
+
+```{r}
+ep_tally$titr$qc1_passing_tally %>%
+  DT::datatable(
+    options = list(
+    pageLength=50, 
+    scrollX='400px', 
+    fixedColumns = list(leftColumns = 2),
+    autoWidth = TRUE)
+)
+```
+
+### iqr filter
+
+```{r}
+ep_tally$titr$iqr_filter_qc1_passing_tally %>%
+  DT::datatable(
+    options = list(
+    pageLength=50, 
+    scrollX='400px', 
+    fixedColumns = list(leftColumns = 2),
+    autoWidth = TRUE)
+)
+```
+
+```{r next run samples, include=FALSE, eval=FALSE}
+
+# x = iqr_filter_tally_reshape %>%
+#   pivot_longer(-c(key, qc_stage), 
+#                names_to = 'conditions', 
+#                values_to='rep_count') %>%
+#   filter(!is.na(rep_count), rep_count < 4, 
+#          !str_starts(conditions, 'cAMP_\\d\\.\\d'),
+#          !str_starts(conditions, 'cAMP_[0,1,3,6]')) %>%
+#   group_by(paste(key,conditions, sep="_"))
+# 
+# 
+# x = x %>%
+#   dplyr::rename(concat_conditions = `paste(key, conditions, sep = "_")`)
+# 
+# y = env_pert_set %>%
+#   mutate(concat_conditions = 
+#            paste(MEDIUM, 
+#                  TEMPERATURE, 
+#                  TIMEPOINT, 
+#                  TREATMENT, 
+#                  TREATMENTCONC, 
+#                  ATMOSPHERE, 
+#                  PH, 
+#                  sep="_"))
+# 
+# out = y %>%
+#   filter(!FASTQFILENAME %in% iqr_fltr_rle_summary$FASTQFILENAME & 
+#            concat_conditions %in% x$concat_conditions)
+# 
+# write_csv(out, "~/Desktop/tmp/environmental_perturbation_failing_samples_20210630.csv")
+```

@@ -185,6 +185,64 @@ createEnvPertSet_perturbed = function(blrs){
 
 }
 
+## Tally Functions ----
+
+#'
+#' Create the EP tally in long form
+#'
+#' @param unfltr_set the experimental set (a blrs obj), not filtered for any
+#'   quality
+#' @param qc1_set the same experimental set, filtered for qc1 metrics (not iqr)
+#' @param iqr_set same as above, but with the IQR filter
+#' @param tally_conditions a base::alist() set of conditions. The members of
+#'   the list must be columns in the metadata
+#'
+#' @return a dataframe in long format detailing the tally of the EP experiment
+#'
+#' @export
+createEPTally = function(unfltr_set, qc1_set, iqr_set, tally_conditions){
+
+  # for each set, create a tally in 'long' form
+  unfiltered_tally_env_pert = extractColData(unfltr_set) %>%
+    dplyr::select(!!!tally_conditions) %>%
+    droplevels() %>%
+    group_by(!!!tally_conditions) %>%
+    tally() %>%
+    mutate(unfiltered_tally = n ) %>%
+    select(-n)
+
+  passing_qc1_tally_env_pert = extractColData(qc1_set) %>%
+    dplyr::select(!!!tally_conditions) %>%
+    droplevels() %>%
+    group_by(!!!tally_conditions) %>%
+    tally() %>%
+    mutate(qc1_passing_tally = n ) %>%
+    select(-n)
+
+  iqr_filter_passing_qc1_tally_env_pert = extractColData(iqr_set) %>%
+    dplyr::select(!!!tally_conditions) %>%
+    droplevels() %>%
+    group_by(!!!tally_conditions) %>%
+    tally() %>%
+    mutate(iqr_filter_qc1_passing_tally = n ) %>%
+    select(-n)
+
+  # join the three tallies and return, still in 'long' form
+  unfiltered_tally_env_pert %>%
+    left_join(passing_qc1_tally_env_pert) %>%
+    left_join(iqr_filter_passing_qc1_tally_env_pert) %>%
+    mutate(iqr_filter_qc1_passing_tally =
+             coalesce(iqr_filter_qc1_passing_tally,
+                      qc1_passing_tally)) %>%
+    dplyr::mutate(qc1_passing_tally =
+                    replace_na(qc1_passing_tally, 0)) %>%
+    dplyr::mutate(iqr_filter_qc1_passing_tally =
+                    replace_na(iqr_filter_qc1_passing_tally, 0))
+
+}
+
+
+
 # 90 minuteInduction sets ------------------------------------------------------
 
 #'
