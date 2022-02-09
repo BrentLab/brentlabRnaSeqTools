@@ -37,23 +37,12 @@ to false and this script may be used to launch an interactive session.}
 None. This prints a batch script to the output dir
 }
 \description{
-this will create the following:
-new                                # batchscript keyword new (new snapshot)
-snapshotDirectory IGV_Snapshots    # output directory
-maxPanelHeight 500                 # maximum height of igv browser viewer
-genome organism.genome             # igv .genome file
-load control.bam                   # load alignment files in bam_file_list
-load perturbed.bam
-goto chr1:1-100                    # load region of interest
-snapshot batchfilename_locus1.png  # saves a snapshot of the IGV window to an image file
-goto chr10:3-300                   # repeat at another locus
-snapshot batchfilename_locus2.png
-exit                               # quit session
+this will create a batch script that may be run with the igv
+browser. An example command is given in the examples below. See the extern
+data for an example of what one of these scripts looks like.
 }
 \examples{
 \dontrun{
-# You need to have igv installed on the machine where you will run this. This
-# is something you can run on your local. Create the browser shot like so:
 
 xvfb-run --auto-servernum igv.sh -b script.bat
 
