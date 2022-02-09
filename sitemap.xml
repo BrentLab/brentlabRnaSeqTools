@@ -19,6 +19,9 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/QC_Sample_Agreement_Objects.html</loc>
   </url>
   <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/Tally.html</loc>
+  </url>
+  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/UsingRstudioProjects.html</loc>
   </url>
   <url>
@@ -26,9 +29,6 @@
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/ninetyMinInduction_tally.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/ninetyMinuteInduction_analysis.html</loc>
@@ -71,6 +71,9 @@
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/connectToDatabase.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/createEPTally.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/createEnvPertSet_perturbed.html</loc>
@@ -209,6 +212,9 @@
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/patchTable.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/plotRLEhistograms.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/postCounts.html</loc>

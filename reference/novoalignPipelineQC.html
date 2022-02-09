@@ -27,9 +27,9 @@
     <a class="dropdown-item" href="../articles/ProccessRun.html">Process a New Run From MGI</a>
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement</a>
+    <a class="dropdown-item" href="../articles/Tally.html">Tally Experiment Sets</a>
     <a class="dropdown-item" href="../articles/UsingRstudioProjects.html">UsingRstudioProjects</a>
     <a class="dropdown-item" href="../articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
-    <a class="dropdown-item" href="../articles/ninetyMinInduction_tally.html">90 Minute Induction Tally</a>
     <a class="dropdown-item" href="../articles/ninetyMinuteInduction_analysis.html">90 Minute Induction Analysis Data Creation</a>
   </div>
 </li>
@@ -87,13 +87,16 @@ annotations. default is c("NAT", "G418")</p></dd>
 <dt>novolog_suffix</dt>
 <dd><p>suffix appended to log files. default is
 "_novoalign.log"</p></dd>
+<dt>exon_counts_suffix</dt>
+<dd><p>suffix appended to exon count files. default is
+'_read_count.tsv'</p></dd>
+<dt>cds_counts_suffix</dt>
+<dd><p>suffix appended to cds count files. default is
+'_read_count.tsv'</p></dd>
 <dt>num_nodes</dt>
 <dd><p>number of cpus(by slurm definition)/threads(on your local).
 the argument in the parallel function is nnodes, hence the name of the
 argument. Default is 10</p></dd>
-<dt>count_suffix</dt>
-<dd><p>suffix appended to count files. default is
-'_read_count.tsv'</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
