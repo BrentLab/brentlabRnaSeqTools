@@ -1,0 +1,176 @@
+---
+title: "Setting Up Your R Environment"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SettingUpYouRenvironment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  include = TRUE,
+  eval = FALSE
+)
+```
+
+# Requirements
+
+An up to date R (so whatever the current version is -- check CRAN) and up to 
+date Rstudio
+
+# Install the following
+
+```{r}
+
+cran_pkgs = c('tidyverse', 'devtools')
+
+# note: increase/decrease the number of CPUs. Any machine should be able to 
+# handle at least 5. You can probably bump this up to 10 without checking
+# anything
+install.packages(cran_pkgs, Ncpus = 5)
+
+```
+
+It is possible that there wil be install errors that come up during the 
+installation of these two pages. If you are on the computational/analyst side 
+of things, then this is a good opportunity to read the error messages and figure 
+out what to install -- both packages may have some c or maybe fortran 
+dependencies which you will need to install onto your computer. Googling the 
+error helps, and frequently R will say, "you need a gcc compiler" or something 
+like that.  
+
+If you are not one of the computational/analyst people, then ask for help if 
+there are errors in the installation of those two packages. 
+
+# Install the brentlabRnaSeqTools
+
+If there is a 'passing' badge in the github README, then this has been 
+successfully built on up to date linux, mac and windows OS. It should also work 
+for you. But, if it doesn't, copy the error and make an issue report. Please 
+also include the output of `Sys.info()` in your issue report.
+
+```{r}
+# as above, you can increase Ncpus
+remotes::install.packages("BrentLab/brentlabRnaSeqTools", Ncpus = 5)
+```
+
+# Set up some environmental variables
+
+Environmental variables are variables that are read by R and loaded into your 
+session when you launch R. You can set either 'user' level variables, which are 
+loaded into any R session launched under your current user, and/or you can 
+set project level environmental variables, which are only set if you launch into 
+a project (see Using Rstudio Projects below). These are convenient to use, and 
+are particularly good at avoiding any embarrassing leaks of login credentials 
+onto github.  
+
+## User level environmental variables
+
+1. open Rstudio
+
+```{r}
+usethis::edit_r_environ('user')
+```
+
+2. in the file that is opened, enter some variables that you'd like to have
+
+```{r}
+db_username = "some_username"
+db_password = "some_password"
+```
+
+3. restart your R session
+
+4. see that you can access these variables like so:
+
+```{r}
+Sys.getenv("db_username")
+# output will be:
+#> "some_password"
+```
+
+If you put the correct username/password into your environment file, then you 
+can access the database like so:
+
+```{r}
+library(brentlabRnaSeqTools)
+
+meta = getMetadata(
+  database_info$kn99$db_host,
+  database_info$kn99$db_name,
+  Sys.getenv("db_username"),
+  Sys.getenv("db_password"))
+
+```
+
+Since the user level environment file is stored in `~/.Renviron`, there is 
+no danger of pushing these credentials up to git if you are in a directory which 
+you are tracking with git/github.
+
+# Using an Rstudio project
+
+## set your working directory
+
+If you do not already have a directory in which you store the projects you work 
+on, create one. I suggest a direcory called `projects` in your `$HOME`
+
+```{r}
+project_dir = "~/projects"
+if(!dir.exists(project_dir)){
+  dir.create(project_dir)
+}
+setwd(project_dir)
+```
+
+## Create a new Rstudio project
+
+A project is a subset of the infrastructure in an R software package. You can use 
+a virtual environment, .Renviron files for environmental variables, etc. It is a 
+tool for reproducibility
+
+```{r}
+# if this is for the nineyMinuteInduction data, for example, you might call 
+# this project "ninetyMinInduction".
+project_name = "my_new_project"
+
+usethis::create_project(project_name)
+```
+
+## Using the project directory
+
+A new Rstudio session will launch in your new project directory. Now, whenever 
+you launch this project, all of your environment variables in .Renviron will be 
+loaded. If you are using a virtual environment (a good idea for reproducibility. 
+Use `renv`), then your virtual environment will be automatically launched, also.  
+
+The `/R` directory is for R scripts. You could make a `notebooks` directory, or 
+just put the notebook in the project parent directory, for example.
+
+[See here for a project directory example](https://github.com/cmatKhan/eds1_mimic_cc)
+
+## Using project level environmental variables in an active R project
+
+Just as with the user level environmental variables, you can set environmental 
+variables for a particular project. These are read in addition to the 
+user level variables, and will overwrite them if there are two that are named 
+the same thing. The first thing to do is to make sure that the project level 
+`.Renviron` is in the `.gitignore` so that you don't accidently push up login 
+credentials
+
+```{r}
+# you can use this, or just click on the .gitignore file in the project
+usethis::edit_git_ignore('project')
+```
+
+In the `.gitignore` file, add `.Renviron`. Next, open a project level `.Renviron`
+
+```{r}
+usethis::edit_r_environ("project")
+```
+
+and edit as before. Remember to re-launch your R session after editing the 
+`.Renviron` to have access to the environmental variables.

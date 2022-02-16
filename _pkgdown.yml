@@ -1,4 +1,14 @@
 url: https://brentlab.github.io/brentlabRnaSeqTools
 template:
   bootstrap: 5
-
+articles:
+- title: Tutorials
+  navbar: ~
+  contents:
+  - brentlabRnaSeqTools
+  - ProcessRun
+  - envPerturbation
+  - ninetyMinuteInduction_analysis
+  - QC_Library_Quality
+  - QC_Sample_Agreement_Objects
+  - Tally
