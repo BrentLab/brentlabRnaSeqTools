@@ -36,18 +36,20 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item">
+  <a class="nav-link" href="../articles/brentlabRnaSeqTools.html">Get started</a>
+</li>
+<li class="nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/ProccessRun.html">Process a New Run From MGI</a>
+    <a class="dropdown-item" href="../articles/ProcessRun.html">Process a New Run From MGI</a>
+    <a class="dropdown-item" href="../articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
+    <a class="dropdown-item" href="../articles/ninetyMinuteInduction_analysis.html">90 Minute Induction Analysis Data Creation</a>
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement</a>
     <a class="dropdown-item" href="../articles/Tally.html">Tally Experiment Sets</a>
-    <a class="dropdown-item" href="../articles/UsingRstudioProjects.html">UsingRstudioProjects</a>
-    <a class="dropdown-item" href="../articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
-    <a class="dropdown-item" href="../articles/ninetyMinuteInduction_analysis.html">90 Minute Induction Analysis Data Creation</a>
   </div>
 </li>
       </ul>
@@ -70,7 +72,7 @@
       <img src="" class="logo" alt=""><h1>Environmental Perturbation Analysis Data Creation</h1>
                         <h4 data-toc-skip class="author">Chase Mateusiak</h4>
             
-            <h4 data-toc-skip class="date">02/09/2022</h4>
+            <h4 data-toc-skip class="date">03/08/2022</h4>
       
       
       <div class="d-none name"><code>envPerturbation.Rmd</code></div>
@@ -123,9 +125,9 @@
 
 <span class="va">kn99_genes</span> <span class="op">=</span> <span class="va">kn99_gff</span><span class="op">[</span><span class="va">kn99_gff</span><span class="op">$</span><span class="va">ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">]</span>
 
-<span class="fu">rowRanges</span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span> <span class="op">=</span> <span class="va">kn99_genes</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">kn99_genes</span><span class="op">$</span><span class="va">ID</span>,<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">rowRanges</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span> <span class="op">=</span> <span class="va">kn99_genes</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">kn99_genes</span><span class="op">$</span><span class="va">ID</span>,<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>
 
-<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span> <span class="op">=</span> <span class="fu">rowData</span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">$</span><span class="va">ID</span></code></pre></div>
+<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">$</span><span class="va">ID</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="create-sets">Create Sets<a class="anchor" aria-label="anchor" href="#create-sets"></a>
@@ -168,10 +170,10 @@
 </h4>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">setBaseConcatTreatmentBaseCond</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">ep_set</span>, <span class="va">concat_base_cond</span><span class="op">)</span><span class="op">{</span>
-  <span class="fu">colData</span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span> <span class="op">=</span> 
-    <span class="fu"><a href="https://rdrr.io/r/stats/relevel.html" class="external-link">relevel</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span>, ref <span class="op">=</span> <span class="va">concat_base_cond</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span> <span class="op">=</span> 
+    <span class="fu"><a href="https://rdrr.io/r/stats/relevel.html" class="external-link">relevel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span>, ref <span class="op">=</span> <span class="va">concat_base_cond</span><span class="op">)</span>
   
-  <span class="fu">colData</span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu">DataFrame</span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu">DataFrame</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
   
   <span class="va">ep_set</span>
   

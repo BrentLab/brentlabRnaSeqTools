@@ -2,14 +2,14 @@ pandoc: 2.14.0.3
 pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
-  ProccessRun: ProccessRun.html
+  ProcessRun: ProcessRun.html
   QC_Library_Quality: QC_Library_Quality.html
   QC_Sample_Agreement_Objects: QC_Sample_Agreement_Objects.html
   Tally: Tally.html
-  UsingRstudioProjects: UsingRstudioProjects.html
+  brentlabRnaSeqTools: brentlabRnaSeqTools.html
   envPerturbation: envPerturbation.html
   ninetyMinuteInduction_analysis: ninetyMinuteInduction_analysis.html
-last_built: 2022-02-09T18:40Z
+last_built: 2022-03-08T15:40Z
 urls:
   reference: https://brentlab.github.io/brentlabRnaSeqTools/reference
   article: https://brentlab.github.io/brentlabRnaSeqTools/articles

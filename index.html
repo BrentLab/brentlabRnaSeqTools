@@ -36,18 +36,20 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item">
+  <a class="nav-link" href="articles/brentlabRnaSeqTools.html">Get started</a>
+</li>
+<li class="nav-item">
   <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="articles/ProccessRun.html">Process a New Run From MGI</a>
+    <a class="dropdown-item" href="articles/ProcessRun.html">Process a New Run From MGI</a>
+    <a class="dropdown-item" href="articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
+    <a class="dropdown-item" href="articles/ninetyMinuteInduction_analysis.html">90 Minute Induction Analysis Data Creation</a>
     <a class="dropdown-item" href="articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement</a>
     <a class="dropdown-item" href="articles/Tally.html">Tally Experiment Sets</a>
-    <a class="dropdown-item" href="articles/UsingRstudioProjects.html">UsingRstudioProjects</a>
-    <a class="dropdown-item" href="articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
-    <a class="dropdown-item" href="articles/ninetyMinuteInduction_analysis.html">90 Minute Induction Analysis Data Creation</a>
   </div>
 </li>
       </ul>
@@ -63,25 +65,31 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="brentlabrnaseqtools">brentlabRnaSeqTools<a class="anchor" aria-label="anchor" href="#brentlabrnaseqtools"></a>
+<div class="page-header"><h1 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h1></div>
-<!-- badges: start -->
+<p>This is a collection of objects and functions intended to make interacting with the brentlab rnaseq database simpler. There are two target audiences: wet lab folks who are not primarily computational analysts, and computational analysts. There is some functionality in this collection of objects and functions which overlap the two groups of users, and some that do not. For the functionality which is intended for the computational analysts, a high level of computational fluency is assumed.</p>
+<p>Every function, object and data loaded by the package is documented. Use <code>?functionName</code> to view the documentation.</p>
+</div>
+<div class="section level1">
+<h1 id="navbar">NavBar<a class="anchor" aria-label="anchor" href="#navbar"></a>
+</h1>
+<div class="section level2">
+<h2 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h2>
+<p>In the navbar, click ‘Getting Started’ for some general instructions on how to use this package, set up your environment, and also how to pull data from the archive rather than directly from the database.</p>
+</div>
+<div class="section level2">
+<h2 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a>
+</h2>
+<p>This is a list of all of the functions, objects, etc in the package. It is currently in alphabetical order. At some point I will organize it by purpose.</p>
+</div>
+<div class="section level2">
+<h2 id="articles">Articles<a class="anchor" aria-label="anchor" href="#articles"></a>
+</h2>
+<p>This is a collection of vignettes – see the list for instructions on, for example, running the raw read (fastq) processing pipeline.</p>
+</div>
+</div>
 
-<p>The goal of the brentlabRnaSeqTools is to facilitate analysis of data stored in the brentlab database(s).</p>
-<div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h2>
-<p>You can install the development version of brentlabRnaSeqTools from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"BrentLab/brentlabRnaSeqTools"</span><span class="op">)</span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
-</h2>
-<p><a href="https://brentlab.github.io/brentlabRnaSeqTools">Please visit this site for documentation</a></p>
-</div>
-</div>
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
@@ -105,12 +113,7 @@
 </ul>
 </div>
 
-<div class="dev-status">
-<h2 data-toc-skip>Dev status</h2>
-<ul class="list-unstyled">
-<li><a href="https://github.com/BrentLab/brentlabRnaSeqTools/actions" class="external-link"><img src="https://github.com/BrentLab/brentlabRnaSeqTools/workflows/R-CMD-check-bioc/badge.svg" alt="R-CMD-check"></a></li>
-</ul>
-</div>
+
 
   </aside>
 </div>

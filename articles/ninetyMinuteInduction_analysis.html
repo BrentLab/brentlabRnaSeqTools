@@ -36,18 +36,20 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item">
+  <a class="nav-link" href="../articles/brentlabRnaSeqTools.html">Get started</a>
+</li>
+<li class="nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/ProccessRun.html">Process a New Run From MGI</a>
+    <a class="dropdown-item" href="../articles/ProcessRun.html">Process a New Run From MGI</a>
+    <a class="dropdown-item" href="../articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
+    <a class="dropdown-item" href="../articles/ninetyMinuteInduction_analysis.html">90 Minute Induction Analysis Data Creation</a>
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement</a>
     <a class="dropdown-item" href="../articles/Tally.html">Tally Experiment Sets</a>
-    <a class="dropdown-item" href="../articles/UsingRstudioProjects.html">UsingRstudioProjects</a>
-    <a class="dropdown-item" href="../articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
-    <a class="dropdown-item" href="../articles/ninetyMinuteInduction_analysis.html">90 Minute Induction Analysis Data Creation</a>
   </div>
 </li>
       </ul>
@@ -70,7 +72,7 @@
       <img src="" class="logo" alt=""><h1>90 Minute Induction Analysis Data Creation</h1>
                         <h4 data-toc-skip class="author">Chase Mateusiak</h4>
             
-            <h4 data-toc-skip class="date">02/09/2022</h4>
+            <h4 data-toc-skip class="date">03/08/2022</h4>
       
       
       <div class="d-none name"><code>ninetyMinuteInduction_analysis.Rmd</code></div>
@@ -126,9 +128,9 @@
 
 <span class="va">kn99_genes</span> <span class="op">=</span> <span class="va">kn99_gff</span><span class="op">[</span><span class="va">kn99_gff</span><span class="op">$</span><span class="va">ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">]</span>
 
-<span class="fu">rowRanges</span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span> <span class="op">=</span> <span class="va">kn99_genes</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">kn99_genes</span><span class="op">$</span><span class="va">ID</span>,<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>
+<span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/RangedSummarizedExperiment-class.html" class="external-link">rowRanges</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span> <span class="op">=</span> <span class="va">kn99_genes</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">kn99_genes</span><span class="op">$</span><span class="va">ID</span>,<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>
 
-<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span> <span class="op">=</span> <span class="fu">rowData</span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">$</span><span class="va">ID</span></code></pre></div>
+<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">$</span><span class="va">ID</span></code></pre></div>
 <p>If the experiment set you want is not already created, issue an ‘issue report’, and describe the <strong>EXACT</strong> filter that you want to use to create the set. What goes into your set depends on what you describe as your filter, so spend time with the database to figure out what is there.</p>
 </div>
 <div class="section level2">
@@ -176,7 +178,7 @@
 <span class="co"># in the RLE stats. Filter those out, also</span>
 
 <span class="va">blrs_90min_qc_passing</span> <span class="op">=</span>
-  <span class="va">blrs_90min_qc_passing</span><span class="op">[</span>,<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">blrs_90min_qc_passing</span><span class="op">)</span><span class="op">$</span><span class="va">ninetyMin_iqr</span><span class="op">)</span><span class="op">]</span>
+  <span class="va">blrs_90min_qc_passing</span><span class="op">[</span>,<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing</span><span class="op">)</span><span class="op">$</span><span class="va">ninetyMin_iqr</span><span class="op">)</span><span class="op">]</span>
 
 <span class="va">protocol_tallies</span> <span class="op">=</span> <span class="fu"><a href="../reference/replicateByProtocolTally.html">replicateByProtocolTally</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing</span><span class="op">)</span>
 
@@ -184,7 +186,7 @@
 <span class="co"># genotypes should be in the list below</span>
 
 <span class="va">protocol_fltr</span> <span class="op">=</span>
-  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">blrs_90min_qc_passing</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">genotype1</span> <span class="op">==</span> <span class="st">"CNAG_00031"</span> <span class="op">&amp;</span> <span class="va">libraryProtocol</span> <span class="op">==</span> <span class="st">"SolexaPrep"</span><span class="op">)</span>,
          <span class="op">!</span><span class="op">(</span><span class="va">genotype1</span> <span class="op">==</span> <span class="st">"CNAG_00871"</span> <span class="op">&amp;</span> <span class="va">libraryProtocol</span> <span class="op">==</span> <span class="st">"E7420L"</span><span class="op">)</span>,
          <span class="op">!</span><span class="op">(</span><span class="va">genotype1</span> <span class="op">==</span> <span class="st">"CNAG_00883"</span> <span class="op">&amp;</span> <span class="va">libraryProtocol</span> <span class="op">==</span> <span class="st">"E7420L"</span><span class="op">)</span>,
@@ -198,11 +200,11 @@
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">fastqFileNumber</span><span class="op">)</span>
 
 <span class="va">blrs_90min_qc_passing_protocol_fltr</span> <span class="op">=</span>
-  <span class="va">blrs_90min_qc_passing</span><span class="op">[</span>,<span class="fu">colData</span><span class="op">(</span><span class="va">blrs_90min_qc_passing</span><span class="op">)</span><span class="op">$</span><span class="va">fastqFileNumber</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span>
+  <span class="va">blrs_90min_qc_passing</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing</span><span class="op">)</span><span class="op">$</span><span class="va">fastqFileNumber</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span>
                           <span class="va">protocol_fltr</span><span class="op">]</span>
 
-<span class="fu">colData</span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span> <span class="op">=</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span> <span class="op">=</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span><span class="op">)</span></code></pre></div>
 <div class="section level3">
 <h3 id="re-examine-tallies-after-separating-the-protocol-groups">Re-examine tallies after separating the protocol groups<a class="anchor" aria-label="anchor" href="#re-examine-tallies-after-separating-the-protocol-groups"></a>
 </h3>
@@ -211,9 +213,9 @@
 <span class="co"># function needs some updating due to hard coding colnames. Columns are in order of the</span>
 <span class="co"># tables passed in</span>
 <span class="va">protocol_fltr_tally</span> <span class="op">=</span>
-  <span class="fu"><a href="../reference/createInductionSetTally.html">createInductionSetTally</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">blrs_90min</span><span class="op">)</span><span class="op">)</span>,
-                          <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">blrs_90min_qc_passing</span><span class="op">)</span><span class="op">)</span>,
-                          <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr</span><span class="op">)</span><span class="op">)</span>,
+  <span class="fu"><a href="../reference/createInductionSetTally.html">createInductionSetTally</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min</span><span class="op">)</span><span class="op">)</span>,
+                          <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing</span><span class="op">)</span><span class="op">)</span>,
+                          <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr</span><span class="op">)</span><span class="op">)</span>,
                           <span class="va">grant_df</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level3">
@@ -245,9 +247,9 @@
 
   <span class="va">full_set_mm_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     E7420L <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span><span class="va">libraryDate</span><span class="op">+</span><span class="va">genotype1</span>,
-                          <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">full_set_split</span><span class="op">$</span><span class="va">E7420L</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
+                          <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">full_set_split</span><span class="op">$</span><span class="va">E7420L</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
     SolexaPrep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span><span class="va">libraryDate</span><span class="op">+</span><span class="va">genotype1</span>,
-                              <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">full_set_split</span><span class="op">$</span><span class="va">SolexaPrep</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+                              <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">full_set_split</span><span class="op">$</span><span class="va">SolexaPrep</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
   <span class="va">full_set_mm_list</span>
 <span class="op">}</span>
@@ -280,11 +282,11 @@
 
 <span class="co"># create filters for each protocol set</span>
 <span class="va">e7420l_fltr</span> <span class="op">=</span>
-  <span class="op">!</span><span class="fu">colData</span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr_split</span><span class="op">$</span><span class="va">E7420L</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span>
+  <span class="op">!</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr_split</span><span class="op">$</span><span class="va">E7420L</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span>
     <span class="va">low_rep_parameters</span><span class="op">$</span><span class="va">E7420L</span>
 
 <span class="va">solexaprep_fltr</span> <span class="op">=</span>
-  <span class="op">!</span><span class="fu">colData</span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr_split</span><span class="op">$</span><span class="va">SolexaPrep</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span>
+  <span class="op">!</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing_protocol_fltr_split</span><span class="op">$</span><span class="va">SolexaPrep</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span>
     <span class="va">low_rep_parameters</span><span class="op">$</span><span class="va">SolexaPrep</span>
 
 <span class="co"># create the full set list</span>
@@ -294,11 +296,11 @@
 <span class="op">)</span>
 
 <span class="co"># drop the factor levels which no longer exist from the filtered  libraryDate column</span>
-<span class="fu">colData</span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">E7420L</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span> <span class="op">=</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">E7420L</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">E7420L</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span> <span class="op">=</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">E7420L</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span><span class="op">)</span>
 
-<span class="fu">colData</span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">SolexaPrep</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span> <span class="op">=</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">SolexaPrep</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">SolexaPrep</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span> <span class="op">=</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">SolexaPrep</span><span class="op">)</span><span class="op">$</span><span class="va">libraryDate</span><span class="op">)</span>
 
 <span class="co"># no more low rep sets left</span>
 <span class="va">fltr_full_set_mm</span> <span class="op">=</span> <span class="fu">createFullSetModelMatricies</span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">)</span>
@@ -309,10 +311,10 @@
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">protocol_fltr_tally</span> <span class="op">=</span>
-  <span class="fu"><a href="../reference/createInductionSetTally.html">createInductionSetTally</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">blrs_90min</span><span class="op">)</span><span class="op">)</span>,
-                          <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">blrs_90min_qc_passing</span><span class="op">)</span><span class="op">)</span>,
-                          <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">E7420L</span><span class="op">)</span><span class="op">)</span>,
-                                <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">SolexaPrep</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
+  <span class="fu"><a href="../reference/createInductionSetTally.html">createInductionSetTally</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min</span><span class="op">)</span><span class="op">)</span>,
+                          <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs_90min_qc_passing</span><span class="op">)</span><span class="op">)</span>,
+                          <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">E7420L</span><span class="op">)</span><span class="op">)</span>,
+                                <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">fltr_full_set_90min</span><span class="op">$</span><span class="va">SolexaPrep</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
                           <span class="va">grant_df</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
@@ -383,9 +385,9 @@
   <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="va">mm</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span><span class="va">libraryProtocol</span> <span class="op">+</span> <span class="va">libraryDate</span> <span class="op">+</span> <span class="va">genotype1</span>, 
-                  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">dds</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+                  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
-<span class="va">min_date</span> <span class="op">=</span> <span class="fu">colData</span><span class="op">(</span><span class="va">dds</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+<span class="va">min_date</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">libraryProtocol</span> <span class="op">==</span> <span class="st">"E7420L"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">libraryDate</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>

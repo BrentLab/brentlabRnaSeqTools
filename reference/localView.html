@@ -26,19 +26,21 @@ clipboard for easy pasting into a terminal. See example."><!-- mathjax --><scrip
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="nav-item">
+  <a class="nav-link" href="../articles/brentlabRnaSeqTools.html">Get started</a>
+</li>
+<li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/ProccessRun.html">Process a New Run From MGI</a>
+    <a class="dropdown-item" href="../articles/ProcessRun.html">Process a New Run From MGI</a>
+    <a class="dropdown-item" href="../articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
+    <a class="dropdown-item" href="../articles/ninetyMinuteInduction_analysis.html">90 Minute Induction Analysis Data Creation</a>
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement</a>
     <a class="dropdown-item" href="../articles/Tally.html">Tally Experiment Sets</a>
-    <a class="dropdown-item" href="../articles/UsingRstudioProjects.html">UsingRstudioProjects</a>
-    <a class="dropdown-item" href="../articles/envPerturbation.html">Environmental Perturbation Analysis Data Creation</a>
-    <a class="dropdown-item" href="../articles/ninetyMinuteInduction_analysis.html">90 Minute Induction Analysis Data Creation</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -85,7 +87,7 @@ clipboard for easy pasting into a terminal. See example.</p>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="va">clipr</span><span class="op">)</span></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mdlincoln/clipr" class="external-link">clipr</a></span><span class="op">)</span></span>
 <span class="r-in"><span class="co"># df is some dataframe in your environment</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/pkg/clipr/man/write_clip.html" class="external-link">write_clip</a></span><span class="op">(</span><span class="fu">localView</span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span class="fu"><a href="http://matthewlincoln.net/clipr/reference/write_clip.html" class="external-link">write_clip</a></span><span class="op">(</span><span class="fu">localView</span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"><span class="co"># in a terminal, you can how paste in the line that the cmd above put</span></span>
 <span class="r-in"><span class="co"># in your clipboard and hit enter. your computer will know what to do next</span></span>
 <span class="r-in"><span class="co"># hopefully</span></span>
