@@ -174,3 +174,46 @@ usethis::edit_r_environ("project")
 
 and edit as before. Remember to re-launch your R session after editing the 
 `.Renviron` to have access to the environmental variables.
+
+# Using data from the lts archive
+
+```{r}
+library(brentlabRnaSeqTools)
+library(tidyverse)
+
+# mount the cluster, or download the 20220208 kn99 db archive
+# paths will need to be updated for your machine. These are examples
+# of what it would look like if you mount.
+archive_prefix = '/mnt/lts/sequence_data/rnaseq_data/kn99_database_archive'
+coldata_df = read_csv(file.path(archive_prefix, "20220208/combined_df_20220208.csv"))
+count_df = read_csv(file.path(archive_prefix, "20220208/counts.csv"))
+
+coldata_df_fltr = coldata_df %>%
+  filter(purpose == "fullRNASeq",
+         !is.na(fastqFileName))
+
+count_df_fltr = count_df[, colnames(count_df) %in% 
+                           coldata_df_fltr$fastqFileName]
+
+coldata_df_fltr = filter(coldata_df_fltr, 
+                         fastqFileName %in% 
+                           colnames(count_df_fltr))
+
+# make sure the order of the count cols matches order of the metadata rows
+count_df_fltr = count_df_fltr[order(match(colnames(count_df_fltr),
+                                            coldata_df_fltr$fastqFileName))]
+
+# if this checks false, stop and figure out why. useful functions would be 
+# setdiff(). Read the ?setdiff docs -- it is asymetric.
+stopifnot(identical(colnames(count_df_fltr), 
+                    coldata_df_fltr$fastqFileName))
+
+dds = DESeq2::DESeqDataSetFromMatrix(countData = counts_fltr,
+                                     colData = df_fltr, 
+                                     design = ~1)
+
+blrs = brentlabRnaSeqSet(dds = dds)
+
+# everything should work as usual from here
+```
+
