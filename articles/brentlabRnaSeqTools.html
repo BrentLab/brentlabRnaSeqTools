@@ -66,8 +66,7 @@
 
 
 
-
-<div class="row">
+<script src="brentlabRnaSeqTools_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <main id="main"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Setting Up Your R Environment</h1>
             
@@ -116,7 +115,7 @@
 <li>open Rstudio</li>
 </ol>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/edit.html" class="external-link">edit_r_environ</a></span><span class="op">(</span><span class="st">'user'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_r_environ</span><span class="op">(</span><span class="st">'user'</span><span class="op">)</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>in the file that is opened, enter some variables that you’d like to have</li>
 </ol>
@@ -133,7 +132,7 @@
 <span class="co">#&gt; "some_password"</span></code></pre></div>
 <p>If you put the correct username/password into your environment file, then you can access the database like so:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">brentlabRnaSeqTools</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://brentlab.github.io/brentlabRnaSeqTools/">brentlabRnaSeqTools</a></span><span class="op">)</span>
 
 <span class="va">meta</span> <span class="op">=</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span>
   <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_host</span>,
@@ -166,7 +165,7 @@
 <span class="co"># this project "ninetyMinInduction".</span>
 <span class="va">project_name</span> <span class="op">=</span> <span class="st">"my_new_project"</span>
 
-<span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_package.html" class="external-link">create_project</a></span><span class="op">(</span><span class="va">project_name</span><span class="op">)</span></code></pre></div>
+<span class="fu">usethis</span><span class="fu">::</span><span class="fu">create_project</span><span class="op">(</span><span class="va">project_name</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="using-the-project-directory">Using the project directory<a class="anchor" aria-label="anchor" href="#using-the-project-directory"></a>
@@ -181,10 +180,10 @@
 <p>Just as with the user level environmental variables, you can set environmental variables for a particular project. These are read in addition to the user level variables, and will overwrite them if there are two that are named the same thing. The first thing to do is to make sure that the project level <code>.Renviron</code> is in the <code>.gitignore</code> so that you don’t accidently push up login credentials</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># you can use this, or just click on the .gitignore file in the project</span>
-<span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/edit.html" class="external-link">edit_git_ignore</a></span><span class="op">(</span><span class="st">'project'</span><span class="op">)</span></code></pre></div>
+<span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_git_ignore</span><span class="op">(</span><span class="st">'project'</span><span class="op">)</span></code></pre></div>
 <p>In the <code>.gitignore</code> file, add <code>.Renviron</code>. Next, open a project level <code>.Renviron</code></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/edit.html" class="external-link">edit_r_environ</a></span><span class="op">(</span><span class="st">"project"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_r_environ</span><span class="op">(</span><span class="st">"project"</span><span class="op">)</span></code></pre></div>
 <p>and edit as before. Remember to re-launch your R session after editing the <code>.Renviron</code> to have access to the environmental variables.</p>
 </div>
 </div>
@@ -192,7 +191,7 @@
 <h2 id="using-data-from-the-lts-archive">Using data from the lts archive<a class="anchor" aria-label="anchor" href="#using-data-from-the-lts-archive"></a>
 </h2>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">brentlabRnaSeqTools</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://brentlab.github.io/brentlabRnaSeqTools/">brentlabRnaSeqTools</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span>
 
 <span class="co"># mount the cluster, or download the 20220208 kn99 db archive</span>

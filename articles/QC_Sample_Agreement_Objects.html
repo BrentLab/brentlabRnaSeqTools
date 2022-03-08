@@ -66,8 +66,7 @@
 
 
 
-
-<div class="row">
+<script src="QC_Sample_Agreement_Objects_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <main id="main"><div class="page-header">
       <img src="" class="logo" alt=""><h1>QC: Replicate Agreement</h1>
                         <h4 data-toc-skip class="author">Chase Mateusiak</h4>
@@ -93,7 +92,7 @@
 <h3 id="setup-the-environment">Setup the environment<a class="anchor" aria-label="anchor" href="#setup-the-environment"></a>
 </h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">brentlabRnaSeqTools</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://brentlab.github.io/brentlabRnaSeqTools/">brentlabRnaSeqTools</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">rtracklayer</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/topepo/caret/" class="external-link">caret</a></span><span class="op">)</span>
@@ -189,7 +188,7 @@
 <h5 id="inspect-the-model-matrix-for-linear-dependencies">inspect the model matrix for linear dependencies<a class="anchor" aria-label="anchor" href="#inspect-the-model-matrix-for-linear-dependencies"></a>
 </h5>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">lin_dep_report</span> <span class="op">=</span> <span class="fu">caret</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/caret/man/findLinearCombos.html" class="external-link">findLinearCombos</a></span><span class="op">(</span><span class="va">mm</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">lin_dep_report</span> <span class="op">=</span> <span class="fu">caret</span><span class="fu">::</span><span class="fu">findLinearCombos</span><span class="op">(</span><span class="va">mm</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level5">
 <h5 id="add-the-design-to-the-object">add the design to the object<a class="anchor" aria-label="anchor" href="#add-the-design-to-the-object"></a>
@@ -284,7 +283,7 @@
 <h5 id="inspect-the-model-matrix-for-linear-dependencies-1">inspect the model matrix for linear dependencies<a class="anchor" aria-label="anchor" href="#inspect-the-model-matrix-for-linear-dependencies-1"></a>
 </h5>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">lin_dep_report</span> <span class="op">=</span> <span class="fu">caret</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/caret/man/findLinearCombos.html" class="external-link">findLinearCombos</a></span><span class="op">(</span><span class="va">mm</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">lin_dep_report</span> <span class="op">=</span> <span class="fu">caret</span><span class="fu">::</span><span class="fu">findLinearCombos</span><span class="op">(</span><span class="va">mm</span><span class="op">)</span>
 <span class="va">lin_dep_report</span></code></pre></div>
 </div>
 <div class="section level5">
@@ -380,7 +379,7 @@
 <h5 id="inspect-the-model-matrix-for-linear-dependencies-2">inspect the model matrix for linear dependencies<a class="anchor" aria-label="anchor" href="#inspect-the-model-matrix-for-linear-dependencies-2"></a>
 </h5>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">lin_dep_report</span> <span class="op">=</span> <span class="fu">caret</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/caret/man/findLinearCombos.html" class="external-link">findLinearCombos</a></span><span class="op">(</span><span class="va">mm</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">lin_dep_report</span> <span class="op">=</span> <span class="fu">caret</span><span class="fu">::</span><span class="fu">findLinearCombos</span><span class="op">(</span><span class="va">mm</span><span class="op">)</span>
 <span class="va">lin_dep_report</span></code></pre></div>
 </div>
 <div class="section level5">

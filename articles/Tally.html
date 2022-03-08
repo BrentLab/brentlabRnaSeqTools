@@ -66,8 +66,7 @@
 
 
 
-
-<div class="row">
+<script src="Tally_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <main id="main"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Tally Experiment Sets</h1>
                         <h4 data-toc-skip class="author">Chase Mateusiak</h4>
@@ -94,7 +93,7 @@
 <h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">brentlabRnaSeqTools</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://brentlab.github.io/brentlabRnaSeqTools/">brentlabRnaSeqTools</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">rtracklayer</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span>
 
@@ -223,37 +222,37 @@
 <div class="section level3">
 <h3 id="column-3">column 3<a class="anchor" aria-label="anchor" href="#column-3"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># note that this function requires that ep_list and ep_list_qc_passing_with_iqr</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># be in the namespace already (see the setup section)</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: save the norm count rle from the sample agreement step for this function</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>cumDistIqr <span class="ot">=</span> <span class="cf">function</span>(set_name){</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>       <span class="fu">stat_ecdf</span>(<span class="at">data =</span> norm_count_rle), </span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">aes</span>(<span class="sc">!!</span>rlang<span class="sc">::</span><span class="fu">sym</span>(<span class="fu">paste0</span>(<span class="st">"ep_"</span>,set_name, <span class="st">"_iqr"</span>))), </span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">'orange'</span>) <span class="sc">+</span> </span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>       <span class="fu">stat_ecdf</span>(<span class="at">data =</span> <span class="fu">extractColData</span>(ep_list_qc_passing_with_iqr[[set_name]]), </span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">aes</span>(<span class="sc">!!</span>rlang<span class="sc">::</span><span class="fu">sym</span>(<span class="fu">paste0</span>(<span class="st">"ep_"</span>, set_name, <span class="st">"_iqr"</span>))), </span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span> </span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>       <span class="fu">ggtitle</span>(<span class="st">"orange = normalized counts; blue = libdate_model_removed_libdate"</span>)<span class="er">)</span> <span class="sc">+</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">05</span>))<span class="sc">+</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">05</span>))</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a> </span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># note that this function requires that ep_list and ep_list_qc_passing_with_iqr</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="co"># be in the namespace already (see the setup section)</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: save the norm count rle from the sample agreement step for this function</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>cumDistIqr =<span class="st"> </span><span class="cf">function</span>(set_name){</span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="kw">plot</span>(<span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="st">       </span><span class="kw">stat_ecdf</span>(<span class="dt">data =</span> norm_count_rle), </span>
+<span id="cb7-7"><a href="#cb7-7"></a>                 <span class="kw">aes</span>(<span class="op">!!</span>rlang<span class="op">::</span><span class="kw">sym</span>(<span class="kw">paste0</span>(<span class="st">"ep_"</span>,set_name, <span class="st">"_iqr"</span>))), </span>
+<span id="cb7-8"><a href="#cb7-8"></a>                 <span class="dt">color =</span> <span class="st">'orange'</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="st">       </span><span class="kw">stat_ecdf</span>(<span class="dt">data =</span> <span class="kw">extractColData</span>(ep_list_qc_passing_with_iqr[[set_name]]), </span>
+<span id="cb7-10"><a href="#cb7-10"></a>                 <span class="kw">aes</span>(<span class="op">!!</span>rlang<span class="op">::</span><span class="kw">sym</span>(<span class="kw">paste0</span>(<span class="st">"ep_"</span>, set_name, <span class="st">"_iqr"</span>))), </span>
+<span id="cb7-11"><a href="#cb7-11"></a>                 <span class="dt">color =</span> <span class="st">"blue"</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb7-12"><a href="#cb7-12"></a><span class="st">       </span><span class="kw">ggtitle</span>(<span class="st">"orange = normalized counts; blue = libdate_model_removed_libdate"</span>)<span class="er">)</span> <span class="op">+</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">05</span>))<span class="op">+</span></span>
+<span id="cb7-14"><a href="#cb7-14"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">05</span>))</span>
+<span id="cb7-15"><a href="#cb7-15"></a>}</span>
+<span id="cb7-16"><a href="#cb7-16"></a></span>
+<span id="cb7-17"><a href="#cb7-17"></a> </span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="environmental-perturbation-wt">Environmental Perturbation – WT<a class="anchor" aria-label="anchor" href="#environmental-perturbation-wt"></a>
 </h2>
 <div class="section level3" data-width="500">
-<h3 class="tabset tabset-fade" id="column">Column<a class="anchor" aria-label="anchor" href="#column"></a>
+<h3 id="column">Column<a class="anchor" aria-label="anchor" href="#column"></a>
 </h3>
 <div class="section level4">
 <h4 id="unfiltered-tallies">unfiltered tallies<a class="anchor" aria-label="anchor" href="#unfiltered-tallies"></a>
 </h4>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ep_tally</span><span class="op">$</span><span class="va">wt</span><span class="op">$</span><span class="va">unfiltered_tally</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span>
+  <span class="fu">DT</span><span class="fu">::</span><span class="fu">datatable</span><span class="op">(</span>
     options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     pageLength<span class="op">=</span><span class="fl">50</span>, 
     scrollX<span class="op">=</span><span class="st">'400px'</span>, 
@@ -266,7 +265,7 @@
 </h4>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ep_tally</span><span class="op">$</span><span class="va">wt</span><span class="op">$</span><span class="va">qc1_passing_tally</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span>
+  <span class="fu">DT</span><span class="fu">::</span><span class="fu">datatable</span><span class="op">(</span>
     options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     pageLength<span class="op">=</span><span class="fl">50</span>, 
     scrollX<span class="op">=</span><span class="st">'400px'</span>, 
@@ -279,7 +278,7 @@
 </h4>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ep_tally</span><span class="op">$</span><span class="va">wt</span><span class="op">$</span><span class="va">iqr_filter_qc1_passing_tally</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span>
+  <span class="fu">DT</span><span class="fu">::</span><span class="fu">datatable</span><span class="op">(</span>
     options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     pageLength<span class="op">=</span><span class="fl">50</span>, 
     scrollX<span class="op">=</span><span class="st">'400px'</span>, 
@@ -293,14 +292,14 @@
 <h2 id="environmental-perturbation-perturbed">Environmental Perturbation – Perturbed<a class="anchor" aria-label="anchor" href="#environmental-perturbation-perturbed"></a>
 </h2>
 <div class="section level3" data-width="500">
-<h3 class="tabset tabset-fade" id="column-1">Column<a class="anchor" aria-label="anchor" href="#column-1"></a>
+<h3 id="column-1">Column<a class="anchor" aria-label="anchor" href="#column-1"></a>
 </h3>
 <div class="section level4">
 <h4 id="unfiltered-tallies-1">unfiltered tallies<a class="anchor" aria-label="anchor" href="#unfiltered-tallies-1"></a>
 </h4>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ep_tally</span><span class="op">$</span><span class="va">pert</span><span class="op">$</span><span class="va">unfiltered_tally</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span>
+  <span class="fu">DT</span><span class="fu">::</span><span class="fu">datatable</span><span class="op">(</span>
     options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     pageLength<span class="op">=</span><span class="fl">50</span>, 
     scrollX<span class="op">=</span><span class="st">'400px'</span>, 
@@ -313,7 +312,7 @@
 </h4>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ep_tally</span><span class="op">$</span><span class="va">pert</span><span class="op">$</span><span class="va">qc1_passing_tally</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span>
+  <span class="fu">DT</span><span class="fu">::</span><span class="fu">datatable</span><span class="op">(</span>
     options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     pageLength<span class="op">=</span><span class="fl">50</span>, 
     scrollX<span class="op">=</span><span class="st">'400px'</span>, 
@@ -326,7 +325,7 @@
 </h4>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ep_tally</span><span class="op">$</span><span class="va">pert</span><span class="op">$</span><span class="va">iqr_filter_qc1_passing_tally</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span>
+  <span class="fu">DT</span><span class="fu">::</span><span class="fu">datatable</span><span class="op">(</span>
     options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     pageLength<span class="op">=</span><span class="fl">50</span>, 
     scrollX<span class="op">=</span><span class="st">'400px'</span>, 
@@ -340,14 +339,14 @@
 <h2 id="titration-tallies-wt">Titration Tallies – WT<a class="anchor" aria-label="anchor" href="#titration-tallies-wt"></a>
 </h2>
 <div class="section level3" data-width="500">
-<h3 class="tabset tabset-fade" id="column-2">Column<a class="anchor" aria-label="anchor" href="#column-2"></a>
+<h3 id="column-2">Column<a class="anchor" aria-label="anchor" href="#column-2"></a>
 </h3>
 <div class="section level4">
 <h4 id="unfiltered-tallies-2">unfiltered tallies<a class="anchor" aria-label="anchor" href="#unfiltered-tallies-2"></a>
 </h4>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ep_tally</span><span class="op">$</span><span class="va">titr</span><span class="op">$</span><span class="va">unfiltered_tally</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span>
+  <span class="fu">DT</span><span class="fu">::</span><span class="fu">datatable</span><span class="op">(</span>
     options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     pageLength<span class="op">=</span><span class="fl">50</span>, 
     scrollX<span class="op">=</span><span class="st">'400px'</span>, 
@@ -360,7 +359,7 @@
 </h4>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ep_tally</span><span class="op">$</span><span class="va">titr</span><span class="op">$</span><span class="va">qc1_passing_tally</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span>
+  <span class="fu">DT</span><span class="fu">::</span><span class="fu">datatable</span><span class="op">(</span>
     options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     pageLength<span class="op">=</span><span class="fl">50</span>, 
     scrollX<span class="op">=</span><span class="st">'400px'</span>, 
@@ -373,7 +372,7 @@
 </h4>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ep_tally</span><span class="op">$</span><span class="va">titr</span><span class="op">$</span><span class="va">iqr_filter_qc1_passing_tally</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span>
+  <span class="fu">DT</span><span class="fu">::</span><span class="fu">datatable</span><span class="op">(</span>
     options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     pageLength<span class="op">=</span><span class="fl">50</span>, 
     scrollX<span class="op">=</span><span class="st">'400px'</span>, 
