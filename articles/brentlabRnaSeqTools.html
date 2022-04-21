@@ -201,6 +201,13 @@
 <span class="va">coldata_df</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">archive_prefix</span>, <span class="st">"20220208/combined_df_20220208.csv"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">count_df</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">archive_prefix</span>, <span class="st">"20220208/counts.csv"</span><span class="op">)</span><span class="op">)</span>
 
+<span class="va">gene_ids</span> <span class="op">=</span> <span class="fu"><a href="../reference/getGeneNames.html">getGeneNames</a></span><span class="op">(</span><span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_host</span>,
+                        <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_name</span>,
+                        <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">'db_username'</span><span class="op">)</span>,
+                        <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">'db_password'</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">gene_ids</span> <span class="op">=</span> <span class="va">gene_ids</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6967</span><span class="op">]</span>
+
 <span class="va">coldata_df_fltr</span> <span class="op">=</span> <span class="va">coldata_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">purpose</span> <span class="op">==</span> <span class="st">"fullRNASeq"</span>,
          <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">fastqFileName</span><span class="op">)</span><span class="op">)</span>
@@ -221,9 +228,10 @@
 <span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">count_df_fltr</span><span class="op">)</span>, 
                     <span class="va">coldata_df_fltr</span><span class="op">$</span><span class="va">fastqFileName</span><span class="op">)</span><span class="op">)</span>
 
-<span class="va">dds</span> <span class="op">=</span> <span class="fu">DESeq2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeqDataSet.html" class="external-link">DESeqDataSetFromMatrix</a></span><span class="op">(</span>countData <span class="op">=</span> <span class="va">counts_fltr</span>,
-                                     colData <span class="op">=</span> <span class="va">df_fltr</span>, 
+<span class="va">dds</span> <span class="op">=</span> <span class="fu">DESeq2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeqDataSet.html" class="external-link">DESeqDataSetFromMatrix</a></span><span class="op">(</span>countData <span class="op">=</span> <span class="va">count_df_fltr</span>,
+                                     colData <span class="op">=</span> <span class="va">coldata_df_fltr</span>, 
                                      design <span class="op">=</span> <span class="op">~</span><span class="fl">1</span><span class="op">)</span>
+<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span> <span class="op">=</span> <span class="va">gene_ids</span>
 
 <span class="va">blrs</span> <span class="op">=</span> <span class="fu"><a href="../reference/brentlabRnaSeqSet.html">brentlabRnaSeqSet</a></span><span class="op">(</span>dds <span class="op">=</span> <span class="va">dds</span><span class="op">)</span>
 
