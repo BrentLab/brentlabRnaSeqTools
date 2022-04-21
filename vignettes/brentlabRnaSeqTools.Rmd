@@ -193,7 +193,7 @@ gene_ids = getGeneNames(database_info$kn99$db_host,
                         Sys.getenv('db_username'),
                         Sys.getenv('db_password'))
 
-gene_ids = gene_ids[1:6967]
+gene_ids = gene_ids$gene_id[1:6967]
 
 coldata_df_fltr = coldata_df %>%
   filter(purpose == "fullRNASeq",
