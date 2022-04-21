@@ -188,6 +188,13 @@ archive_prefix = '/mnt/lts/sequence_data/rnaseq_data/kn99_database_archive'
 coldata_df = read_csv(file.path(archive_prefix, "20220208/combined_df_20220208.csv"))
 count_df = read_csv(file.path(archive_prefix, "20220208/counts.csv"))
 
+gene_ids = getGeneNames(database_info$kn99$db_host,
+                        database_info$kn99$db_name,
+                        Sys.getenv('db_username'),
+                        Sys.getenv('db_password'))
+
+gene_ids = gene_ids[1:6967]
+
 coldata_df_fltr = coldata_df %>%
   filter(purpose == "fullRNASeq",
          !is.na(fastqFileName))
@@ -208,9 +215,10 @@ count_df_fltr = count_df_fltr[order(match(colnames(count_df_fltr),
 stopifnot(identical(colnames(count_df_fltr), 
                     coldata_df_fltr$fastqFileName))
 
-dds = DESeq2::DESeqDataSetFromMatrix(countData = counts_fltr,
-                                     colData = df_fltr, 
+dds = DESeq2::DESeqDataSetFromMatrix(countData = count_df_fltr,
+                                     colData = coldata_df_fltr, 
                                      design = ~1)
+rownames(dds) = gene_ids
 
 blrs = brentlabRnaSeqSet(dds = dds)
 

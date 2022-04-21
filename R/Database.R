@@ -132,7 +132,7 @@ getGeneNames = function(database_host,
 
   db = connectToDatabase(database_host, database_name, database_user, database_password)
 
-  df = as_tibble(dbGetQuery(db, 'select * from "Genes"'))
+  df = as_tibble(dbGetQuery(db, 'select * from "genes"'))
 
   dbDisconnect(db)
 
@@ -504,6 +504,8 @@ patchTable = function(database_table_url, auth_token, update_df, id_col){
 #'
 #' @export
 postTable = function(database_table_url, auth_token, df){
+
+  # TODO error check the df -- is it a data frame? does it have more than 0 rows?
 
   post_body = jsonlite::toJSON(df, auto_unbox = TRUE)
 

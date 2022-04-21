@@ -17,6 +17,4 @@ You can install the development version of brentlabRnaSeqTools from [GitHub](htt
 devtools::install_github("BrentLab/brentlabRnaSeqTools")
 ```
 
-## Documentation
-
-[Please visit this site for documentation](https://brentlab.github.io/brentlabRnaSeqTools)
+## [Documentation](https://brentlab.github.io/brentlabRnaSeqTools)
