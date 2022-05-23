@@ -49,7 +49,7 @@ library(tidyverse)
 
 # set variables 
 
-KN99_GFF_PATH = Sys.getenv("kn99_gff")
+KN99_GFF_PATH = Sys.getenv("kn99_stranded_gff")
 DB_USERNAME = Sys.getenv("db_username")
 DB_PASSWORD = Sys.getenv("db_password")
 

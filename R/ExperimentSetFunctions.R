@@ -17,8 +17,7 @@ createEnvPert_epWT = function(blrs){
   # filter
   ep_meta_fastqFileNumbers = extractColData(blrs) %>%
     filter(strain == 'TDY451',
-           treatment %in% c("cAMP","noTreatment"),
-           treatmentConc %in% c("20", 'noTreatmentConc'),
+           cAMP %in% c(20,0),
            experimentDesign == 'Environmental_Perturbation',
            purpose == "fullRNASeq",
            libraryProtocol == 'E7420L',
@@ -27,21 +26,6 @@ createEnvPert_epWT = function(blrs){
 
   ep_set = blrs[,colData(blrs)$fastqFileNumber %in%
                   ep_meta_fastqFileNumbers]
-
-  experimental_conditions = alist(medium,
-                                  atmosphere,
-                                  temperature,
-                                  treatment,
-                                  treatmentConc,
-                                  pH,
-                                  timePoint)
-
-  concat_treatment = extractColData(ep_set) %>%
-    mutate(concat_treatment = as.factor(paste(!!!experimental_conditions,
-                                              sep="_"))) %>%
-    pull(concat_treatment)
-
-  colData(ep_set)$concat_treatment = concat_treatment
 
   ep_set
 
@@ -64,11 +48,11 @@ createEnvPertSet_titrationWT = function(blrs){
   # filter
   ep_meta_fastqFileNumbers = extractColData(blrs) %>%
     filter(strain == 'TDY451',
-           medium == 'RPMI',
-           atmosphere == "noAtmosphere",
+           baseNutrientMixName_id == 'rpmi',
+           nutrientMixModName_id == 'none',
+           co2 == 0.00,
            temperature == 30,
-           treatment %in% c("cAMP", "noTreatment"),
-           pH == "noPH",
+           buffer == "none",
            experimentDesign %in%
              c('ep_cAMP_titration', 'Environmental_Perturbation'),
            purpose == "fullRNASeq",
@@ -77,21 +61,6 @@ createEnvPertSet_titrationWT = function(blrs){
     pull(fastqFileNumber)
 
   ep_set = blrs[,colData(blrs)$fastqFileNumber %in% ep_meta_fastqFileNumbers]
-
-  experimental_conditions = alist(medium,
-                                  atmosphere,
-                                  temperature,
-                                  treatment,
-                                  treatmentConc,
-                                  pH,
-                                  timePoint)
-
-  concat_treatment = extractColData(ep_set) %>%
-    mutate(concat_treatment = as.factor(paste(!!!experimental_conditions,
-                                              sep="_"))) %>%
-    pull(concat_treatment)
-
-  colData(ep_set)$concat_treatment = concat_treatment
 
   ep_set
 
@@ -114,31 +83,26 @@ createEnvPertSet_perturbed = function(blrs){
   # extract conditions in the perturbed samples ----
   non_wt_ep_meta = extractColData(blrs) %>%
     filter(strain != 'TDY451',
-           treatment %in% c("cAMP", "noTreatment"),
            experimentDesign %in%
              c('Environmental_Perturbation', 'ep_cAMP_titration'),
            purpose == "fullRNASeq",
            libraryProtocol == 'E7420L',
            !is.na(fastqFileName))
 
-  medium_conds = non_wt_ep_meta %>%
-    pull(medium) %>%
+  gc_conds = non_wt_ep_meta %>%
+    pull(gcid_id) %>%
     unique()
 
   temperature_conds = non_wt_ep_meta %>%
     pull(temperature) %>%
     unique()
 
-  atmosphere_conds = non_wt_ep_meta %>%
-    pull(atmosphere) %>%
+  co2_conds = non_wt_ep_meta %>%
+    pull(co2) %>%
     unique()
 
-  treatment_conds = non_wt_ep_meta %>%
-    pull(treatment) %>%
-    unique()
-
-  treatmentConc_conds = non_wt_ep_meta %>%
-    pull(treatmentConc) %>%
+  cAMP_conds = non_wt_ep_meta %>%
+    pull(cAMP) %>%
     unique()
 
   timePoint_conds = non_wt_ep_meta %>%
@@ -151,11 +115,10 @@ createEnvPertSet_perturbed = function(blrs){
 
   # get all samples matching these conditions, regardless of geno ----
   set_ffn = extractColData(blrs) %>%
-    filter(medium %in% medium_conds,
+    filter(gcid_id %in% gc_conds,
            temperature %in% temperature_conds,
-           atmosphere %in% atmosphere_conds,
-           treatment %in% treatment_conds,
-           treatmentConc %in% treatmentConc_conds,
+           co2 %in% co2_conds,
+           cAMP %in% cAMP_conds,
            timePoint %in% timePoint_conds,
            libraryDate %in% libraryDate_conds,
            experimentDesign %in%
@@ -164,22 +127,7 @@ createEnvPertSet_perturbed = function(blrs){
            !is.na(fastqFileName)) %>%
     pull(fastqFileNumber)
 
-  # filter the blrs obj ----
   ep_set = blrs[,colData(blrs)$fastqFileNumber %in% set_ffn]
-
-  experimental_conditions = alist(medium,
-                                  atmosphere,
-                                  temperature,
-                                  treatment,
-                                  treatmentConc,
-                                  pH,
-                                  timePoint)
-
-  concat_treatment = extractColData(ep_set) %>%
-    mutate(concat_treatment = as.factor(paste(!!!experimental_conditions, sep="_"))) %>%
-    pull(concat_treatment)
-
-  colData(ep_set)$concat_treatment = concat_treatment
 
   ep_set
 
@@ -265,17 +213,17 @@ createNinetyMinuteInduction_2016grant = function(blrs){
 
 
   condition_fltr_metadata = extractColData(blrs) %>%
-    filter(medium %in% c("DMEM"),
+    filter(baseNutrientMixName_id %in% c("dmem"),
+           nutrientMixModName_id == 'none',
            temperature %in% c(37),
-           atmosphere %in% c("CO2"),
-           treatment %in% c("noTreatment"),
-           otherConditions %in% c("noOtherConditions"),
-           pH %in% c("noPH"),
+           co2 == 0.05,
+           cAMP == 0,
+           buffer == 'none',
            timePoint %in% c(90),
            purpose=="fullRNASeq",
            !is.na(fastqFileName),
            str_detect(genotype1, "CNAG"),
-           is.na(genotype2) | genotype2 == "",
+           genotype2 == "none",
            perturbation1 =="deletion" | is.na(perturbation1) | perturbation1 == "")
 
   # TODO: COMBINE THE FILTER STATEMENTS INTO SINGLE FILTER
@@ -290,8 +238,7 @@ createNinetyMinuteInduction_2016grant = function(blrs){
     filter(strain_status == "done")
 
   perturbed_induction_set = condition_fltr_metadata %>%
-    filter(genotype1 %in% fltr_grant_df$genotype1 &
-             (is.na(genotype2) | genotype2 == ""))
+    filter(genotype1 %in% fltr_grant_df$genotype1 & genotype2 == "none")
 
   # put the wt and filtered genotypes together
   set = bind_rows(wt_induction_set, perturbed_induction_set)
@@ -316,18 +263,18 @@ createNinetyMinuteInduction_2016grant = function(blrs){
 createNinetyMinuteInduction_2016grantWithDoubles = function(blrs){
 
   condition_fltr_metadata = extractColData(blrs) %>%
-    filter(medium %in% c("DMEM"),
+    filter(baseNutrientMixName_id %in% c("dmem"),
+           nutrientMixModName_id == 'none',
            temperature %in% c(37),
-           atmosphere %in% c("CO2"),
-           treatment %in% c("noTreatment"),
-           otherConditions %in% c("noOtherConditions"),
-           pH %in% c("noPH"),
+           co2 == 0.05,
+           cAMP == 0,
+           buffer == 'none',
            timePoint %in% c(90),
            purpose=="fullRNASeq",
            !is.na(fastqFileName),
            str_detect(genotype1, "CNAG"),
            perturbation1 =="deletion" | is.na(perturbation1) | perturbation1 == "",
-           perturbation2 =="deletion" | is.na(perturbation2) | perturbation2 == "")
+           perturbation2 %in% c("deletion","none"))
 
   # TODO: COMBINE THE FILTER STATEMENTS INTO SINGLE FILTER
   # get wildtypes
@@ -335,7 +282,7 @@ createNinetyMinuteInduction_2016grantWithDoubles = function(blrs){
     filter(genotype1 == "CNAG_00000", strain == 'TDY451')
 
   double_ko_df = condition_fltr_metadata %>%
-    filter(!is.na(genotype2) & genotype2 != "",
+    filter(genotype2 != "none",
            (genotype1 %in% grant_df$genotype1 |
              genotype2 %in% grant_df$genotype1))
 
@@ -343,7 +290,7 @@ createNinetyMinuteInduction_2016grantWithDoubles = function(blrs){
                           unique(as.character(double_ko_df$genotype2))))
 
   single_ko_for_doubles = condition_fltr_metadata %>%
-    filter(is.na(genotype2) | genotype2 == "" & genotype1 %in% double_genos)
+    filter(genotype2 == "none" & genotype1 %in% double_genos)
 
   # put the wt and filtered genotypes together
   set = bind_rows(wt_induction_set, single_ko_for_doubles, double_ko_df)
@@ -373,18 +320,18 @@ createNinetyMinuteInduction_2016grantWithDoubles = function(blrs){
 createNinetyMinuteInduction_non2016grant = function(blrs){
 
   condition_fltr_metadata = extractColData(blrs) %>%
-    filter(medium %in% c("DMEM"),
+    filter(baseNutrientMixName_id %in% c("dmem"),
+           nutrientMixModName_id == 'none',
            temperature %in% c(37),
-           atmosphere %in% c("CO2"),
-           treatment %in% c("noTreatment"),
-           otherConditions %in% c("noOtherConditions"),
-           pH %in% c("noPH"),
+           co2 == 0.05,
+           cAMP == 0,
+           buffer == 'none',
            timePoint %in% c(90),
            purpose =="fullRNASeq",
            !is.na(fastqFileName),
            str_detect(genotype1, "CNAG"),
            perturbation1 == "deletion" | is.na(perturbation1) | perturbation1 == "",
-           perturbation2 == "deletion" | is.na(perturbation2) | perturbation2 == "")
+           perturbation2 %in% c("deletion", "none"))
 
   # TODO: COMBINE THE FILTER STATEMENTS INTO SINGLE FILTER
   # get wildtypes
@@ -395,7 +342,7 @@ createNinetyMinuteInduction_non2016grant = function(blrs){
   perturbed_induction_set = condition_fltr_metadata %>%
     filter(genotype1 != "CNAG_00000",
            !genotype1 %in% grant_df$genotype1 |
-             (!is.na(genotype2) & !genotype2 %in% grant_df$genotype1))
+             genotype2 %in% grant_df$genotype1)
 
   # put the wt and filtered genotypes together
   set = bind_rows(wt_induction_set, perturbed_induction_set)
@@ -425,18 +372,18 @@ createNinetyMinuteInduction_non2016grant = function(blrs){
 createNinetyMinuteInduction_all = function(blrs){
 
   condition_fltr_metadata = extractColData(blrs) %>%
-    filter(medium %in% c("DMEM"),
+    filter(baseNutrientMixName_id %in% c("dmem"),
+           nutrientMixModName_id == 'none',
            temperature %in% c(37),
-           atmosphere %in% c("CO2"),
-           treatment %in% c("noTreatment"),
-           otherConditions %in% c("noOtherConditions"),
-           pH %in% c("noPH"),
+           co2 == 0.05,
+           cAMP == 0,
+           buffer == 'none',
            timePoint %in% c(90),
            purpose =="fullRNASeq",
            !is.na(fastqFileName),
            str_detect(genotype1, "CNAG"),
            perturbation1 == "deletion" | is.na(perturbation1) | perturbation1 == "",
-           perturbation2 == "deletion" | is.na(perturbation2) | perturbation2 == "")
+           perturbation2 %in% c("deletion", "none"))
 
   # TODO: COMBINE THE FILTER STATEMENTS INTO SINGLE FILTER
   # get wildtypes

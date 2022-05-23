@@ -1,5 +1,9 @@
 # TODO use inheritParams etc to reduce redundancy in documentation
 
+# TODO reformulate the dplyr stuff as SQL -- can use show_query() along with
+# dplyr interactively to help with constructing the query. All the pivoting
+# will be hard in sql
+
 #' Get the combined metadata as a tibble from a remote database
 #'
 #' @description Join the biosample, rnasample, s1sample, s2sample, library, fastqFiles and qualityAssessment tables (in that order, left joins) and return the result as a tibble
@@ -21,18 +25,47 @@
 #' @export
 getMetadata = function(database_host, database_name, database_user, database_password){
 
+  # connect to the db and pull the tables
   db = connectToDatabase(database_host, database_name, database_user, database_password)
 
-  biosample = tbl(db, 'bioSample')
-  rnasample = tbl(db, 'rnaSample')
-  s1sample = tbl(db, 's1cDNASample')
-  s2sample = tbl(db, 's2cDNASample')
-  library = tbl(db, 'library')
-  fastqFiles = tbl(db, 'fastqFiles')
-  quality = tbl(db, 'qualityAssessment')
-  replicateAgreement = tbl(db, 'replicateAgreement')
+  baseNutMix         = tbl(db, "baseNutrientMix")
+  nutMixMod          = tbl(db, "NutrientMixMod")
+  aa                 = tbl(db, "aminoAcids")
+  gc                 = tbl(db, "growthConditions")
+  biosample          = tbl(db, 'bioSample') %>% collect()
+  rnasample          = tbl(db, 'rnaSample') %>% collect()
+  s1sample           = tbl(db, 's1cDNASample') %>% collect()
+  s2sample           = tbl(db, 's2cDNASample') %>% collect()
+  library            = tbl(db, 'library') %>% collect()
+  fastqFiles         = tbl(db, 'fastqFiles') %>% collect()
+  quality            = tbl(db, 'qualityAssessment') %>% collect()
+  replicateAgreement = tbl(db, 'replicateAgreement') %>% collect()
+
+  combined_nutrient_df =
+    # join the growth conditions nad nutrient tables
+    gc %>%
+    left_join(nutMixMod, by = c('nutrientMixModName_id' = 'nutrientMixModName')) %>%
+    left_join(baseNutMix, by = c('baseNutrientMixName_id' = 'baseNutrientName')) %>%
+    # pull from database into memory
+    collect()  %>%
+    # pivot the columns with suffixes .x and .y -- these are the duplicated
+    # nutrient columns
+    pivot_longer(cols = ends_with(c(".x", ".y"))) %>%
+    # separate the eg nutrient.x into two columns, the nut column (nutrient) and source column (y)
+    separate(name, into = c("nut", "source"), sep = "\\.") %>%
+    # group by the growth condition and the nut
+    group_by(gcid, nut) %>%
+    # and add the nut values, eg adenine.x and adenine.y for gcid 8 are added together
+    summarise(mod_value = sum(value), .groups = 'keep')
+
+  conditions_df = gc %>%
+    left_join(aa, by = c('aaid_id' = 'aaid')) %>%
+    collect() %>%
+    left_join(combined_nutrient_df) %>%
+    pivot_wider(names_from = nut, values_from = mod_value)
 
   joined_meta_tables = biosample %>%
+    left_join(conditions_df, by = c('gcid_id' = 'gcid')) %>%
     left_join(rnasample, by = c('bioSampleNumber' = 'bioSampleNumber_id'))%>%
     left_join(s1sample, by = c('rnaSampleNumber' = 'rnaSampleNumber_id'))%>%
     left_join(s2sample, by = c('s1cDNASampleNumber' = 's1cDNASampleNumber_id'))%>%
