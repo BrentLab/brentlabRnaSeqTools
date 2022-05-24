@@ -29,7 +29,7 @@ getMetadata = function(database_host, database_name, database_user, database_pas
   db = connectToDatabase(database_host, database_name, database_user, database_password)
 
   baseNutMix         = tbl(db, "baseNutrientMix")
-  nutMixMod          = tbl(db, "NutrientMixMod")
+  nutMixMod          = tbl(db, "nutrientMixMod")
   aa                 = tbl(db, "aminoAcids")
   gc                 = tbl(db, "growthConditions")
   biosample          = tbl(db, 'bioSample') %>% collect()
