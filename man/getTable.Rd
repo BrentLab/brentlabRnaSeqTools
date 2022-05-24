@@ -21,7 +21,8 @@ getTable(
 
 \item{database_password}{password to the database user. You'll need to check with the database maintainer for this. It is suggested that you use a .Renviron file in your local project (make sure it is completely ignored by git, R, etc) to store this info}
 
-\item{tablename}{}
+\item{tablename}{name of the table you wish to pull. Must have correct capitalization. I have attempted to
+make the camelCase consistent, eg bioSample, rnaSample}
 }
 \value{
 a single table as a dataframe
