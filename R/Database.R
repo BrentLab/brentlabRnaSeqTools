@@ -105,7 +105,8 @@ getMetadata = function(database_host, database_name, database_user, database_pas
 #' @param database_name name of the database, eg for cryptococcus kn99, the database might be named kn99_database. Check with the documentation, whoever set up the database, or get into the server and check directly
 #' @param database_user a user of the actual database, with some level of permissions. You'll need to check with the database maintainer for this. It is suggested that you use a .Renviron file in your local project (make sure it is completely ignored by git, R, etc) to store this info
 #' @param database_password password to the database user. You'll need to check with the database maintainer for this. It is suggested that you use a .Renviron file in your local project (make sure it is completely ignored by git, R, etc) to store this info
-#' @param tablename
+#' @param tablename name of the table you wish to pull. Must have correct capitalization. I have attempted to
+#'   make the camelCase consistent, eg bioSample, rnaSample
 #'
 #' @return a single table as a dataframe
 #'
