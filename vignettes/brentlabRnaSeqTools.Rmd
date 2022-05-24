@@ -224,4 +224,40 @@ blrs = brentlabRnaSeqSet(dds = dds)
 
 # everything should work as usual from here
 ```
+```{r}
+createEnvPert_epWT = function(blrs){
+
+  # filter
+  ep_meta_fastqFileNumbers = extractColData(blrs) %>%
+    filter(strain == 'TDY451',
+           treatment %in% c("cAMP","noTreatment"),
+           treatmentConc %in% c("20", 'noTreatmentConc'),
+           experimentDesign == 'Environmental_Perturbation',
+           purpose == "fullRNASeq",
+           libraryProtocol == 'E7420L',
+           !is.na(fastqFileName)) %>%
+    pull(fastqFileNumber)
+
+  ep_set = blrs[,colData(blrs)$fastqFileNumber %in%
+                  ep_meta_fastqFileNumbers]
+
+  experimental_conditions = alist(medium,
+                                  atmosphere,
+                                  temperature,
+                                  treatment,
+                                  treatmentConc,
+                                  pH,
+                                  timePoint)
+
+  concat_treatment = extractColData(ep_set) %>%
+    mutate(concat_treatment = as.factor(paste(!!!experimental_conditions,
+                                              sep="_"))) %>%
+    pull(concat_treatment)
+
+  colData(ep_set)$concat_treatment = concat_treatment
+
+  ep_set
+
+}
+```
 
