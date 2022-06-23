@@ -72,19 +72,30 @@ https://nf-co.re/rnaseq/3.2/usage#samplesheet-input"><!-- mathjax --><script src
     <dl><dt>metadata</dt>
 <dd><p>most likely from the database. must include runNumber, fastqFileName, libraryProtocol,
 and the columns used to create the sample name (see param sample_columns)</p></dd>
+
+
 <dt>sample_columns</dt>
 <dd><p>a character vector of columns to concat into a sample identifier.
 eg c("genotype1", "fastqFileNumber")</p></dd>
+
+
 <dt>sequence_dir_prefix</dt>
 <dd><p>path to directory where the sequence run directories are stored.
 eg /mnt/htcf_lts/lts_sequence</p></dd>
+
+
 <dt>check_files_flag</dt>
 <dd><p>default FALSE. Set to true to check that files exist</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>a dataframe with the columns which correspond to those required for the nf-co rnaseq pipeline
+    
+
+<p>a dataframe with the columns which correspond to those required for the nf-co rnaseq pipeline
 sample sheet. See <a href="https://nf-co.re/rnaseq/3.2/usage#samplesheet-input" class="external-link">https://nf-co.re/rnaseq/3.2/usage#samplesheet-input</a></p>
+
+
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
@@ -101,7 +112,7 @@ AND for single strand libraries (fastq2 is an empty string)</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>
