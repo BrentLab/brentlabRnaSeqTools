@@ -569,6 +569,7 @@ postTable = function(database_table_url, auth_token, df){
 
   post_body = jsonlite::toJSON(df, auto_unbox = TRUE)
 
+  message("...Sending data to database")
   POST(url = database_table_url,
        add_headers(Authorization = paste("token" , auth_token, sep=" ")),
        content_type("application/json"),
@@ -617,4 +618,95 @@ sendCountsToDatabase = function(htseq_path, run_number, auth_token,
              auth_token,
              htseq_out,
              fastq_table)
+}
+
+
+#'
+#' Send Capsule Image Annotation Data to Database
+#'
+#' @description Parse the .m output of the annotation script and send to the
+#'   database.
+#'
+#' @importFrom stringr str_extract str_extract_all str_split str_remove_all
+#' @importFrom purrr map
+#' @importFrom dplyr select mutate across everything all_of
+#'
+#' @param annotation_path path to the .m output of the matematica annotation script
+#' @param auth_token your user authentication token to the database. See
+#'   \code{\link{getUserAuthToken}}. Note that this will be recorded as the person
+#'   responsible for these annotations -- please only upload annotations which
+#'   you did yourself
+#' @param image_id numeric ID from the capsuleImage table which identifies a
+#'   given image
+#' @param post_table boolean, default TRUE. Set to FALSE to prevent sending
+#'   the data to the database, and instead return the dataframe
+#'
+#' @return http response if post_table is true, otherwise the dataframe
+#'
+#' @export
+sendImageAnnotationsToDatabase = function(annotation_path,
+                                          auth_token,
+                                          image_id,
+                                          post_table = TRUE){
+
+  stopifnot(tools::file_ext(annotation_path) != '.m')
+
+  # These need to correspond to the fields in the imageAnnotation
+  # table
+  cell_data_df_colnames = c('centerX', 'centerY',
+                            'cellDiameter', 'capsuleWidth')
+
+  # regex to parse the .m file
+  # per michael (author of the script which produces these):
+  # The format for the annotation is very simple.
+  # There’s some initial stuff you can ignore followed by
+  # {cell1, …, celln} where each cell consists
+  # {{center-x, center-y}, cell-diameter, capsule-width}
+  regex_list = list(
+    extract_cell_data = "\\{\\{\\{.*\\}\\}\\}",
+    extract_individual_cells =
+      "\\{\\d+\\.\\d+\\,\\s+\\d+\\.\\d+\\},\\s+\\d+\\.\\d+\\,\\s+\\d+\\.\\d+\\}"
+  )
+
+  # open the file and extract the cell data into a string
+  file_text = paste0(readLines(annotation_path), collapse = "")
+  cell_text = str_extract(file_text,
+                          regex_list$extract_cell_data)
+  parsed_cell_data = unlist(str_extract_all(cell_text,
+                                            regex_list$extract_individual_cells))
+
+  # a function to parse the cell data, in structure
+  #  {{center-x, center-y}, cell-diameter, capsule-width}
+  #  into 4 item lists of numbers
+  extract_data = function(x){
+    unlist(map(unlist(
+      str_split(
+        unlist(
+          str_remove_all(x, "\\{|\\}")), ",")), as.numeric))
+  }
+
+  # create list of lists. The number of lists is the number of cells. each
+  # cell list is length 4, with values in order corresponding to
+  # center-x, center-y, cell-diameter, capsule-width
+  cell_data_list = map(parsed_cell_data, extract_data)
+
+  # turn the list of lists into a dataframe of dimensions # cells by
+  # the 5, where the 5th column is the foreign key back to the image table
+  cell_data_df = as.data.frame(do.call(rbind, cell_data_list))
+  colnames(cell_data_df) = cell_data_df_colnames
+
+  # note the rounding to 4 decimal places in each of the metric columns
+  cell_data_df = cell_data_df %>%
+    mutate(across(.cols = everything(), round, 4)) %>%
+    mutate(imageNumber = image_id) %>%
+    dplyr::select(imageNumber, all_of(cell_data_df_colnames))
+
+  if(post_table){
+    # post table to the database
+    # database_table_url = database_info$kn99$urls$CapsuleAnnotation
+    # postTable(database_table_url, auth_token, cell_data_df)
+  } else{
+    cell_data_df
+  }
+
 }
