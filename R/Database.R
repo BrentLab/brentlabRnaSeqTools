@@ -692,14 +692,20 @@ sendImageAnnotationsToDatabase = function(annotation_path,
 
   # turn the list of lists into a dataframe of dimensions # cells by
   # the 5, where the 5th column is the foreign key back to the image table
-  cell_data_df = as.data.frame(do.call(rbind, cell_data_list))
-  colnames(cell_data_df) = cell_data_df_colnames
+  tryCatch({
+    cell_data_df = as.data.frame(do.call(rbind, cell_data_list))
+    colnames(cell_data_df) = cell_data_df_colnames
 
-  # note the rounding to 4 decimal places in each of the metric columns
-  cell_data_df = cell_data_df %>%
-    mutate(across(.cols = everything(), round, 4)) %>%
-    mutate(imageNumber = image_id) %>%
-    dplyr::select(imageNumber, all_of(cell_data_df_colnames))
+    # note the rounding to 4 decimal places in each of the metric columns
+    cell_data_df = cell_data_df %>%
+      mutate(across(.cols = everything(), round, 4)) %>%
+      mutate(imageNumber = image_id) %>%
+      dplyr::select(imageNumber, all_of(cell_data_df_colnames))
+
+
+  }, error = function(e){
+    stop(sprintf("Error in file: %s. Fix and try again.", annotation_path))
+  })
 
   if(post_table){
     # post table to the database
@@ -708,5 +714,6 @@ sendImageAnnotationsToDatabase = function(annotation_path,
   } else{
     cell_data_df
   }
+
 
 }
