@@ -18,31 +18,37 @@
 #' @return a ggplot object rank response plot
 #'
 #' @export
-rank_response_plot = function(expression_df_list, binding_df_list, tf){
+rank_response_plot = function(expression_df_list, binding_df_list, tf, lfc_thres = 0, padj_thres = .05){
 
  message("Summarizing data by rank response...")
- rank_res_df_list = foreach(
-   expr_name = names(expression_df_list)
+  rank_res_df = foreach(
+   expr_name = names(expression_df_list),
+   .combine = 'rbind'
   ) %do% {
-    map(names(binding_df_list),
+    df_list = map(names(binding_df_list),
         ~sort_rank_mean_expr(expression_df_list[[expr_name]],
                              expr_name,
                              binding_df_list[[.]],
-                             .))
-  }
+                             .,
+                             lfc_thres,
+                             padj_thres))
 
- rank_res_df = do.call('rbind', rank_res_df_list)
+    do.call('rbind', df_list)
+  }
 
  rank_res_df %>%
    mutate(expression_source = as.factor(expression_source),
-          binding_source = as.factor(binding_source),
-          data = as.factor(data),
-          rank = factor(as.character(rank))) %>%
+          binding_source = as.factor(binding_source)) %>%
    ggplot() +
      geom_line(aes(rank,
                    response_ratio,
                    color = binding_source,
-                   linetype = expression_source))
+                   linetype = expression_source)) +
+   ggtitle(tf) +
+   scale_x_continuous(breaks = seq(0,150,10)) +
+   scale_y_continuous(breaks = seq(0,1,.1)) +
+   theme(text = element_text(size = 20),
+         axis.text.x = element_text(angle = 45, hjust =1))
 }
 
 #'
@@ -74,13 +80,15 @@ sort_rank_mean_expr = function(expression_df, expression_src,
   binding_cols = c('gene', 'binding_signal')
 
   stopifnot(expression_cols %in% colnames(expression_df))
-  expression_df = select(expression_df, all_of(expression_cols))
+  expression_df = select(expression_df, all_of(expression_cols)) %>%
+    filter(complete.cases(.))
   stopifnot(binding_cols %in% colnames(binding_df))
-  binding_df = select(binding_df, all_of(binding_cols))
+  binding_df = select(binding_df, all_of(binding_cols)) %>%
+    filter(complete.cases(.))
 
-  message(paste0("the overlap between the expression and binding ",
+  message(paste0("the overlap between the complete cases in the expression and binding ",
                  sprintf("gene sets is: %s out of %s in the expression data ",
-                         length(union(expression_df$gene, binding_df$gene)),
+                         length(intersect(expression_df$gene, binding_df$gene)),
                          nrow(expression_df)),
                  sprintf("and %s in the binding data", nrow(binding_df))))
 
@@ -91,5 +99,25 @@ sort_rank_mean_expr = function(expression_df, expression_src,
     summarise(group_ratio = sum(abs(log2FoldChange) > lfc_thres & padj <= padj_thres)) %>%
     mutate(response_ratio = (cumsum(group_ratio)/rank)) %>%
     mutate(binding_source = binding_src) %>%
-    mutate(expression_source = expression_src)
+    mutate(expression_source = expression_src) %>%
+    head(15)
 }
+
+expr_list = list(
+  expr1 = read_csv("~/Desktop/zev_deseq_res.csv"),
+  expr2 = read_csv("~/Desktop/zev_deseq_res2.csv")
+)
+
+binding_list = list(
+  binding1 = read_tsv("~/Desktop/tmp/E0001_HAP2_JP008.sig_prom.txt") %>%
+    dplyr::rename(gene = `Systematic Name`,
+                  binding_signal = `Poisson pvalue`) %>%
+    dplyr::select(gene, binding_signal),
+  binding2 = read_tsv("~/Desktop/tmp/E0001_PHO4_JP008.sig_prom.txt") %>%
+    dplyr::rename(gene = `Systematic Name`,
+                  binding_signal = `Poisson pvalue`) %>%
+    dplyr::select(gene, binding_signal)
+)
+
+rank_response_plot(expr_list, binding_list, 'test', lfc_thres = 0, padj_thres = .8)
+
