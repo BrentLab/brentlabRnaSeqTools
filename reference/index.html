@@ -33,6 +33,8 @@
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement</a>
     <a class="dropdown-item" href="../articles/Tally.html">Tally Experiment Sets</a>
+    <a class="dropdown-item" href="../articles/Rank_Response_Plot.html">Rank Reponse Plot</a>
+    <a class="dropdown-item" href="../articles/image_table_interactions.html">Image Table Interaction</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -49,9 +51,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="data-objects">Data objects<a class="anchor" aria-label="anchor" href="#data-objects"></a></h2>
       
-      
+      <p class="section-desc"></p><p>data objects loaded with brentlabRnaSeqTools</p>
 
       
     </div><div id="" class="section level2">
@@ -61,14 +63,40 @@
 
       <dl><dt>
           
-          <code><a href="addQcColsToMeta.html">addQcColsToMeta()</a></code> 
+          <code><a href="database_info.html">database_info</a></code> 
         </dt>
-        <dd>add qc metrics to metadata</dd>
+        <dd>URLS to active databases</dd>
       </dl><dl><dt>
           
-          <code><a href="addRleSummaryStats.html">addRleSummaryStats()</a></code> 
+          <code><a href="grant_df.html">grant_df</a></code> 
         </dt>
-        <dd>calculate RLE by replicate groups</dd>
+        <dd>the 2016 grant summary represented as a dataframe</dd>
+      </dl><dl><dt>
+          
+          <code><a href="passing_genes_all.html">passing_genes_all</a></code> 
+        </dt>
+        <dd>genes considered NOT to have 'high dispersion'</dd>
+      </dl><dl><dt>
+          
+          <code><a href="database_colnames.html">database_colnames</a></code> 
+        </dt>
+        <dd>set global variables, mostly as a hack to make the tidyverse data binding pass the R CMD Check</dd>
+      </dl></div><div class="section level2">
+      <h2 id="database-utilities">Database – Utilities<a class="anchor" aria-label="anchor" href="#database-utilities"></a></h2>
+      
+      <p class="section-desc"></p><p>Things like connecting directly to the database, archiving or retrieving a user token</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="connectToDatabase.html">connectToDatabase()</a></code> 
+        </dt>
+        <dd>Connect to a remote postgresql database</dd>
       </dl><dl><dt>
           
           <code><a href="archiveDatabase.html">archiveDatabase()</a></code> 
@@ -76,10 +104,119 @@
         <dd>pull entire database (not counts) and save to output_dir for archival purposes</dd>
       </dl><dl><dt>
           
-          <code><a href="autoAuditQcTable.html">autoAuditQcTable()</a></code> 
+          <code><a href="getUserAuthToken.html">getUserAuthToken()</a></code> 
         </dt>
-        <dd>Audit a qc table with metrics added</dd>
+        <dd>get (via a http POST request) your user authentication token from the database</dd>
+      </dl></div><div class="section level2">
+      <h2 id="database-getting-data">Database – Getting Data<a class="anchor" aria-label="anchor" href="#database-getting-data"></a></h2>
+      
+      <p class="section-desc"></p><p>get the full join (getMetadata) or individual tables</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="getMetadata.html">getMetadata()</a></code> 
+        </dt>
+        <dd>Get the combined metadata as a tibble from a remote database</dd>
       </dl><dl><dt>
+          
+          <code><a href="getRawCounts.html">getRawCounts()</a></code> 
+        </dt>
+        <dd>Get combined raw counts</dd>
+      </dl><dl><dt>
+          
+          <code><a href="getGeneNames.html">getGeneNames()</a></code> 
+        </dt>
+        <dd>Get gene names</dd>
+      </dl><dl><dt>
+          
+          <code><a href="listTables.html">listTables()</a></code> 
+        </dt>
+        <dd>list tables in databse</dd>
+      </dl><dl><dt>
+          
+          <code><a href="getTable.html">getTable()</a></code> 
+        </dt>
+        <dd>Convenience function to pull a single table</dd>
+      </dl><dl><dt>
+          
+          <code><a href="getCapsuleImageSet.html">getCapsuleImageSet()</a></code> 
+        </dt>
+        <dd>Retrieve, as a zip file, the set of images which correspond to a given
+bioSampleNumber</dd>
+      </dl></div><div class="section level2">
+      <h2 id="database-sending-data">Database – Sending Data<a class="anchor" aria-label="anchor" href="#database-sending-data"></a></h2>
+      
+      <p class="section-desc"></p><p>send data TO the database. Please be careful with these.</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="postFastqSheet.html">postFastqSheet()</a></code> 
+        </dt>
+        <dd>post new fastq sheet to database</dd>
+      </dl><dl><dt>
+          
+          <code><a href="postCounts.html">postCounts()</a></code> 
+        </dt>
+        <dd>post counts to database</dd>
+      </dl><dl><dt>
+          
+          <code><a href="postQcSheet.html">postQcSheet()</a></code> 
+        </dt>
+        <dd>post new qc sheet to database</dd>
+      </dl><dl><dt>
+          
+          <code><a href="patchTable.html">patchTable()</a></code> 
+        </dt>
+        <dd>PATCH entries in database table</dd>
+      </dl><dl><dt>
+          
+          <code><a href="postTable.html">postTable()</a></code> 
+        </dt>
+        <dd>Post a table to the database</dd>
+      </dl><dl><dt>
+          
+          <code><a href="postCapsuleJpeg.html">postCapsuleJpeg()</a></code> 
+        </dt>
+        <dd>Send a single JPEG KN99 capsule image to the capsule image table</dd>
+      </dl><dl><dt>
+          
+          <code><a href="postCapsuleJpeg_batch.html">postCapsuleJpeg_batch()</a></code> 
+        </dt>
+        <dd>Send a set of JPEGs for a given bioSampleNumber to the database</dd>
+      </dl><dl><dt>
+          
+          <code><a href="postCountsToDatabase.html">postCountsToDatabase()</a></code> 
+        </dt>
+        <dd>Send Counts to Database (legacy pipeline)</dd>
+      </dl><dl><dt>
+          
+          <code><a href="postImageAnnotationsToDatabase.html">postImageAnnotationsToDatabase()</a></code> 
+        </dt>
+        <dd>Send Capsule Image Annotation Data to Database</dd>
+      </dl></div><div class="section level2">
+      <h2 id="brentlabrnaseq-object">brentLabRnaSeq Object<a class="anchor" aria-label="anchor" href="#brentlabrnaseq-object"></a></h2>
+      
+      <p class="section-desc"></p><p>the object(s) used in most of QC processing</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="brentlabRnaSeqExperiment.html">brentlabRnaSeqExperiment()</a></code> 
         </dt>
@@ -96,9 +233,199 @@
         <dd>brentlabRnaSeqSetTransform object and constructor. This extends DESeqTransform.</dd>
       </dl><dl><dt>
           
-          <code><a href="calculateGeneWiseMedians.html">calculateGeneWiseMedians()</a></code> 
+          <code><a href="coerceToDds.html">coerceToDds()</a></code> 
         </dt>
-        <dd>calculate medians across rows of dataframe</dd>
+        <dd>coerce brentlabRnaSeqSet to DESeqDataSet</dd>
+      </dl><dl><dt>
+          
+          <code><a href="createExperimentSet.html">createExperimentSet()</a></code> 
+        </dt>
+        <dd>Create a pre-defined experiment set</dd>
+      </dl><dl><dt>
+          
+          <code><a href="createTestTrainSet.html">createTestTrainSet()</a></code> 
+        </dt>
+        <dd>create test train set</dd>
+      </dl><dl><dt>
+          
+          <code><a href="estimateSizeFactorsByProtocol.html">estimateSizeFactorsByProtocol()</a></code> 
+        </dt>
+        <dd>Calculate Size Factors within protocol groups</dd>
+      </dl><dl><dt>
+          
+          <code><a href="extractColData.html">extractColData()</a></code> 
+        </dt>
+        <dd>extract colData as tibble</dd>
+      </dl><dl><dt>
+          
+          <code><a href="extractDesignMatrix.html">extractDesignMatrix()</a></code> 
+        </dt>
+        <dd>extract the model.matrix using the design and colData</dd>
+      </dl><dl><dt>
+          
+          <code><a href="getRunNumberLeadingZero.html">getRunNumberLeadingZero()</a></code> 
+        </dt>
+        <dd>correct run number to add leading zero where approprirate</dd>
+      </dl><dl><dt>
+          
+          <code><a href="qaFilter.html">qaFilter()</a></code> 
+        </dt>
+        <dd>Quality filter a brentlabRnaSeqSet object</dd>
+      </dl></div><div class="section level2">
+      <h2 id="rnaseq-pipeline">RNAseq Pipeline<a class="anchor" aria-label="anchor" href="#rnaseq-pipeline"></a></h2>
+      
+      <p class="section-desc"></p><p>Functions for processing data from the database for the RNAseq pipeline</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="readHTSeqFile.html">readHTSeqFile()</a></code> 
+        </dt>
+        <dd>Parse HTSeq output to tibble</dd>
+      </dl><dl><dt>
+          
+          <code><a href="parseNovoalignLog.html">parseNovoalignLog()</a></code> 
+        </dt>
+        <dd>Parse a novoalign log</dd>
+      </dl><dl><dt>
+          
+          <code><a href="geneGRanges.html">geneGRanges()</a></code> 
+        </dt>
+        <dd>Given a GenomicFeatures annotation_db and a gene_id, extract an GRanges
+object of the cds</dd>
+      </dl><dl><dt>
+          
+          <code><a href="strandedScanBamParam.html">strandedScanBamParam()</a></code> 
+        </dt>
+        <dd>A helper function to create a ScanBamParam object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="htseq_proteinCodingTotal.html">htseq_proteinCodingTotal()</a></code> 
+        </dt>
+        <dd>Calculate KN99 protein coding total</dd>
+      </dl><dl><dt>
+          
+          <code><a href="htseq_notAlignedTotalPercent.html">htseq_notAlignedTotalPercent()</a></code> 
+        </dt>
+        <dd>Extract notAlignedTotalPercent from novoalign log</dd>
+      </dl><dl><dt>
+          
+          <code><a href="htseq_libraryComplexity.html">htseq_libraryComplexity()</a></code> 
+        </dt>
+        <dd>Calculate percentage of library accounted for by top expressed genes</dd>
+      </dl><dl><dt>
+          
+          <code><a href="locusCoverage.html">locusCoverage()</a></code> 
+        </dt>
+        <dd>Calculate coverage over a given feature</dd>
+      </dl><dl><dt>
+          
+          <code><a href="htseq_locusLog2cpm.html">htseq_locusLog2cpm()</a></code> 
+        </dt>
+        <dd>Get the log2cpm of a given locus in the htseq output</dd>
+      </dl><dl><dt>
+          
+          <code><a href="novoalignPipelineQC.html">novoalignPipelineQC()</a></code> 
+        </dt>
+        <dd>QC a crypto run output by the novoalign+htseq pipeline</dd>
+      </dl><dl><dt>
+          
+          <code><a href="addQcColsToMeta.html">addQcColsToMeta()</a></code> 
+        </dt>
+        <dd>add qc metrics to metadata</dd>
+      </dl><dl><dt>
+          
+          <code><a href="autoAuditQcTable.html">autoAuditQcTable()</a></code> 
+        </dt>
+        <dd>Audit a qc table with metrics added</dd>
+      </dl><dl><dt>
+          
+          <code><a href="decomposeStatus2Bit.html">decomposeStatus2Bit()</a></code> 
+        </dt>
+        <dd>decompose sums of powers of two to a list of the summed powers</dd>
+      </dl><dl><dt>
+          
+          <code><a href="kn99_novo_htseq_status.html">kn99_novo_htseq_status</a></code> 
+        </dt>
+        <dd>QC status codes for the novo+htseq pipeline</dd>
+      </dl><dl><dt>
+          
+          <code><a href="kn99_novo_htseq_thresholds.html">kn99_novo_htseq_thresholds</a></code> 
+        </dt>
+        <dd>thresholds set for the novo+htseq pipeline</dd>
+      </dl></div><div class="section level2">
+      <h2 id="rnaseq-pipeline-nextflow">RNAseq Pipeline – nextflow<a class="anchor" aria-label="anchor" href="#rnaseq-pipeline-nextflow"></a></h2>
+      
+      <p class="section-desc"></p><p>Functions for processing data in the nextflow pipeline</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="createNovoalignPipelineSamplesheet.html">createNovoalignPipelineSamplesheet()</a></code> 
+        </dt>
+        <dd>create a sample sheet for the novoalign pipeline</dd>
+      </dl><dl><dt>
+          
+          <code><a href="createNfCorePipelineSampleSheet.html">createNfCorePipelineSampleSheet()</a></code> 
+        </dt>
+        <dd>create nf-co sample sheet</dd>
+      </dl><dl><dt>
+          
+          <code><a href="moveNfCoFastqFiles.html">moveNfCoFastqFiles()</a></code> 
+        </dt>
+        <dd>move fastq files from lts to scratch for nf-co/rnaseq pipeline</dd>
+      </dl></div><div class="section level2">
+      <h2 id="rnaseq-qc-misc">RNAseq QC – Misc<a class="anchor" aria-label="anchor" href="#rnaseq-qc-misc"></a></h2>
+      
+      <p class="section-desc"></p><p>Miscellaneous RNAseq QC functions</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="setPerturbedLociToZero.html">setPerturbedLociToZero()</a></code> 
+        </dt>
+        <dd>Zero out perturbed expression</dd>
+      </dl><dl><dt>
+          
+          <code><a href="removeParameterEffects.html">removeParameterEffects()</a></code> 
+        </dt>
+        <dd>remove some effects from the counts</dd>
+      </dl><dl><dt>
+          
+          <code><a href="fltrLowReplicateParams.html">fltrLowReplicateParams()</a></code> 
+        </dt>
+        <dd>filter low replicate parameters from metadata</dd>
+      </dl></div><div class="section level2">
+      <h2 id="rnaseq-qc-rle">RNAseq QC – RLE<a class="anchor" aria-label="anchor" href="#rnaseq-qc-rle"></a></h2>
+      
+      <p class="section-desc"></p><p>Functions used to calculate relative log expression for QC</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="rleTransform.html">rleTransform()</a></code> 
+        </dt>
+        <dd>transform normalized counts into regularized log expression</dd>
       </dl><dl><dt>
           
           <code><a href="calculateRLE.html">calculateRLE()</a></code> 
@@ -106,20 +433,77 @@
         <dd>calculate RLE of a numeric dataframe</dd>
       </dl><dl><dt>
           
-          <code><a href="coerceToDds.html">coerceToDds()</a></code> 
+          <code><a href="calculateGeneWiseMedians.html">calculateGeneWiseMedians()</a></code> 
         </dt>
-        <dd>coerce brentlabRnaSeqSet to DESeqDataSet</dd>
+        <dd>calculate medians across rows of dataframe</dd>
       </dl><dl><dt>
           
-          <code><a href="connectToDatabase.html">connectToDatabase()</a></code> 
+          <code><a href="rleSummary.html">rleSummary()</a></code> 
         </dt>
-        <dd>Connect to a remote postgresql database</dd>
+        <dd>rleSummary calculates summary statistics of rleFullTable</dd>
       </dl><dl><dt>
           
-          <code><a href="createEPTally.html">createEPTally()</a></code> 
+          <code><a href="addRleSummaryStats.html">addRleSummaryStats()</a></code> 
         </dt>
-        <dd>Create the EP tally in long form</dd>
+        <dd>calculate RLE by replicate groups</dd>
       </dl><dl><dt>
+          
+          <code><a href="rleByReplicateGroup.html">rleByReplicateGroup()</a></code> 
+        </dt>
+        <dd>calculate RLE by replicate groups</dd>
+      </dl><dl><dt>
+          
+          <code><a href="rlePlotCompareEffectRemoved.html">rlePlotCompareEffectRemoved()</a></code> 
+        </dt>
+        <dd>plots output of rleSummaryByReplicateGroup</dd>
+      </dl><dl><dt>
+          
+          <code><a href="removeLibdateByReplicate.html">removeLibdateByReplicate()</a></code> 
+        </dt>
+        <dd>Remove the libraryDate effects from KN99 dds objs</dd>
+      </dl><dl><dt>
+          
+          <code><a href="plotRLEhistograms.html">plotRLEhistograms()</a></code> 
+        </dt>
+        <dd>composite plot of all rle_stats in one plot</dd>
+      </dl><dl><dt>
+          
+          <code><a href="rlePlot.html">rlePlot()</a></code> 
+        </dt>
+        <dd>plot RLE for a given column filter</dd>
+      </dl><dl><dt>
+          
+          <code><a href="rlePlot_helper.html">rlePlot_helper()</a></code> 
+        </dt>
+        <dd>the actual plotting function for rlePlot</dd>
+      </dl></div><div class="section level2">
+      <h2 id="rnaseq-qc-igv">RNAseq QC – IGV<a class="anchor" aria-label="anchor" href="#rnaseq-qc-igv"></a></h2>
+      
+      <p class="section-desc"></p><p>Functions for interacting with the IGV</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="createIgvBatchscript.html">createIgvBatchscript()</a></code> 
+        </dt>
+        <dd>create IGV viewer batch script (single range, as many tracks as you like)</dd>
+      </dl></div><div class="section level2">
+      <h2 id="experimental-sets">Experimental Sets<a class="anchor" aria-label="anchor" href="#experimental-sets"></a></h2>
+      
+      <p class="section-desc"></p><p>Functions for creating various pre-defined experimental sets</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="createEnvPertSet_perturbed.html">createEnvPertSet_perturbed()</a></code> 
         </dt>
@@ -136,24 +520,9 @@
         <dd>filter combined_df for environmental perturbation sample set</dd>
       </dl><dl><dt>
           
-          <code><a href="createExperimentSet.html">createExperimentSet()</a></code> 
+          <code><a href="createEPTally.html">createEPTally()</a></code> 
         </dt>
-        <dd>Create a pre-defined experiment set</dd>
-      </dl><dl><dt>
-          
-          <code><a href="createIgvBatchscript.html">createIgvBatchscript()</a></code> 
-        </dt>
-        <dd>create IGV viewer batch script (single range, as many tracks as you like)</dd>
-      </dl><dl><dt>
-          
-          <code><a href="createInductionSetTally.html">createInductionSetTally()</a></code> 
-        </dt>
-        <dd>create 90 minute induction set tally</dd>
-      </dl><dl><dt>
-          
-          <code><a href="createNfCorePipelineSampleSheet.html">createNfCorePipelineSampleSheet()</a></code> 
-        </dt>
-        <dd>create nf-co sample sheet</dd>
+        <dd>Create the EP tally in long form</dd>
       </dl><dl><dt>
           
           <code><a href="createNinetyMinuteInduction_2016grant.html">createNinetyMinuteInduction_2016grant()</a></code> 
@@ -176,230 +545,9 @@
         <dd>Samples with genotypes not in the grant_df</dd>
       </dl><dl><dt>
           
-          <code><a href="createNovoalignPipelineSamplesheet.html">createNovoalignPipelineSamplesheet()</a></code> 
+          <code><a href="createInductionSetTally.html">createInductionSetTally()</a></code> 
         </dt>
-        <dd>create a sample sheet for the novoalign pipeline</dd>
-      </dl><dl><dt>
-          
-          <code><a href="createTestTrainSet.html">createTestTrainSet()</a></code> 
-        </dt>
-        <dd>create test train set</dd>
-      </dl><dl><dt>
-          
-          <code><a href="database_colnames.html">database_colnames</a></code> 
-        </dt>
-        <dd>set global variables, mostly as a hack to make the tidyverse data binding pass the R CMD Check</dd>
-      </dl><dl><dt>
-          
-          <code><a href="database_info.html">database_info</a></code> 
-        </dt>
-        <dd>URLS to active databases</dd>
-      </dl><dl><dt>
-          
-          <code><a href="decomposeStatus2Bit.html">decomposeStatus2Bit()</a></code> 
-        </dt>
-        <dd>decompose sums of powers of two to a list of the summed powers</dd>
-      </dl><dl><dt>
-          
-          <code><a href="estimateSizeFactorsByProtocol.html">estimateSizeFactorsByProtocol()</a></code> 
-        </dt>
-        <dd>Calculate Size Factors within protocol groups</dd>
-      </dl><dl><dt>
-          
-          <code><a href="extractColData.html">extractColData()</a></code> 
-        </dt>
-        <dd>extract colData as tibble</dd>
-      </dl><dl><dt>
-          
-          <code><a href="extractDesignMatrix.html">extractDesignMatrix()</a></code> 
-        </dt>
-        <dd>extract the model.matrix using the design and colData</dd>
-      </dl><dl><dt>
-          
-          <code><a href="filterWtByExperimentalLibdate_90min.html">filterWtByExperimentalLibdate_90min()</a></code> 
-        </dt>
-        <dd>WT filtering helper for 90minInduction sets</dd>
-      </dl><dl><dt>
-          
-          <code><a href="fltrLowReplicateParams.html">fltrLowReplicateParams()</a></code> 
-        </dt>
-        <dd>filter low replicate parameters from metadata</dd>
-      </dl><dl><dt>
-          
-          <code><a href="geneGRanges.html">geneGRanges()</a></code> 
-        </dt>
-        <dd>Given a GenomicFeatures annotation_db and a gene_id, extract an GRanges
-object of the cds</dd>
-      </dl><dl><dt>
-          
-          <code><a href="getGeneNames.html">getGeneNames()</a></code> 
-        </dt>
-        <dd>Get gene names</dd>
-      </dl><dl><dt>
-          
-          <code><a href="getMetadata.html">getMetadata()</a></code> 
-        </dt>
-        <dd>Get the combined metadata as a tibble from a remote database</dd>
-      </dl><dl><dt>
-          
-          <code><a href="getRawCounts.html">getRawCounts()</a></code> 
-        </dt>
-        <dd>Get combined raw counts</dd>
-      </dl><dl><dt>
-          
-          <code><a href="getRunNumberLeadingZero.html">getRunNumberLeadingZero()</a></code> 
-        </dt>
-        <dd>correct run number to add leading zero where approprirate</dd>
-      </dl><dl><dt>
-          
-          <code><a href="getTable.html">getTable()</a></code> 
-        </dt>
-        <dd>Convenience function to pull a single table</dd>
-      </dl><dl><dt>
-          
-          <code><a href="getUserAuthToken.html">getUserAuthToken()</a></code> 
-        </dt>
-        <dd>get (via a http POST request) your user authentication token from the database</dd>
-      </dl><dl><dt>
-          
-          <code><a href="grant_df.html">grant_df</a></code> 
-        </dt>
-        <dd>the 2016 grant summary represented as a dataframe</dd>
-      </dl><dl><dt>
-          
-          <code><a href="htseq_libraryComplexity.html">htseq_libraryComplexity()</a></code> 
-        </dt>
-        <dd>Calculate percentage of library accounted for by top expressed genes</dd>
-      </dl><dl><dt>
-          
-          <code><a href="htseq_locusLog2cpm.html">htseq_locusLog2cpm()</a></code> 
-        </dt>
-        <dd>Get the log2cpm of a given locus in the htseq output</dd>
-      </dl><dl><dt>
-          
-          <code><a href="htseq_notAlignedTotalPercent.html">htseq_notAlignedTotalPercent()</a></code> 
-        </dt>
-        <dd>Extract notAlignedTotalPercent from novoalign log</dd>
-      </dl><dl><dt>
-          
-          <code><a href="htseq_proteinCodingTotal.html">htseq_proteinCodingTotal()</a></code> 
-        </dt>
-        <dd>Calculate KN99 protein coding total</dd>
-      </dl><dl><dt>
-          
-          <code><a href="isNumeric.html">isNumeric()</a></code> 
-        </dt>
-        <dd>test if argument is numeric</dd>
-      </dl><dl><dt>
-          
-          <code><a href="is_integer64.html">is_integer64()</a></code> 
-        </dt>
-        <dd>Test if value is datatype integer64</dd>
-      </dl><dl><dt>
-          
-          <code><a href="kn99_novo_htseq_status.html">kn99_novo_htseq_status</a></code> 
-        </dt>
-        <dd>QC status codes for the novo+htseq pipeline</dd>
-      </dl><dl><dt>
-          
-          <code><a href="kn99_novo_htseq_thresholds.html">kn99_novo_htseq_thresholds</a></code> 
-        </dt>
-        <dd>thresholds set for the novo+htseq pipeline</dd>
-      </dl><dl><dt>
-          
-          <code><a href="listTables.html">listTables()</a></code> 
-        </dt>
-        <dd>list tables in databse</dd>
-      </dl><dl><dt>
-          
-          <code><a href="localView.html">localView()</a></code> 
-        </dt>
-        <dd>To view a data.frame / data.table in LibreOffice Calc</dd>
-      </dl><dl><dt>
-          
-          <code><a href="locusCoverage.html">locusCoverage()</a></code> 
-        </dt>
-        <dd>Calculate coverage over a given feature</dd>
-      </dl><dl><dt>
-          
-          <code><a href="moveNfCoFastqFiles.html">moveNfCoFastqFiles()</a></code> 
-        </dt>
-        <dd>move fastq files from lts to scratch for nf-co/rnaseq pipeline</dd>
-      </dl><dl><dt>
-          
-          <code><a href="novoalignPipelineQC.html">novoalignPipelineQC()</a></code> 
-        </dt>
-        <dd>QC a crypto run output by the novoalign+htseq pipeline</dd>
-      </dl><dl><dt>
-          
-          <code><a href="parseComparatives.html">parseComparatives()</a></code> 
-        </dt>
-        <dd>parse text comparative sentence</dd>
-      </dl><dl><dt>
-          
-          <code><a href="parseNovoalignLog.html">parseNovoalignLog()</a></code> 
-        </dt>
-        <dd>Parse a novoalign log</dd>
-      </dl><dl><dt>
-          
-          <code><a href="passing_genes_all.html">passing_genes_all</a></code> 
-        </dt>
-        <dd>genes considered NOT to have 'high dispersion'</dd>
-      </dl><dl><dt>
-          
-          <code><a href="patchTable.html">patchTable()</a></code> 
-        </dt>
-        <dd>PATCH entries in database table</dd>
-      </dl><dl><dt>
-          
-          <code><a href="plotRLEhistograms.html">plotRLEhistograms()</a></code> 
-        </dt>
-        <dd>composite plot of all rle_stats in one plot</dd>
-      </dl><dl><dt>
-          
-          <code><a href="postCounts.html">postCounts()</a></code> 
-        </dt>
-        <dd>post counts to database</dd>
-      </dl><dl><dt>
-          
-          <code><a href="postFastqSheet.html">postFastqSheet()</a></code> 
-        </dt>
-        <dd>post new fastq sheet to database</dd>
-      </dl><dl><dt>
-          
-          <code><a href="postQcSheet.html">postQcSheet()</a></code> 
-        </dt>
-        <dd>post new qc sheet to database</dd>
-      </dl><dl><dt>
-          
-          <code><a href="postTable.html">postTable()</a></code> 
-        </dt>
-        <dd>Post a table to the database</dd>
-      </dl><dl><dt>
-          
-          <code><a href="qaFilter.html">qaFilter()</a></code> 
-        </dt>
-        <dd>Quality filter a brentlabRnaSeqSet object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="readHTSeqFile.html">readHTSeqFile()</a></code> 
-        </dt>
-        <dd>Parse HTSeq output to tibble</dd>
-      </dl><dl><dt>
-          
-          <code><a href="readInData.html">readInData()</a></code> 
-        </dt>
-        <dd>read in columnar data</dd>
-      </dl><dl><dt>
-          
-          <code><a href="removeLibdateByReplicate.html">removeLibdateByReplicate()</a></code> 
-        </dt>
-        <dd>Remove the libraryDate effects from KN99 dds objs</dd>
-      </dl><dl><dt>
-          
-          <code><a href="removeParameterEffects.html">removeParameterEffects()</a></code> 
-        </dt>
-        <dd>remove some effects from the counts</dd>
+        <dd>create 90 minute induction set tally</dd>
       </dl><dl><dt>
           
           <code><a href="replicateByProtocolTally.html">replicateByProtocolTally()</a></code> 
@@ -412,34 +560,78 @@ object of the cds</dd>
         <dd>90min replicate by protocol tally</dd>
       </dl><dl><dt>
           
-          <code><a href="rleByReplicateGroup.html">rleByReplicateGroup()</a></code> 
+          <code><a href="filterWtByExperimentalLibdate_90min.html">filterWtByExperimentalLibdate_90min()</a></code> 
         </dt>
-        <dd>calculate RLE by replicate groups</dd>
+        <dd>WT filtering helper for 90minInduction sets</dd>
       </dl><dl><dt>
           
-          <code><a href="rlePlot.html">rlePlot()</a></code> 
+          <code><a href="splitProtocolGroups.html">splitProtocolGroups()</a></code> 
         </dt>
-        <dd>plot RLE for a given column filter</dd>
+        <dd>Split a brentlabRnaSeqSet into two by protocol</dd>
+      </dl></div><div class="section level2">
+      <h2 id="binding-response-eda-functions">Binding Response EDA functions<a class="anchor" aria-label="anchor" href="#binding-response-eda-functions"></a></h2>
+      
+      <p class="section-desc"></p><p>For instance, for Rank-Response plots</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="rank_response_plot.html">rank_response_plot()</a></code> 
+        </dt>
+        <dd>Given expresion and binding signal, plot the rank response a la
+doi:</dd>
       </dl><dl><dt>
           
-          <code><a href="rlePlotCompareEffectRemoved.html">rlePlotCompareEffectRemoved()</a></code> 
+          <code><a href="create_partitions.html">create_partitions()</a></code> 
         </dt>
-        <dd>plots output of rleSummaryByReplicateGroup</dd>
+        <dd>Given a vector length adn the size of each parition, create a vector which
+represents those partitions.</dd>
       </dl><dl><dt>
           
-          <code><a href="rlePlot_helper.html">rlePlot_helper()</a></code> 
+          <code><a href="sort_rank_mean_expr.html">sort_rank_mean_expr()</a></code> 
         </dt>
-        <dd>the actual plotting function for rlePlot</dd>
+        <dd>Create a rank-response data frame</dd>
+      </dl></div><div class="section level2">
+      <h2 id="utilities">Utilities<a class="anchor" aria-label="anchor" href="#utilities"></a></h2>
+      
+      <p class="section-desc"></p><p>Helper functions</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="isNumeric.html">isNumeric()</a></code> 
+        </dt>
+        <dd>test if argument is numeric</dd>
       </dl><dl><dt>
           
-          <code><a href="rleSummary.html">rleSummary()</a></code> 
+          <code><a href="is_integer64.html">is_integer64()</a></code> 
         </dt>
-        <dd>rleSummary calculates summary statistics of rleFullTable</dd>
+        <dd>Test if value is datatype integer64</dd>
       </dl><dl><dt>
           
-          <code><a href="rleTransform.html">rleTransform()</a></code> 
+          <code><a href="localView.html">localView()</a></code> 
         </dt>
-        <dd>transform normalized counts into regularized log expression</dd>
+        <dd>To view a data.frame / data.table in LibreOffice Calc</dd>
+      </dl><dl><dt>
+          
+          <code><a href="parseComparatives.html">parseComparatives()</a></code> 
+        </dt>
+        <dd>parse text comparative sentence</dd>
+      </dl><dl><dt>
+          
+          <code><a href="readInData.html">readInData()</a></code> 
+        </dt>
+        <dd>read in columnar data</dd>
       </dl><dl><dt>
           
           <code><a href="run_numbers_with_leading_zero.html">run_numbers_with_leading_zero</a></code> 
@@ -448,36 +640,12 @@ object of the cds</dd>
 a leading 0, eg 0647.</dd>
       </dl><dl><dt>
           
-          <code><a href="sendCountsToDatabase.html">sendCountsToDatabase()</a></code> 
-        </dt>
-        <dd>Send Counts to Database (legacy pipeline)</dd>
-      </dl><dl><dt>
-          
-          <code><a href="sendImageAnnotationsToDatabase.html">sendImageAnnotationsToDatabase()</a></code> 
-        </dt>
-        <dd>Send Capsule Image Annotation Data to Database</dd>
-      </dl><dl><dt>
-          
-          <code><a href="setPerturbedLociToZero.html">setPerturbedLociToZero()</a></code> 
-        </dt>
-        <dd>Zero out perturbed expression</dd>
-      </dl><dl><dt>
-          
-          <code><a href="splitProtocolGroups.html">splitProtocolGroups()</a></code> 
-        </dt>
-        <dd>Split a brentlabRnaSeqSet into two by protocol</dd>
-      </dl><dl><dt>
-          
-          <code><a href="strandedScanBamParam.html">strandedScanBamParam()</a></code> 
-        </dt>
-        <dd>A helper function to create a ScanBamParam object</dd>
-      </dl><dl><dt>
-          
           <code><a href="testBamPath.html">testBamPath()</a></code> 
         </dt>
         <dd>test bam path</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

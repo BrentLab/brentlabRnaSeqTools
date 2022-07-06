@@ -33,6 +33,8 @@
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement</a>
     <a class="dropdown-item" href="../articles/Tally.html">Tally Experiment Sets</a>
+    <a class="dropdown-item" href="../articles/Rank_Response_Plot.html">Rank Reponse Plot</a>
+    <a class="dropdown-item" href="../articles/image_table_interactions.html">Image Table Interaction</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -56,19 +58,20 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">postQcSheet</span><span class="op">(</span>
-  <span class="va">database_qc_url</span>,
-  <span class="va">auth_token</span>,
-  <span class="va">run_number</span>,
-  <span class="va">new_qc_path</span>,
-  <span class="va">fastq_table_path</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">postQcSheet</span><span class="op">(</span></span>
+<span>  <span class="va">database_qc_url</span>,</span>
+<span>  <span class="va">auth_token</span>,</span>
+<span>  <span class="va">run_number</span>,</span>
+<span>  <span class="va">new_qc_path</span>,</span>
+<span>  <span class="va">fastq_table_path</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>database_qc_url</dt>
-<dd><p>eg database_info$kn99_urls$QualityAssess. see <code><a href="database_info.html">database_info</a></code>.</p></dd>
+<dd><p>eg database_info$kn99_urls$QualityAssess.
+see <code><a href="database_info.html">database_info</a></code>.</p></dd>
 
 
 <dt>auth_token</dt>
@@ -76,8 +79,8 @@
 
 
 <dt>run_number</dt>
-<dd><p>the run number of this qc sheet -- this is important b/c fastqFileNames aren't necessarily unique
-outside of their runs</p></dd>
+<dd><p>the run number of this qc sheet -- this is important
+b/c fastqFileNames aren't necessarily unique outside of their runs</p></dd>
 
 
 <dt>new_qc_path</dt>
@@ -96,8 +99,9 @@ outside of their runs</p></dd>
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
-    <p>there can be problems with dependencies and the rename function. this is working for now,
-but see here for more info <a href="https://statisticsglobe.com/r-error-cant-rename-columns-that-dont-exist" class="external-link">https://statisticsglobe.com/r-error-cant-rename-columns-that-dont-exist</a></p>
+    <p>there can be problems with dependencies and the rename
+function. this is working for now, but see here for more info
+<a href="https://statisticsglobe.com/r-error-cant-rename-columns-that-dont-exist" class="external-link">https://statisticsglobe.com/r-error-cant-rename-columns-that-dont-exist</a></p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

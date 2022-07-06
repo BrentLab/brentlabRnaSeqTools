@@ -50,6 +50,8 @@
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement</a>
     <a class="dropdown-item" href="../articles/Tally.html">Tally Experiment Sets</a>
+    <a class="dropdown-item" href="../articles/Rank_Response_Plot.html">Rank Reponse Plot</a>
+    <a class="dropdown-item" href="../articles/image_table_interactions.html">Image Table Interaction</a>
   </div>
 </li>
       </ul>
@@ -71,7 +73,7 @@
       <img src="" class="logo" alt=""><h1>Process a New Run From MGI</h1>
                         <h4 data-toc-skip class="author">Chase Mateusiak</h4>
             
-            <h4 data-toc-skip class="date">06/23/2022</h4>
+            <h4 data-toc-skip class="date">07/06/2022</h4>
       
       
       <div class="d-none name"><code>ProcessRun.Rmd</code></div>
@@ -84,40 +86,40 @@
     </div>
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://brentlab.github.io/brentlabRnaSeqTools/">brentlabRnaSeqTools</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://brentlab.github.io/brentlabRnaSeqTools/">brentlabRnaSeqTools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="get-the-metadata-from-the-database">Get the metadata from the database<a class="anchor" aria-label="anchor" href="#get-the-metadata-from-the-database"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">meta</span> <span class="op">=</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span>
-  <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_host</span>,
-  <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_name</span>,
-  <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_username"</span><span class="op">)</span>,
-  <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_password"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">meta</span> <span class="op">=</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span></span>
+<span>  <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_host</span>,</span>
+<span>  <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_name</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_username"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_password"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="filter-out-the-reads-of-interest">Filter out the reads of interest<a class="anchor" aria-label="anchor" href="#filter-out-the-reads-of-interest"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">run_df</span> <span class="op">=</span> <span class="va">meta</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">runNumber</span> <span class="op">==</span> <span class="fl">5500</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">run_df</span> <span class="op">=</span> <span class="va">meta</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">runNumber</span> <span class="op">==</span> <span class="fl">5500</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="look-at-it--make-sure-it-is-correct">Look at it. Make sure it is correct<a class="anchor" aria-label="anchor" href="#look-at-it--make-sure-it-is-correct"></a>
 </h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">run_df</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">run_df</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="write-out">Write out<a class="anchor" aria-label="anchor" href="#write-out"></a>
 </h2>
 <p>If you have mounted your local to HTCF, you can write directly to HTCF. Otherwise, write to your computer and follow the directions below to move it to HTCF.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sample_sheet</span> <span class="op">=</span> <span class="fu"><a href="../reference/createNovoalignPipelineSamplesheet.html">createNovoalignPipelineSamplesheet</a></span><span class="op">(</span><span class="va">run_df</span>, <span class="st">"/scratch/mblab/chasem/rnaseq_pipeline/scratch_sequence"</span><span class="op">)</span>
-
-<span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span><span class="va">sample_sheet</span>, <span class="st">"/path/to/where/you/write_things/run_&lt;some_identifier&gt;.csv"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sample_sheet</span> <span class="op">=</span> <span class="fu"><a href="../reference/createNovoalignPipelineSamplesheet.html">createNovoalignPipelineSamplesheet</a></span><span class="op">(</span><span class="va">run_df</span>, <span class="st">"/scratch/mblab/chasem/rnaseq_pipeline/scratch_sequence"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span><span class="va">sample_sheet</span>, <span class="st">"/path/to/where/you/write_things/run_&lt;some_identifier&gt;.csv"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="move-a-file-to-htcf">Move a file to HTCF<a class="anchor" aria-label="anchor" href="#move-a-file-to-htcf"></a>
 </h3>

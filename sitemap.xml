@@ -19,6 +19,9 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/QC_Sample_Agreement_Objects.html</loc>
   </url>
   <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/Rank_Response_Plot.html</loc>
+  </url>
+  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/Tally.html</loc>
   </url>
   <url>
@@ -26,6 +29,9 @@
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/envPerturbation.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/image_table_interactions.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/articles/index.html</loc>
@@ -115,6 +121,9 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/createTestTrainSet.html</loc>
   </url>
   <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/create_partitions.html</loc>
+  </url>
+  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/database_colnames.html</loc>
   </url>
   <url>
@@ -140,6 +149,9 @@
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/geneGRanges.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/getCapsuleImageSet.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/getGeneNames.html</loc>
@@ -220,10 +232,22 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/plotRLEhistograms.html</loc>
   </url>
   <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/postCapsuleJpeg.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/postCapsuleJpeg_batch.html</loc>
+  </url>
+  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/postCounts.html</loc>
   </url>
   <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/postCountsToDatabase.html</loc>
+  </url>
+  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/postFastqSheet.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/postImageAnnotationsToDatabase.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/postQcSheet.html</loc>
@@ -233,6 +257,9 @@
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/qaFilter.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/rank_response_plot.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/readHTSeqFile.html</loc>
@@ -274,13 +301,10 @@
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/run_numbers_with_leading_zero.html</loc>
   </url>
   <url>
-    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/sendCountsToDatabase.html</loc>
-  </url>
-  <url>
-    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/sendImageAnnotationsToDatabase.html</loc>
-  </url>
-  <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/setPerturbedLociToZero.html</loc>
+  </url>
+  <url>
+    <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/sort_rank_mean_expr.html</loc>
   </url>
   <url>
     <loc>https://brentlab.github.io/brentlabRnaSeqTools/reference/splitProtocolGroups.html</loc>

@@ -5,11 +5,13 @@ articles:
   ProcessRun: ProcessRun.html
   QC_Library_Quality: QC_Library_Quality.html
   QC_Sample_Agreement_Objects: QC_Sample_Agreement_Objects.html
+  Rank_Response_Plot: Rank_Response_Plot.html
   Tally: Tally.html
   brentlabRnaSeqTools: brentlabRnaSeqTools.html
   envPerturbation: envPerturbation.html
+  image_table_interactions: image_table_interactions.html
   ninetyMinuteInduction_analysis: ninetyMinuteInduction_analysis.html
-last_built: 2022-06-23T18:51Z
+last_built: 2022-07-06T21:09Z
 urls:
   reference: https://brentlab.github.io/brentlabRnaSeqTools/reference
   article: https://brentlab.github.io/brentlabRnaSeqTools/articles

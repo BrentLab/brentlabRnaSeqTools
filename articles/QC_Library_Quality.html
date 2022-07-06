@@ -50,6 +50,8 @@
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement</a>
     <a class="dropdown-item" href="../articles/Tally.html">Tally Experiment Sets</a>
+    <a class="dropdown-item" href="../articles/Rank_Response_Plot.html">Rank Reponse Plot</a>
+    <a class="dropdown-item" href="../articles/image_table_interactions.html">Image Table Interaction</a>
   </div>
 </li>
       </ul>
@@ -71,7 +73,7 @@
       <img src="" class="logo" alt=""><h1>QC: Library Quality</h1>
                         <h4 data-toc-skip class="author">Chase Mateusiak</h4>
             
-            <h4 data-toc-skip class="date">06/23/2022</h4>
+            <h4 data-toc-skip class="date">07/06/2022</h4>
       
       
       <div class="d-none name"><code>QC_Library_Quality.Rmd</code></div>
@@ -152,142 +154,142 @@
 </table>
 <p>Note that libraryComplexity is included in the qc metrics now, but there is no threshold currently set. The default setting for libraryComplexity is to calculate the portion of the total counts made up by the top 25 expressed genes</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://brentlab.github.io/brentlabRnaSeqTools/">brentlabRnaSeqTools</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://brentlab.github.io/brentlabRnaSeqTools/">brentlabRnaSeqTools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="get-the-metadata-from-the-database">Get the metadata from the database<a class="anchor" aria-label="anchor" href="#get-the-metadata-from-the-database"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">meta</span> <span class="op">=</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span>
-  <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_host</span>,
-  <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_name</span>,
-  <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_username"</span><span class="op">)</span>,
-  <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_password"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">meta</span> <span class="op">=</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span></span>
+<span>  <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_host</span>,</span>
+<span>  <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_name</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_username"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_password"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="filter-out-the-reads-of-interest">Filter out the reads of interest<a class="anchor" aria-label="anchor" href="#filter-out-the-reads-of-interest"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">run_df</span> <span class="op">=</span> <span class="va">meta</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">runNumber</span> <span class="op">==</span> <span class="fl">5500</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">run_df</span> <span class="op">=</span> <span class="va">meta</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">runNumber</span> <span class="op">==</span> <span class="fl">5500</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="create-qc-table">Create QC table<a class="anchor" aria-label="anchor" href="#create-qc-table"></a>
 </h2>
 <p>You will need to have the cluster mounted to your local for this to work. Note that you may get warnings about the index file being older than the bam. That isn’t critical and can generally be ignored, though something I am aware of and trying to figure out.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pipeline_out</span> <span class="op">=</span> <span class="st">"/mnt/scratch/rnaseq_pipeline/align_count_results/run_5500/rnaseq_pipeline_results/run_5500_samples"</span>
-
-<span class="va">run_qc</span> <span class="op">=</span> <span class="fu"><a href="../reference/novoalignPipelineQC.html">novoalignPipelineQC</a></span><span class="op">(</span><span class="va">run_df</span>, <span class="va">pipeline_out</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"kn99_stranded_gff_rds"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pipeline_out</span> <span class="op">=</span> <span class="st">"/mnt/scratch/rnaseq_pipeline/align_count_results/run_5500/rnaseq_pipeline_results/run_5500_samples"</span></span>
+<span></span>
+<span><span class="va">run_qc</span> <span class="op">=</span> <span class="fu"><a href="../reference/novoalignPipelineQC.html">novoalignPipelineQC</a></span><span class="op">(</span><span class="va">run_df</span>, <span class="va">pipeline_out</span>, <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"kn99_stranded_gff_rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="parse-this-out-into-a-qc-sheet">parse this out into a QC sheet<a class="anchor" aria-label="anchor" href="#parse-this-out-into-a-qc-sheet"></a>
 </h2>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">qc_table</span> <span class="op">=</span> <span class="fu"><a href="../reference/addQcColsToMeta.html">addQcColsToMeta</a></span><span class="op">(</span><span class="va">run_df</span>, <span class="va">run_qc</span><span class="op">)</span>
-
-
-<span class="co"># write_csv(dplyr::select(qc_df, -c(genotype1, genotype2, marker1, marker2)), </span>
-<span class="co">#           "~/Desktop/tmp/run_5500_qc.csv")</span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="va">qc_table</span> <span class="op">=</span> <span class="fu"><a href="../reference/addQcColsToMeta.html">addQcColsToMeta</a></span><span class="op">(</span><span class="va">run_df</span>, <span class="va">run_qc</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="co"># write_csv(dplyr::select(qc_df, -c(genotype1, genotype2, marker1, marker2)), </span></span>
+<span><span class="co">#           "~/Desktop/tmp/run_5500_qc.csv")</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="auto-and-manual-audit">auto and manual audit<a class="anchor" aria-label="anchor" href="#auto-and-manual-audit"></a>
 </h2>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">audited_qc_df</span> <span class="op">=</span> <span class="fu"><a href="../reference/autoAuditQcTable.html">autoAuditQcTable</a></span><span class="op">(</span><span class="va">qc_table</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="co"># add manual audit columns</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>manualAudit <span class="op">=</span> <span class="cn">NA</span>,
-         manualStatus <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">audited_qc_df</span> <span class="op">=</span> <span class="fu"><a href="../reference/autoAuditQcTable.html">autoAuditQcTable</a></span><span class="op">(</span><span class="va">qc_table</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="co"># add manual audit columns</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>manualAudit <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>         manualStatus <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="update-manual-audit">update manual audit<a class="anchor" aria-label="anchor" href="#update-manual-audit"></a>
 </h2>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">audited_qc_df</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/edit.html" class="external-link">edit</a></span><span class="op">(</span><span class="va">audited_qc_df</span><span class="op">)</span>
-
-<span class="va">audited_qc_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">genotype1</span>, <span class="va">genotype2</span>, <span class="va">marker1</span>, <span class="va">marker2</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-<span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span><span class="st">"~/Desktop/tmp/run_5500_qc.csv"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">audited_qc_df</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/edit.html" class="external-link">edit</a></span><span class="op">(</span><span class="va">audited_qc_df</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">audited_qc_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">genotype1</span>, <span class="va">genotype2</span>, <span class="va">marker1</span>, <span class="va">marker2</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span><span class="st">"~/Desktop/tmp/run_5500_qc.csv"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="post-counts-to-database">post Counts to database<a class="anchor" aria-label="anchor" href="#post-counts-to-database"></a>
 </h2>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">count_files</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.glob.html" class="external-link">Sys.glob</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_out</span>, <span class="st">"count"</span>, <span class="st">"*_read_count.tsv"</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">count_files</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">count_files</span><span class="op">)</span>, <span class="st">"_read_count.tsv"</span><span class="op">)</span>
-
-<span class="va">compiled_counts</span> <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">count_files</span><span class="op">)</span>, <span class="op">~</span><span class="fu"><a href="../reference/readHTSeqFile.html">readHTSeqFile</a></span><span class="op">(</span><span class="va">count_files</span><span class="op">[[</span><span class="va">.</span><span class="op">]</span><span class="op">]</span>, <span class="va">.</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">plyr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/plyr/man/join_all.html" class="external-link">join_all</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="va">feature</span>, <span class="st">"__"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">feature</span><span class="op">)</span>
-
-<span class="va">fastq_df</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"/mnt/lts/sequence_data/rnaseq_data/kn99_database_archive/20220131/fastqFiles.csv"</span><span class="op">)</span>
-
-<span class="co"># note: commented out to prevent me from accidently running this</span>
-<span class="co"># res = postCounts(database_info$kn99$urls$counts, </span>
-<span class="co">#                  5500, </span>
-<span class="co">#                  Sys.getenv("kn99_db_token"), </span>
-<span class="co">#                  compiled_counts, </span>
-<span class="co">#                  fastq_df)</span>
-<span class="co"># </span>
-<span class="co"># res</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">count_files</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.glob.html" class="external-link">Sys.glob</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_out</span>, <span class="st">"count"</span>, <span class="st">"*_read_count.tsv"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">count_files</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">count_files</span><span class="op">)</span>, <span class="st">"_read_count.tsv"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">compiled_counts</span> <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">count_files</span><span class="op">)</span>, <span class="op">~</span><span class="fu"><a href="../reference/readHTSeqFile.html">readHTSeqFile</a></span><span class="op">(</span><span class="va">count_files</span><span class="op">[[</span><span class="va">.</span><span class="op">]</span><span class="op">]</span>, <span class="va">.</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">plyr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/plyr/man/join_all.html" class="external-link">join_all</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="va">feature</span>, <span class="st">"__"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">feature</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fastq_df</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"/mnt/lts/sequence_data/rnaseq_data/kn99_database_archive/20220131/fastqFiles.csv"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># note: commented out to prevent me from accidently running this</span></span>
+<span><span class="co"># res = postCounts(database_info$kn99$urls$counts, </span></span>
+<span><span class="co">#                  5500, </span></span>
+<span><span class="co">#                  Sys.getenv("kn99_db_token"), </span></span>
+<span><span class="co">#                  compiled_counts, </span></span>
+<span><span class="co">#                  fastq_df)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># res</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="send-qc-to-database">Send QC to database<a class="anchor" aria-label="anchor" href="#send-qc-to-database"></a>
 </h2>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="co"># note: commented out in the vignette to prevent me from running accidently</span>
-<span class="co"># res = postQcSheet_test(database_info$kn99$urls$qualityAssess,</span>
-<span class="co">#             Sys.getenv("kn99_db_token"),</span>
-<span class="co">#             5500, </span>
-<span class="co">#             "~/Desktop/tmp/run_5500_qc.csv",</span>
-<span class="co">#             "/mnt/lts/sequence_data/rnaseq_data/kn99_database_archive/20220131/fastqFiles.csv")</span>
-
-<span class="co"># a code of 200 or 201 means it worked. anything else means failure</span>
-<span class="co"># res</span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="co"># note: commented out in the vignette to prevent me from running accidently</span></span>
+<span><span class="co"># res = postQcSheet_test(database_info$kn99$urls$qualityAssess,</span></span>
+<span><span class="co">#             Sys.getenv("kn99_db_token"),</span></span>
+<span><span class="co">#             5500, </span></span>
+<span><span class="co">#             "~/Desktop/tmp/run_5500_qc.csv",</span></span>
+<span><span class="co">#             "/mnt/lts/sequence_data/rnaseq_data/kn99_database_archive/20220131/fastqFiles.csv")</span></span>
+<span></span>
+<span><span class="co"># a code of 200 or 201 means it worked. anything else means failure</span></span>
+<span><span class="co"># res</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="igv-browser-shot">IGV browser shot<a class="anchor" aria-label="anchor" href="#igv-browser-shot"></a>
 </h2>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">kn99_gff</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"kn99_stranded_gff_rds"</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">unique_loci</span> <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html" class="external-link">str_replace</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">run_qc</span><span class="op">$</span><span class="va">locus</span><span class="op">)</span>, <span class="st">"CNAG"</span>, <span class="st">"CKF44"</span><span class="op">)</span>
-
-<span class="va">unique_loci</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">unique_loci</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CNAG_NAT"</span>, <span class="st">"CNAG_G418"</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">bam_prefix</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_out</span>, <span class="st">"align"</span><span class="op">)</span>
-<span class="va">bam_suffix</span> <span class="op">=</span> <span class="st">"_sorted_aligned_reads_with_annote.bam"</span>
-
-<span class="va">bam_list_df</span> <span class="op">=</span> <span class="va">run_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">fastqFileNumber</span>, .keep_all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="va">bam_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">bam_list_df</span>, <span class="va">fastqFileName</span><span class="op">)</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">bam_prefix</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">bam_suffix</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">bam_list</span> <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">bam_list</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">.</span>, <span class="st">"/mnt/scratch/rnaseq_pipeline/align_count_results/run_5500/rnaseq_pipeline_results/run_5500_samples/align/Brent_3235_GTAC_1_SIC_Index2_08_TGAGGTTATC_AAGCACGT_S2_R1_001_sorted_aligned_reads_with_annote.bam"</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">bam_list</span><span class="op">)</span> <span class="op">=</span> <span class="va">bam_list_df</span><span class="op">$</span><span class="va">fastqFileNumber</span>
-
-<span class="va">igvScriptAll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">ffn</span><span class="op">)</span><span class="op">{</span>
-  <span class="kw">for</span><span class="op">(</span><span class="va">locus</span> <span class="kw">in</span> <span class="va">unique_loci</span><span class="op">)</span><span class="op">{</span>
-      <span class="va">granges</span> <span class="op">=</span> <span class="va">kn99_gff</span><span class="op">[</span><span class="va">kn99_gff</span><span class="op">$</span><span class="va">ID</span> <span class="op">==</span> <span class="va">locus</span> <span class="op">&amp;</span> <span class="va">kn99_gff</span><span class="op">$</span><span class="va">type</span> <span class="op">==</span> <span class="st">'gene'</span><span class="op">]</span>
-      <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">granges</span><span class="op">)</span>
-      <span class="va">basename</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">ffn</span>, <span class="va">locus</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span>
-      <span class="fu"><a href="../reference/createIgvBatchscript.html">createIgvBatchscript</a></span><span class="op">(</span>
-        bam_list <span class="op">=</span> <span class="va">bam_list</span><span class="op">[[</span><span class="va">ffn</span><span class="op">]</span><span class="op">]</span>,
-        granges <span class="op">=</span> <span class="va">granges</span>,
-        igv_genome <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"kn99_stranded_igv_genome"</span><span class="op">)</span>,
-        output_dir <span class="op">=</span> <span class="st">"/home/oguzkhan/Desktop/tmp/igv/"</span>,
-        output_file_basename <span class="op">=</span> <span class="va">basename</span><span class="op">)</span>
-  <span class="op">}</span>
-
-<span class="op">}</span>
-
-<span class="fu">igvScriptAll</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">bam_list</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="va">kn99_gff</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"kn99_stranded_gff_rds"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">unique_loci</span> <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html" class="external-link">str_replace</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">run_qc</span><span class="op">$</span><span class="va">locus</span><span class="op">)</span>, <span class="st">"CNAG"</span>, <span class="st">"CKF44"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">unique_loci</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">unique_loci</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CNAG_NAT"</span>, <span class="st">"CNAG_G418"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bam_prefix</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pipeline_out</span>, <span class="st">"align"</span><span class="op">)</span></span>
+<span><span class="va">bam_suffix</span> <span class="op">=</span> <span class="st">"_sorted_aligned_reads_with_annote.bam"</span></span>
+<span></span>
+<span><span class="va">bam_list_df</span> <span class="op">=</span> <span class="va">run_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">fastqFileNumber</span>, .keep_all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bam_list</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">bam_list_df</span>, <span class="va">fastqFileName</span><span class="op">)</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">bam_prefix</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">bam_suffix</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bam_list</span> <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">bam_list</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">.</span>, <span class="st">"/mnt/scratch/rnaseq_pipeline/align_count_results/run_5500/rnaseq_pipeline_results/run_5500_samples/align/Brent_3235_GTAC_1_SIC_Index2_08_TGAGGTTATC_AAGCACGT_S2_R1_001_sorted_aligned_reads_with_annote.bam"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">bam_list</span><span class="op">)</span> <span class="op">=</span> <span class="va">bam_list_df</span><span class="op">$</span><span class="va">fastqFileNumber</span></span>
+<span></span>
+<span><span class="va">igvScriptAll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">ffn</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="kw">for</span><span class="op">(</span><span class="va">locus</span> <span class="kw">in</span> <span class="va">unique_loci</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="va">granges</span> <span class="op">=</span> <span class="va">kn99_gff</span><span class="op">[</span><span class="va">kn99_gff</span><span class="op">$</span><span class="va">ID</span> <span class="op">==</span> <span class="va">locus</span> <span class="op">&amp;</span> <span class="va">kn99_gff</span><span class="op">$</span><span class="va">type</span> <span class="op">==</span> <span class="st">'gene'</span><span class="op">]</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">granges</span><span class="op">)</span></span>
+<span>      <span class="va">basename</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">ffn</span>, <span class="va">locus</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="../reference/createIgvBatchscript.html">createIgvBatchscript</a></span><span class="op">(</span></span>
+<span>        bam_list <span class="op">=</span> <span class="va">bam_list</span><span class="op">[[</span><span class="va">ffn</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>        granges <span class="op">=</span> <span class="va">granges</span>,</span>
+<span>        igv_genome <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"kn99_stranded_igv_genome"</span><span class="op">)</span>,</span>
+<span>        output_dir <span class="op">=</span> <span class="st">"/home/oguzkhan/Desktop/tmp/igv/"</span>,</span>
+<span>        output_file_basename <span class="op">=</span> <span class="va">basename</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu">igvScriptAll</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">bam_list</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="running-the-igv-batch-scripts">Running the IGV batch scripts<a class="anchor" aria-label="anchor" href="#running-the-igv-batch-scripts"></a>

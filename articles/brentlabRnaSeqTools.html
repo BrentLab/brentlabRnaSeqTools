@@ -50,6 +50,8 @@
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement</a>
     <a class="dropdown-item" href="../articles/Tally.html">Tally Experiment Sets</a>
+    <a class="dropdown-item" href="../articles/Rank_Response_Plot.html">Rank Reponse Plot</a>
+    <a class="dropdown-item" href="../articles/image_table_interactions.html">Image Table Interaction</a>
   </div>
 </li>
       </ul>
@@ -86,13 +88,13 @@
 <h2 id="install-the-following">Install the following<a class="anchor" aria-label="anchor" href="#install-the-following"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">cran_pkgs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tidyverse'</span>, <span class="st">'devtools'</span><span class="op">)</span>
-
-<span class="co"># note: increase/decrease the number of CPUs. Any machine should be able to </span>
-<span class="co"># handle at least 5. You can probably bump this up to 10 without checking</span>
-<span class="co"># anything</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="va">cran_pkgs</span>, Ncpus <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="va">cran_pkgs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'tidyverse'</span>, <span class="st">'devtools'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># note: increase/decrease the number of CPUs. Any machine should be able to </span></span>
+<span><span class="co"># handle at least 5. You can probably bump this up to 10 without checking</span></span>
+<span><span class="co"># anything</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="va">cran_pkgs</span>, Ncpus <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
 <p>It is possible that there wil be install errors that come up during the installation of these two pages. If you are on the computational/analyst side of things, then this is a good opportunity to read the error messages and figure out what to install – both packages may have some c or maybe fortran dependencies which you will need to install onto your computer. Googling the error helps, and frequently R will say, “you need a gcc compiler” or something like that.</p>
 <p>If you are not one of the computational/analyst people, then ask for help if there are errors in the installation of those two packages.</p>
 </div>
@@ -101,8 +103,8 @@
 </h2>
 <p>If there is a ‘passing’ badge in the github README, then this has been successfully built on up to date linux, mac and windows OS. It should also work for you. But, if it doesn’t, copy the error and make an issue report. Please also include the output of <code><a href="https://rdrr.io/r/base/Sys.info.html" class="external-link">Sys.info()</a></code> in your issue report.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># as above, you can increase Ncpus</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu">install.packages</span><span class="op">(</span><span class="st">"BrentLab/brentlabRnaSeqTools"</span>, Ncpus <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># as above, you can increase Ncpus</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install.packages</span><span class="op">(</span><span class="st">"BrentLab/brentlabRnaSeqTools"</span>, Ncpus <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="set-up-some-environmental-variables">Set up some environmental variables<a class="anchor" aria-label="anchor" href="#set-up-some-environmental-variables"></a>
@@ -115,30 +117,30 @@
 <li>open Rstudio</li>
 </ol>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_r_environ</span><span class="op">(</span><span class="st">'user'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_r_environ</span><span class="op">(</span><span class="st">'user'</span><span class="op">)</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>in the file that is opened, enter some variables that you’d like to have</li>
 </ol>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">db_username</span> <span class="op">=</span> <span class="st">"some_username"</span>
-<span class="va">db_password</span> <span class="op">=</span> <span class="st">"some_password"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">db_username</span> <span class="op">=</span> <span class="st">"some_username"</span></span>
+<span><span class="va">db_password</span> <span class="op">=</span> <span class="st">"some_password"</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li><p>restart your R session</p></li>
 <li><p>see that you can access these variables like so:</p></li>
 </ol>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_username"</span><span class="op">)</span>
-<span class="co"># output will be:</span>
-<span class="co">#&gt; "some_password"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_username"</span><span class="op">)</span></span>
+<span><span class="co"># output will be:</span></span>
+<span><span class="co">#&gt; "some_password"</span></span></code></pre></div>
 <p>If you put the correct username/password into your environment file, then you can access the database like so:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://brentlab.github.io/brentlabRnaSeqTools/">brentlabRnaSeqTools</a></span><span class="op">)</span>
-
-<span class="va">meta</span> <span class="op">=</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span>
-  <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_host</span>,
-  <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_name</span>,
-  <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_username"</span><span class="op">)</span>,
-  <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_password"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://brentlab.github.io/brentlabRnaSeqTools/">brentlabRnaSeqTools</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">meta</span> <span class="op">=</span> <span class="fu"><a href="../reference/getMetadata.html">getMetadata</a></span><span class="op">(</span></span>
+<span>  <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_host</span>,</span>
+<span>  <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_name</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_username"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"db_password"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Since the user level environment file is stored in <code>~/.Renviron</code>, there is no danger of pushing these credentials up to git if you are in a directory which you are tracking with git/github.</p>
 </div>
 </div>
@@ -150,22 +152,22 @@
 </h3>
 <p>If you do not already have a directory in which you store the projects you work on, create one. I suggest a direcory called <code>projects</code> in your <code>$HOME</code></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">project_dir</span> <span class="op">=</span> <span class="st">"~/projects"</span>
-<span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.exists</a></span><span class="op">(</span><span class="va">project_dir</span><span class="op">)</span><span class="op">)</span><span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">project_dir</span><span class="op">)</span>
-<span class="op">}</span>
-<span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">setwd</a></span><span class="op">(</span><span class="va">project_dir</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">project_dir</span> <span class="op">=</span> <span class="st">"~/projects"</span></span>
+<span><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.exists</a></span><span class="op">(</span><span class="va">project_dir</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">project_dir</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">setwd</a></span><span class="op">(</span><span class="va">project_dir</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="create-a-new-rstudio-project">Create a new Rstudio project<a class="anchor" aria-label="anchor" href="#create-a-new-rstudio-project"></a>
 </h3>
 <p>A project is a subset of the infrastructure in an R software package. You can use a virtual environment, .Renviron files for environmental variables, etc. It is a tool for reproducibility</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># if this is for the nineyMinuteInduction data, for example, you might call </span>
-<span class="co"># this project "ninetyMinInduction".</span>
-<span class="va">project_name</span> <span class="op">=</span> <span class="st">"my_new_project"</span>
-
-<span class="fu">usethis</span><span class="fu">::</span><span class="fu">create_project</span><span class="op">(</span><span class="va">project_name</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># if this is for the nineyMinuteInduction data, for example, you might call </span></span>
+<span><span class="co"># this project "ninetyMinInduction".</span></span>
+<span><span class="va">project_name</span> <span class="op">=</span> <span class="st">"my_new_project"</span></span>
+<span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">create_project</span><span class="op">(</span><span class="va">project_name</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="using-the-project-directory">Using the project directory<a class="anchor" aria-label="anchor" href="#using-the-project-directory"></a>
@@ -179,11 +181,11 @@
 </h3>
 <p>Just as with the user level environmental variables, you can set environmental variables for a particular project. These are read in addition to the user level variables, and will overwrite them if there are two that are named the same thing. The first thing to do is to make sure that the project level <code>.Renviron</code> is in the <code>.gitignore</code> so that you don’t accidently push up login credentials</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># you can use this, or just click on the .gitignore file in the project</span>
-<span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_git_ignore</span><span class="op">(</span><span class="st">'project'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># you can use this, or just click on the .gitignore file in the project</span></span>
+<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_git_ignore</span><span class="op">(</span><span class="st">'project'</span><span class="op">)</span></span></code></pre></div>
 <p>In the <code>.gitignore</code> file, add <code>.Renviron</code>. Next, open a project level <code>.Renviron</code></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_r_environ</span><span class="op">(</span><span class="st">"project"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_r_environ</span><span class="op">(</span><span class="st">"project"</span><span class="op">)</span></span></code></pre></div>
 <p>and edit as before. Remember to re-launch your R session after editing the <code>.Renviron</code> to have access to the environmental variables.</p>
 </div>
 </div>
@@ -191,86 +193,86 @@
 <h2 id="using-data-from-the-lts-archive">Using data from the lts archive<a class="anchor" aria-label="anchor" href="#using-data-from-the-lts-archive"></a>
 </h2>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://brentlab.github.io/brentlabRnaSeqTools/">brentlabRnaSeqTools</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span>
-
-<span class="co"># mount the cluster, or download the 20220208 kn99 db archive</span>
-<span class="co"># paths will need to be updated for your machine. These are examples</span>
-<span class="co"># of what it would look like if you mount.</span>
-<span class="va">archive_prefix</span> <span class="op">=</span> <span class="st">'/mnt/lts/sequence_data/rnaseq_data/kn99_database_archive'</span>
-<span class="va">coldata_df</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">archive_prefix</span>, <span class="st">"20220208/combined_df_20220208.csv"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">count_df</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">archive_prefix</span>, <span class="st">"20220208/counts.csv"</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">gene_ids</span> <span class="op">=</span> <span class="fu"><a href="../reference/getGeneNames.html">getGeneNames</a></span><span class="op">(</span><span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_host</span>,
-                        <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_name</span>,
-                        <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">'db_username'</span><span class="op">)</span>,
-                        <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">'db_password'</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">gene_ids</span> <span class="op">=</span> <span class="va">gene_ids</span><span class="op">$</span><span class="va">gene_id</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6967</span><span class="op">]</span>
-
-<span class="va">coldata_df_fltr</span> <span class="op">=</span> <span class="va">coldata_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">purpose</span> <span class="op">==</span> <span class="st">"fullRNASeq"</span>,
-         <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">fastqFileName</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">count_df_fltr</span> <span class="op">=</span> <span class="va">count_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">count_df</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> 
-                           <span class="va">coldata_df_fltr</span><span class="op">$</span><span class="va">fastqFileName</span><span class="op">]</span>
-
-<span class="va">coldata_df_fltr</span> <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">coldata_df_fltr</span>, 
-                         <span class="va">fastqFileName</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> 
-                           <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">count_df_fltr</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co"># make sure the order of the count cols matches order of the metadata rows</span>
-<span class="va">count_df_fltr</span> <span class="op">=</span> <span class="va">count_df_fltr</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">count_df_fltr</span><span class="op">)</span>,
-                                            <span class="va">coldata_df_fltr</span><span class="op">$</span><span class="va">fastqFileName</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>
-
-<span class="co"># if this checks false, stop and figure out why. useful functions would be </span>
-<span class="co"># setdiff(). Read the ?setdiff docs -- it is asymetric.</span>
-<span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">count_df_fltr</span><span class="op">)</span>, 
-                    <span class="va">coldata_df_fltr</span><span class="op">$</span><span class="va">fastqFileName</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">dds</span> <span class="op">=</span> <span class="fu">DESeq2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeqDataSet.html" class="external-link">DESeqDataSetFromMatrix</a></span><span class="op">(</span>countData <span class="op">=</span> <span class="va">count_df_fltr</span>,
-                                     colData <span class="op">=</span> <span class="va">coldata_df_fltr</span>, 
-                                     design <span class="op">=</span> <span class="op">~</span><span class="fl">1</span><span class="op">)</span>
-<span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span> <span class="op">=</span> <span class="va">gene_ids</span>
-
-<span class="va">blrs</span> <span class="op">=</span> <span class="fu"><a href="../reference/brentlabRnaSeqSet.html">brentlabRnaSeqSet</a></span><span class="op">(</span>dds <span class="op">=</span> <span class="va">dds</span><span class="op">)</span>
-
-<span class="co"># everything should work as usual from here</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://brentlab.github.io/brentlabRnaSeqTools/">brentlabRnaSeqTools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># mount the cluster, or download the 20220208 kn99 db archive</span></span>
+<span><span class="co"># paths will need to be updated for your machine. These are examples</span></span>
+<span><span class="co"># of what it would look like if you mount.</span></span>
+<span><span class="va">archive_prefix</span> <span class="op">=</span> <span class="st">'/mnt/lts/sequence_data/rnaseq_data/kn99_database_archive'</span></span>
+<span><span class="va">coldata_df</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">archive_prefix</span>, <span class="st">"20220208/combined_df_20220208.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">count_df</span> <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">archive_prefix</span>, <span class="st">"20220208/counts.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">gene_ids</span> <span class="op">=</span> <span class="fu"><a href="../reference/getGeneNames.html">getGeneNames</a></span><span class="op">(</span><span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_host</span>,</span>
+<span>                        <span class="va">database_info</span><span class="op">$</span><span class="va">kn99</span><span class="op">$</span><span class="va">db_name</span>,</span>
+<span>                        <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">'db_username'</span><span class="op">)</span>,</span>
+<span>                        <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">'db_password'</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">gene_ids</span> <span class="op">=</span> <span class="va">gene_ids</span><span class="op">$</span><span class="va">gene_id</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6967</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">coldata_df_fltr</span> <span class="op">=</span> <span class="va">coldata_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">purpose</span> <span class="op">==</span> <span class="st">"fullRNASeq"</span>,</span>
+<span>         <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">fastqFileName</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">count_df_fltr</span> <span class="op">=</span> <span class="va">count_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">count_df</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> </span>
+<span>                           <span class="va">coldata_df_fltr</span><span class="op">$</span><span class="va">fastqFileName</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">coldata_df_fltr</span> <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">coldata_df_fltr</span>, </span>
+<span>                         <span class="va">fastqFileName</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> </span>
+<span>                           <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">count_df_fltr</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># make sure the order of the count cols matches order of the metadata rows</span></span>
+<span><span class="va">count_df_fltr</span> <span class="op">=</span> <span class="va">count_df_fltr</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">count_df_fltr</span><span class="op">)</span>,</span>
+<span>                                            <span class="va">coldata_df_fltr</span><span class="op">$</span><span class="va">fastqFileName</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># if this checks false, stop and figure out why. useful functions would be </span></span>
+<span><span class="co"># setdiff(). Read the ?setdiff docs -- it is asymetric.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">count_df_fltr</span><span class="op">)</span>, </span>
+<span>                    <span class="va">coldata_df_fltr</span><span class="op">$</span><span class="va">fastqFileName</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dds</span> <span class="op">=</span> <span class="fu">DESeq2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DESeq2/man/DESeqDataSet.html" class="external-link">DESeqDataSetFromMatrix</a></span><span class="op">(</span>countData <span class="op">=</span> <span class="va">count_df_fltr</span>,</span>
+<span>                                     colData <span class="op">=</span> <span class="va">coldata_df_fltr</span>, </span>
+<span>                                     design <span class="op">=</span> <span class="op">~</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">dds</span><span class="op">)</span> <span class="op">=</span> <span class="va">gene_ids</span></span>
+<span></span>
+<span><span class="va">blrs</span> <span class="op">=</span> <span class="fu"><a href="../reference/brentlabRnaSeqSet.html">brentlabRnaSeqSet</a></span><span class="op">(</span>dds <span class="op">=</span> <span class="va">dds</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># everything should work as usual from here</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">createEnvPert_epWT</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">{</span>
-
-  <span class="co"># filter</span>
-  <span class="va">ep_meta_fastqFileNumbers</span> <span class="op">=</span> <span class="fu"><a href="../reference/extractColData.html">extractColData</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">strain</span> <span class="op">==</span> <span class="st">'TDY451'</span>,
-           <span class="va">treatment</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cAMP"</span>,<span class="st">"noTreatment"</span><span class="op">)</span>,
-           <span class="va">treatmentConc</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"20"</span>, <span class="st">'noTreatmentConc'</span><span class="op">)</span>,
-           <span class="va">experimentDesign</span> <span class="op">==</span> <span class="st">'Environmental_Perturbation'</span>,
-           <span class="va">purpose</span> <span class="op">==</span> <span class="st">"fullRNASeq"</span>,
-           <span class="va">libraryProtocol</span> <span class="op">==</span> <span class="st">'E7420L'</span>,
-           <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">fastqFileName</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">fastqFileNumber</span><span class="op">)</span>
-
-  <span class="va">ep_set</span> <span class="op">=</span> <span class="va">blrs</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">$</span><span class="va">fastqFileNumber</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span>
-                  <span class="va">ep_meta_fastqFileNumbers</span><span class="op">]</span>
-
-  <span class="va">experimental_conditions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">alist</a></span><span class="op">(</span><span class="va">medium</span>,
-                                  <span class="va">atmosphere</span>,
-                                  <span class="va">temperature</span>,
-                                  <span class="va">treatment</span>,
-                                  <span class="va">treatmentConc</span>,
-                                  <span class="va">pH</span>,
-                                  <span class="va">timePoint</span><span class="op">)</span>
-
-  <span class="va">concat_treatment</span> <span class="op">=</span> <span class="fu"><a href="../reference/extractColData.html">extractColData</a></span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>concat_treatment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="op">!</span><span class="op">!</span><span class="op">!</span><span class="va">experimental_conditions</span>,
-                                              sep<span class="op">=</span><span class="st">"_"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">concat_treatment</span><span class="op">)</span>
-
-  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span> <span class="op">=</span> <span class="va">concat_treatment</span>
-
-  <span class="va">ep_set</span>
-
-<span class="op">}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">createEnvPert_epWT</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">{</span></span>
+<span></span>
+<span>  <span class="co"># filter</span></span>
+<span>  <span class="va">ep_meta_fastqFileNumbers</span> <span class="op">=</span> <span class="fu"><a href="../reference/extractColData.html">extractColData</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">strain</span> <span class="op">==</span> <span class="st">'TDY451'</span>,</span>
+<span>           <span class="va">treatment</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cAMP"</span>,<span class="st">"noTreatment"</span><span class="op">)</span>,</span>
+<span>           <span class="va">treatmentConc</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"20"</span>, <span class="st">'noTreatmentConc'</span><span class="op">)</span>,</span>
+<span>           <span class="va">experimentDesign</span> <span class="op">==</span> <span class="st">'Environmental_Perturbation'</span>,</span>
+<span>           <span class="va">purpose</span> <span class="op">==</span> <span class="st">"fullRNASeq"</span>,</span>
+<span>           <span class="va">libraryProtocol</span> <span class="op">==</span> <span class="st">'E7420L'</span>,</span>
+<span>           <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">fastqFileName</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">fastqFileNumber</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">ep_set</span> <span class="op">=</span> <span class="va">blrs</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">blrs</span><span class="op">)</span><span class="op">$</span><span class="va">fastqFileNumber</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span></span>
+<span>                  <span class="va">ep_meta_fastqFileNumbers</span><span class="op">]</span></span>
+<span></span>
+<span>  <span class="va">experimental_conditions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">alist</a></span><span class="op">(</span><span class="va">medium</span>,</span>
+<span>                                  <span class="va">atmosphere</span>,</span>
+<span>                                  <span class="va">temperature</span>,</span>
+<span>                                  <span class="va">treatment</span>,</span>
+<span>                                  <span class="va">treatmentConc</span>,</span>
+<span>                                  <span class="va">pH</span>,</span>
+<span>                                  <span class="va">timePoint</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">concat_treatment</span> <span class="op">=</span> <span class="fu"><a href="../reference/extractColData.html">extractColData</a></span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>concat_treatment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="op">!</span><span class="op">!</span><span class="op">!</span><span class="va">experimental_conditions</span>,</span>
+<span>                                              sep<span class="op">=</span><span class="st">"_"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">concat_treatment</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">ep_set</span><span class="op">)</span><span class="op">$</span><span class="va">concat_treatment</span> <span class="op">=</span> <span class="va">concat_treatment</span></span>
+<span></span>
+<span>  <span class="va">ep_set</span></span>
+<span></span>
+<span><span class="op">}</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

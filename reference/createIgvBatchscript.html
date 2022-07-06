@@ -37,6 +37,8 @@ data for an example of what one of these scripts looks like."><!-- mathjax --><s
     <a class="dropdown-item" href="../articles/QC_Library_Quality.html">QC: Library Quality</a>
     <a class="dropdown-item" href="../articles/QC_Sample_Agreement_Objects.html">QC: Replicate Agreement</a>
     <a class="dropdown-item" href="../articles/Tally.html">Tally Experiment Sets</a>
+    <a class="dropdown-item" href="../articles/Rank_Response_Plot.html">Rank Reponse Plot</a>
+    <a class="dropdown-item" href="../articles/image_table_interactions.html">Image Table Interaction</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -62,15 +64,15 @@ data for an example of what one of these scripts looks like.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">createIgvBatchscript</span><span class="op">(</span>
-  <span class="va">bam_list</span>,
-  <span class="va">granges</span>,
-  <span class="va">igv_genome</span>,
-  <span class="va">output_dir</span>,
-  <span class="va">output_file_basename</span>,
-  exit_browser <span class="op">=</span> <span class="cn">TRUE</span>,
-  maxPanelHeight <span class="op">=</span> <span class="fl">500</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">createIgvBatchscript</span><span class="op">(</span></span>
+<span>  <span class="va">bam_list</span>,</span>
+<span>  <span class="va">granges</span>,</span>
+<span>  <span class="va">igv_genome</span>,</span>
+<span>  <span class="va">output_dir</span>,</span>
+<span>  <span class="va">output_file_basename</span>,</span>
+<span>  exit_browser <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  maxPanelHeight <span class="op">=</span> <span class="fl">500</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -113,11 +115,11 @@ to false and this script may be used to launch an interactive session.</p></dd>
 
 <p>None. This prints a batch script to the output dir</p>
     </div>
-
     <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    
+    <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
+    <p>run on the command line like so xvfb-run --auto-servernum igv.sh -b script.bat</p>
     </div>
+
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
