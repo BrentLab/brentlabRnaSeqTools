@@ -1,0 +1,69 @@
+---
+title: "Image Table Interaction"
+author: "Chase Mateusiak"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+  Send and Retrieve Images from the database
+  brentlabRnaSeqTools package version: `r packageVersion("brentlabRnaSeqTools")`
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{Image Table Interaction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  include = TRUE,
+  eval = FALSE
+)
+```
+
+
+```{r setup}
+library(brentlabRnaSeqTools)
+```
+
+# Sending sets of images to the database
+
+See the documentation in `?postCapsuleJpeg_batch`. An example of calling this 
+function is like so:
+
+```{r}
+# note: there are no negative bioSampleNumbers. But I don't want to put 
+# something in here that might get copied/pasted and sent to the database
+bioSampleNumber = -1
+image_dir = "/path/to/the/image_set_dir"
+expected_number_of_images = 14
+
+postCapsuleJpeg_batch(
+  Sys.getenv("kn99_db_token"),
+  bioSampleNumber,
+  image_dir,
+  expected_number_of_images
+)
+```
+
+# Retrieving a set of images
+
+see the documentation in `?getCapsuleImageSet`. An example of calling this 
+function is like so:
+
+```{r}
+bioSampleNumber = 440
+# note: you do not want to keep images sets on your computer long term. Put them 
+# somewhere that you can find, and then delete them when you are done. If you 
+# need them in an hour, tomorrow, etc, you can always pull them again
+out_dir = "~/Desktop/tmp_images"
+
+getCapsuleImageSet(Sys.getenv("kn99_db_token"), bioSampleNumber, output_dir)
+```
+
+

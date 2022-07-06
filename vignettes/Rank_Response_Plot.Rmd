@@ -31,6 +31,21 @@ knitr::opts_chunk$set(
 library(brentlabRnaSeqTools)
 ```
 
+# Creating a Rank-Response plot
+
+You will need the following:
+
+ - The expression data you wish to use -- there may be more than one (eg, 
+ kemmeren data, data from our lab, etc, ...)
+ 
+ - The binding data you wish to use -- again, there may be more than one. For 
+ instance, maybe you are comparing chip-chip to calling cards
+ 
+Check `?rank_response_plot` for more information on what columns must exist 
+in the expression and binding data.  
+
+An example of creating the plots is below:
+
 ```{r}
 expr_list = list(
   expr1 = read_csv("~/Desktop/zev_deseq_res.csv"),
@@ -51,3 +66,5 @@ binding_list = list(
 rank_response_plot(expr_list, binding_list, 'test', lfc_thres = 0, padj_thres = .8)
 ```
 
+Caveat: I haven't implemented the random response line yet. However, that 
+can be added -- what is returned is a ggplot object. Add it with `geom_abline`

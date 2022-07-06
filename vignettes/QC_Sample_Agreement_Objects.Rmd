@@ -45,7 +45,7 @@ and come up with a set of filters to define your new set. See the github reposit
 
 ## Setup the environment 
 
-```{r setup}
+```{r}
 library(brentlabRnaSeqTools)
 library(rtracklayer)
 library(tidyverse)
