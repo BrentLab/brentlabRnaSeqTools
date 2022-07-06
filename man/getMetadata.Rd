@@ -22,10 +22,11 @@ getMetadata(database_host, database_name, database_user, database_password)
 A DBI connection to the remote database
 }
 \description{
-Join the biosample, rnasample, s1sample, s2sample, library, fastqFiles and qualityAssessment tables (in that order, left joins) and return the result as a tibble
-
-Use the RPostgres package to connect to a remote postgresql database, do the table joining, and return the joined metadata as a tibble. The database connection is closed
+Join the biosample, rnasample, s1sample,
+s2sample, library, fastqFiles and qualityAssessment tables
+(in that order, left joins) and return the result as a tibble
 }
 \note{
-for information on using R environmental files, see \url{https://support.rstudio.com/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf}
+for information on using R environmental files,
+see \url{https://support.rstudio.com/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf}
 }

@@ -1,6 +1,7 @@
 url: https://brentlab.github.io/brentlabRnaSeqTools/
 template:
   bootstrap: 5
+  theme: github-dark
 articles:
 - title: Tutorials
   navbar: ~
@@ -12,4 +13,140 @@ articles:
   - QC_Library_Quality
   - QC_Sample_Agreement_Objects
   - Tally
+  - Rank_Response_Plot
+
+reference:
+- title: Data objects
+  desc: data objects loaded with brentlabRnaSeqTools
+  contents:
+  - database_info
+  - grant_df
+  - passing_genes_all
+  - database_colnames
+
+- title: Database -- Utilities
+  desc:  Things like connecting directly to the database, archiving or retrieving a user token
+  contents:
+  - connectToDatabase
+  - archiveDatabase
+  - getUserAuthToken
+
+- title: Database -- Getting Data
+  desc:  get the full join (getMetadata) or individual tables
+  contents:
+  - getMetadata
+  - getRawCounts
+  - getGeneNames
+  - listTables
+  - getTable
+  - getCapsuleImageSet
+
+- title: Database -- Sending Data
+  desc:  send data TO the database. Please be careful with these.
+  contents:
+  - postFastqSheet
+  - postCounts
+  - postQcSheet
+  - patchTable
+  - postTable
+  - postCapsuleJpeg
+  - postCapsuleJpeg_batch
+  - postCountsToDatabase
+  - postImageAnnotationsToDatabase
+
+- title: brentLabRnaSeq Object
+  desc: the object(s) used in most of QC processing
+  contents:
+  - starts_with("brentlabRnaSeq")
+  - coerceToDds
+  - createExperimentSet
+  - createTestTrainSet
+  - estimateSizeFactorsByProtocol
+  - extractColData
+  - extractDesignMatrix
+  - getRunNumberLeadingZero
+  - qaFilter
+
+
+- title: RNAseq Pipeline
+  desc: Functions for processing data from the database for the RNAseq pipeline
+  contents:
+  - readHTSeqFile
+  - parseNovoalignLog
+  - geneGRanges
+  - strandedScanBamParam
+  - htseq_proteinCodingTotal
+  - htseq_notAlignedTotalPercent
+  - htseq_libraryComplexity
+  - locusCoverage
+  - htseq_locusLog2cpm
+  - novoalignPipelineQC
+  - addQcColsToMeta
+  - autoAuditQcTable
+  - decomposeStatus2Bit
+  - kn99_novo_htseq_status
+  - kn99_novo_htseq_thresholds
+
+- title: RNAseq Pipeline -- nextflow
+  desc: Functions for processing data in the nextflow pipeline
+  contents:
+  - createNovoalignPipelineSamplesheet
+  - createNfCorePipelineSampleSheet
+  - moveNfCoFastqFiles
+
+- title: RNAseq QC -- Misc
+  desc: Miscellaneous RNAseq QC functions
+  contents:
+  - setPerturbedLociToZero
+  - removeParameterEffects
+  - fltrLowReplicateParams
+
+- title: RNAseq QC -- RLE
+  desc: Functions used to calculate relative log expression for QC
+  contents:
+  - rleTransform
+  - calculateRLE
+  - calculateGeneWiseMedians
+  - rleSummary
+  - addRleSummaryStats
+  - rleByReplicateGroup
+  - rlePlotCompareEffectRemoved
+  - removeLibdateByReplicate
+  - plotRLEhistograms
+  - rlePlot
+  - rlePlot_helper
+
+- title: RNAseq QC -- IGV
+  desc: Functions for interacting with the IGV
+  contents:
+  - createIgvBatchscript
+
+- title: Experimental Sets
+  desc: Functions for creating various pre-defined experimental sets
+  contents:
+  - starts_with("createEnvPert")
+  - createEPTally
+  - starts_with("createNinetyMinuteInduction")
+  - createInductionSetTally
+  - starts_with("replicateByProtocolTally")
+  - filterWtByExperimentalLibdate_90min
+  - splitProtocolGroups
+
+- title: Binding Response EDA functions
+  desc: For instance, for Rank-Response plots
+  contents:
+  - rank_response_plot
+  - create_partitions
+  - sort_rank_mean_expr
+
+- title: Utilities
+  desc: Helper functions
+  contents:
+  - isNumeric
+  - is_integer64
+  - localView
+  - parseComparatives
+  - readInData
+  - run_numbers_with_leading_zero
+  - testBamPath
 

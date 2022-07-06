@@ -7,7 +7,8 @@
 postTable(database_table_url, auth_token, df)
 }
 \arguments{
-\item{database_table_url}{see \code{\link{database_info}}. Use one of the URLS in the url slot}
+\item{database_table_url}{see \code{\link{database_info}}.
+Use one of the URLS in the url slot}
 
 \item{auth_token}{see \code{\link{getUserAuthToken}}}
 

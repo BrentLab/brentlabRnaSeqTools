@@ -1,0 +1,53 @@
+---
+title: "Rank Reponse Plot"
+author: "Chase Mateusiak"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+  Create a Rank Response Plot
+  brentlabRnaSeqTools package version: `r packageVersion("brentlabRnaSeqTools")`
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{Rank Response Plot}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  include = TRUE,
+  eval = FALSE
+)
+```
+
+
+```{r setup}
+library(brentlabRnaSeqTools)
+```
+
+```{r}
+expr_list = list(
+  expr1 = read_csv("~/Desktop/zev_deseq_res.csv"),
+  expr2 = read_csv("~/Desktop/zev_deseq_res2.csv")
+)
+
+binding_list = list(
+  binding1 = read_tsv("~/Desktop/tmp/E0001_HAP2_JP008.sig_prom.txt") %>%
+    dplyr::rename(gene = `Systematic Name`,
+                  binding_signal = `Poisson pvalue`) %>%
+    dplyr::select(gene, binding_signal),
+  binding2 = read_tsv("~/Desktop/tmp/E0001_PHO4_JP008.sig_prom.txt") %>%
+    dplyr::rename(gene = `Systematic Name`,
+                  binding_signal = `Poisson pvalue`) %>%
+    dplyr::select(gene, binding_signal)
+)
+
+rank_response_plot(expr_list, binding_list, 'test', lfc_thres = 0, padj_thres = .8)
+```
+

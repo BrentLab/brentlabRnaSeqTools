@@ -7,13 +7,16 @@
 patchTable(database_table_url, auth_token, update_df, id_col)
 }
 \arguments{
-\item{database_table_url}{NO TRAILING '/'. eg "http://18.224.181.136/api/v1/QualityAssess"}
+\item{database_table_url}{see \code{\link{database_info}}.
+Use one of the URLS in the url slot}
 
 \item{auth_token}{see brentlabRnaSeqTools::getUserAuthToken()}
 
-\item{update_df}{a dataframe, preferrably a tibble, already read in, subsetted. Columns must be correct data type for db table}
+\item{update_df}{a dataframe, preferrably a tibble, already read in,
+subsetted. Columns must be correct data type for db table}
 
-\item{id_col}{name of the id column of the table. this number will be appended to the url to create the uri for the record}
+\item{id_col}{name of the id column of the table. this number will
+be appended to the url to create the uri for the record}
 }
 \value{
 a list of httr::response() objects
