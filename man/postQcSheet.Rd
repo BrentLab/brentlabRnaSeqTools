@@ -13,12 +13,13 @@ postQcSheet(
 )
 }
 \arguments{
-\item{database_qc_url}{eg database_info$kn99_urls$QualityAssess. see \code{\link{database_info}}.}
+\item{database_qc_url}{eg database_info$kn99_urls$QualityAssess.
+see \code{\link{database_info}}.}
 
 \item{auth_token}{\code{\link{getUserAuthToken}}}
 
-\item{run_number}{the run number of this qc sheet -- this is important b/c fastqFileNames aren't necessarily unique
-outside of their runs}
+\item{run_number}{the run number of this qc sheet -- this is important
+b/c fastqFileNames aren't necessarily unique outside of their runs}
 
 \item{new_qc_path}{path to the new counts csv}
 
@@ -31,6 +32,7 @@ a list of httr::response() objects
 using the package httr, post the new qc sheet to the database
 }
 \note{
-there can be problems with dependencies and the rename function. this is working for now,
-but see here for more info \url{https://statisticsglobe.com/r-error-cant-rename-columns-that-dont-exist}
+there can be problems with dependencies and the rename
+function. this is working for now, but see here for more info
+\url{https://statisticsglobe.com/r-error-cant-rename-columns-that-dont-exist}
 }

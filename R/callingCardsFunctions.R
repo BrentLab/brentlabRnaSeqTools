@@ -2,23 +2,29 @@
 #' Given expresion and binding signal, plot the rank response a la
 #' doi:
 #'
+#' @import foreach
+#' @importFrom purrr map
+#' @importFrom dplyr mutate
+#' @import ggplot2
+#'
 #' @param expression_df a two column dataframe. One column must be
 #'   called 'gene' and must store gene identifiers (doesn't matter what, as long
 #'   as they are consistent both within the expression list and between the
 #'   expression list and the binding list). The second column identifies the
 #'   experiment and stores the expression value (eg, log2FC)
-#'
 #' @param binding_df a list of dataframes with two columns. One column must be
 #'   called 'gene' and must correspond to the expression_df gene column. The
 #'   other column should be binding data. The column name should reference the
 #'   source, eg 'calling_cards' or 'chip_chip'.
-#'
 #' @param tf the name of the TF -- this will be the plot title
+#' @param lfc_thres expression log2foldchange threshold. default is 0
+#' @param padj_thres expression padj threshold. default is .05
 #'
 #' @return a ggplot object rank response plot
 #'
 #' @export
-rank_response_plot = function(expression_df_list, binding_df_list, tf, lfc_thres = 0, padj_thres = .05){
+rank_response_plot = function(expression_df_list, binding_df_list,
+                              tf, lfc_thres = 0, padj_thres = .05){
 
  message("Summarizing data by rank response...")
   rank_res_df = foreach(
@@ -59,22 +65,43 @@ rank_response_plot = function(expression_df_list, binding_df_list, tf, lfc_thres
 #' size 3, then there will be 4 partitions of length 3 and one of length 2,
 #' 1 1 1 2 2 2 3 3 3 4 4 4 5 5.
 #'
+#' @import dplyr
+#'
 #' @param vector_length the total lenght of the partition vector
 #' @param equal_parts how large should each partition be?
 #'
 #'
 #' @return a vector of `vector_length` divded into `equal_parts` with possibly
 #'   one additional vector of size less than `equal_parts`.
+#'
+#' @export
 create_partitions = function(vector_length, equal_parts = 100){
   c(rep(seq(1,vector_length/equal_parts),
         each=equal_parts),
     rep(floor(vector_length/equal_parts)+1, vector_length%%equal_parts))
 }
 
+#'
+#' Create a rank-response data frame
+#'
+#' @inheritParams rank_response_plot
+#'
+#' @param expression_src the source of the data, eg 'kemmeren' or 'brentlab'
+#' @param binding_src the source of the data, eg 'chip-chip' or 'calling-cards'
+#' @param rank_resolution how to bin ranks. Default is 10, which means that
+#'   ranks are binned into groups of 10 (eg the first group are the 10 highest)
+#' @param num_rows the number of rows to return. Default is 15.
+#'   For instance, if the rank_resolution is 10, and you only want to look at
+#'   the first 150 ranked genes, then num_rows is 15.
+#'
+#' @return a rank_response dataframe
+#'
+#' @export
 sort_rank_mean_expr = function(expression_df, expression_src,
                                binding_df, binding_src,
                                lfc_thres, padj_thres,
-                               rank_resolution = 10){
+                               rank_resolution = 10,
+                               num_rows = 15){
 
   expression_cols = c('gene', "log2FoldChange", "padj")
   binding_cols = c('gene', 'binding_signal')
@@ -100,24 +127,6 @@ sort_rank_mean_expr = function(expression_df, expression_src,
     mutate(response_ratio = (cumsum(group_ratio)/rank)) %>%
     mutate(binding_source = binding_src) %>%
     mutate(expression_source = expression_src) %>%
-    head(15)
+    head(num_rows)
 }
-
-expr_list = list(
-  expr1 = read_csv("~/Desktop/zev_deseq_res.csv"),
-  expr2 = read_csv("~/Desktop/zev_deseq_res2.csv")
-)
-
-binding_list = list(
-  binding1 = read_tsv("~/Desktop/tmp/E0001_HAP2_JP008.sig_prom.txt") %>%
-    dplyr::rename(gene = `Systematic Name`,
-                  binding_signal = `Poisson pvalue`) %>%
-    dplyr::select(gene, binding_signal),
-  binding2 = read_tsv("~/Desktop/tmp/E0001_PHO4_JP008.sig_prom.txt") %>%
-    dplyr::rename(gene = `Systematic Name`,
-                  binding_signal = `Poisson pvalue`) %>%
-    dplyr::select(gene, binding_signal)
-)
-
-rank_response_plot(expr_list, binding_list, 'test', lfc_thres = 0, padj_thres = .8)
 

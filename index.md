@@ -19,8 +19,7 @@ use this package, set up your environment, and also how to pull data from the
 archive rather than directly from the database.
 
 ## Reference
-This is a list of all of the functions, objects, etc in the package. It is 
-currently in alphabetical order. At some point I will organize it by purpose.
+All of the functions in the package, organized by purpose
 
 ## Articles
 This is a collection of vignettes -- see the list for instructions on, for example,
