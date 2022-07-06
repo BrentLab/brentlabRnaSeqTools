@@ -1,3 +1,7 @@
+# TODO parameterize the column headeing names for the binding/expression dfs
+# TODO check that the lists are named, and that the names are unique within/
+# between lists
+
 #'
 #' Given expresion and binding signal, plot the rank response a la
 #' doi:
@@ -7,15 +11,14 @@
 #' @importFrom dplyr mutate
 #' @import ggplot2
 #'
-#' @param expression_df a two column dataframe. One column must be
-#'   called 'gene' and must store gene identifiers (doesn't matter what, as long
-#'   as they are consistent both within the expression list and between the
-#'   expression list and the binding list). The second column identifies the
-#'   experiment and stores the expression value (eg, log2FC)
-#' @param binding_df a list of dataframes with two columns. One column must be
-#'   called 'gene' and must correspond to the expression_df gene column. The
-#'   other column should be binding data. The column name should reference the
-#'   source, eg 'calling_cards' or 'chip_chip'.
+#' @param expression_df_list a NAMED list of gene expression dataframes. Each
+#'   dataframe must have the following columns, at minimum:
+#'   c('gene', "log2FoldChange", "padj"). Names of items in the list must
+#'   correspond to the data source (eg, 'kemmeren', 'brentlab', etc)
+#' @param binding_df_list a NAMED list of gene expression dataframes. Each
+#'   dataframe must have the following columns, at minimum:
+#'   c('gene', 'binding_signal'). Names of items in the list must
+#'   correspond to the data source (eg, 'chip-chip', 'calling-cards', etc)
 #' @param tf the name of the TF -- this will be the plot title
 #' @param lfc_thres expression log2foldchange threshold. default is 0
 #' @param padj_thres expression padj threshold. default is .05
@@ -85,7 +88,11 @@ create_partitions = function(vector_length, equal_parts = 100){
 #' Create a rank-response data frame
 #'
 #' @inheritParams rank_response_plot
-#'
+#' @param expression_df a three column dataframe with the column names
+#'   c('gene', 'log2FoldChange', 'padj') which describes expression data. It
+#'   may have more columns, but those three must exist
+#' @param binding_df a two column dataframe dataframe with the columns
+#'   c('gene', 'binding_signal'). It may have more columns, but those must exist
 #' @param expression_src the source of the data, eg 'kemmeren' or 'brentlab'
 #' @param binding_src the source of the data, eg 'chip-chip' or 'calling-cards'
 #' @param rank_resolution how to bin ranks. Default is 10, which means that

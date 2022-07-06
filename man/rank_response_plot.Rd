@@ -14,22 +14,21 @@ rank_response_plot(
 )
 }
 \arguments{
+\item{expression_df_list}{a NAMED list of gene expression dataframes. Each
+dataframe must have the following columns, at minimum:
+c('gene', "log2FoldChange", "padj"). Names of items in the list must
+correspond to the data source (eg, 'kemmeren', 'brentlab', etc)}
+
+\item{binding_df_list}{a NAMED list of gene expression dataframes. Each
+dataframe must have the following columns, at minimum:
+c('gene', 'binding_signal'). Names of items in the list must
+correspond to the data source (eg, 'chip-chip', 'calling-cards', etc)}
+
 \item{tf}{the name of the TF -- this will be the plot title}
 
 \item{lfc_thres}{expression log2foldchange threshold. default is 0}
 
 \item{padj_thres}{expression padj threshold. default is .05}
-
-\item{expression_df}{a two column dataframe. One column must be
-called 'gene' and must store gene identifiers (doesn't matter what, as long
-as they are consistent both within the expression list and between the
-expression list and the binding list). The second column identifies the
-experiment and stores the expression value (eg, log2FC)}
-
-\item{binding_df}{a list of dataframes with two columns. One column must be
-called 'gene' and must correspond to the expression_df gene column. The
-other column should be binding data. The column name should reference the
-source, eg 'calling_cards' or 'chip_chip'.}
 }
 \value{
 a ggplot object rank response plot

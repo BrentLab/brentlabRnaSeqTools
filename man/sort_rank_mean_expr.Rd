@@ -16,18 +16,14 @@ sort_rank_mean_expr(
 )
 }
 \arguments{
-\item{expression_df}{a two column dataframe. One column must be
-called 'gene' and must store gene identifiers (doesn't matter what, as long
-as they are consistent both within the expression list and between the
-expression list and the binding list). The second column identifies the
-experiment and stores the expression value (eg, log2FC)}
+\item{expression_df}{a three column dataframe with the column names
+c('gene', 'log2FoldChange', 'padj') which describes expression data. It
+may have more columns, but those three must exist}
 
 \item{expression_src}{the source of the data, eg 'kemmeren' or 'brentlab'}
 
-\item{binding_df}{a list of dataframes with two columns. One column must be
-called 'gene' and must correspond to the expression_df gene column. The
-other column should be binding data. The column name should reference the
-source, eg 'calling_cards' or 'chip_chip'.}
+\item{binding_df}{a two column dataframe dataframe with the columns
+c('gene', 'binding_signal'). It may have more columns, but those must exist}
 
 \item{binding_src}{the source of the data, eg 'chip-chip' or 'calling-cards'}
 
