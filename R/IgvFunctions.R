@@ -22,12 +22,7 @@
 #'
 #' @return None. This prints a batch script to the output dir
 #'
-#' @examples
-#' \dontrun{
-#'
-#' xvfb-run --auto-servernum igv.sh -b script.bat
-#'
-#' }
+#' @note run on the command line like so xvfb-run --auto-servernum igv.sh -b script.bat
 #'
 #' @export
 createIgvBatchscript = function(bam_list,

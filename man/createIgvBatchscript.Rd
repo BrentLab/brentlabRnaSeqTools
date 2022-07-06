@@ -41,11 +41,6 @@ this will create a batch script that may be run with the igv
 browser. An example command is given in the examples below. See the extern
 data for an example of what one of these scripts looks like.
 }
-\examples{
-\dontrun{
-
-xvfb-run --auto-servernum igv.sh -b script.bat
-
-}
-
+\note{
+run on the command line like so xvfb-run --auto-servernum igv.sh -b script.bat
 }
