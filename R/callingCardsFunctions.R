@@ -29,6 +29,12 @@
 rank_response_plot = function(expression_df_list, binding_df_list,
                               tf, lfc_thres = 0, padj_thres = .05){
 
+  # TODO (CRITICAL)
+  #   first, identify passing set in all expression list using both padj, lfc.
+  #   Then rank passing genes by one criteria (lfc or padj). then threshold
+  #   such that the number of responsive genes is the same
+
+
  message("Summarizing data by rank response...")
   rank_res_df = foreach(
    expr_name = names(expression_df_list),
@@ -109,6 +115,8 @@ sort_rank_mean_expr = function(expression_df, expression_src,
                                lfc_thres, padj_thres,
                                rank_resolution = 10,
                                num_rows = 15){
+
+  # TODO remove lfc and padj fltering from here -- do that earlier in rank-response-plot
 
   expression_cols = c('gene', "log2FoldChange", "padj")
   binding_cols = c('gene', 'binding_signal')
