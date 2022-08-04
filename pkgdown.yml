@@ -1,5 +1,5 @@
 pandoc: 2.7.3
-pkgdown: 2.0.5
+pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
   ProcessRun: ProcessRun.html
@@ -8,10 +8,11 @@ articles:
   Rank_Response_Plot: Rank_Response_Plot.html
   Tally: Tally.html
   brentlabRnaSeqTools: brentlabRnaSeqTools.html
+  create_R_package: create_R_package.html
   envPerturbation: envPerturbation.html
   image_table_interactions: image_table_interactions.html
   ninetyMinuteInduction_analysis: ninetyMinuteInduction_analysis.html
-last_built: 2022-07-06T21:09Z
+last_built: 2022-08-04T22:40Z
 urls:
   reference: https://brentlab.github.io/brentlabRnaSeqTools/reference
   article: https://brentlab.github.io/brentlabRnaSeqTools/articles
