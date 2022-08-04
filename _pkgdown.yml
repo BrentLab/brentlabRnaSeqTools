@@ -15,6 +15,7 @@ articles:
   - Tally
   - Rank_Response_Plot
   - image_table_interactions
+  - create_R_package
 
 reference:
 - title: Data objects

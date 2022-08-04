@@ -29,6 +29,9 @@
 rank_response_plot = function(expression_df_list, binding_df_list,
                               tf, lfc_thres = 0, padj_thres = .05){
 
+  # TODO -- ADD THE BELOW AS AN OPTION, RATHER THAN UNIVERSAL, so that the
+  # plots can be looked at separately rather than standardizing all together
+
   # TODO (CRITICAL)
   #   first, identify passing set in all expression list using both padj, lfc.
   #   Then rank passing genes by one criteria (lfc or padj). then threshold

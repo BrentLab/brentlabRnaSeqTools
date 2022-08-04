@@ -1,0 +1,122 @@
+---
+title: "Create an R project suitable for Bioconductor"
+author: "Chase Mateusiak"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+  Create an R project that may be uploaded to bioconductor.
+  brentlabRnaSeqTools package version: `r packageVersion("brentlabRnaSeqTools")`
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{Create an R bioconductor project}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  include = TRUE,
+  eval = FALSE
+)
+```
+
+# What is a package?
+
+For the purpose of this vignette, a package is a collection of classes, functions, tests, data and documentation which may be collected together and installed on a host system using a given language's `install` tools. For R, this is the `install` family (eg, `install.packages`, `BiocManager::install()`, or `remotes::install_github`), or `pip` for python. Critically, the package should provide instructions regarding required and suggested dependencies.  
+
+Packaging makes it easy to use certain tools which exist to make code more correct, reliable and maintainable. Test frameworks and continuous integration are examples of these tools.  
+
+But, getting the benefits of packaged software requires a certain amount of 'boilerplate', and ongoing maintenance of the 'boilerplate' files. For instance, the [DESCRIPTION](https://github.com/BrentLab/brentlabRnaSeqTools/blob/main/DESCRIPTION) file is required in R packages, and the developer must maintain this file to include all of the major dependencies. Luckily, in R, there are a number of tools which greatly simplify this. They are the following:  
+
+- [usethis -- a collection of a lot of development tools. More or less, everything is here](https://usethis.r-lib.org/)
+- [roxygen2 -- for building documentation](https://roxygen2.r-lib.org/)
+- [biocthis -- an extension of some usethis functionality, and some extras, which make developing packages which adhere to Bioconductor standards easier](https://bioconductor.org/packages/release/bioc/vignettes/biocthis/inst/doc/biocthis.html)
+-[renv -- similar to venv for python](https://rstudio.github.io/renv/)
+
+# When should I make a package?
+
+If you are doing exploratory data analysis, and write a function that you realize you might want to use outside of that script, you should put it into a package. Maybe that package is just your personal functions, classes, etc. Maybe it is a new package that might grow into distributable software that you can include in a publication later on. It is easier to do it in the beginning than it is to write a lot of unpackaged, undocumented, etc. code, and then package it later. If you learn how to use the tools listed above, then writing within packages (and projects, in R, a package's lightweight cousin) will make things go faster.
+
+# Do I need to follow the Bioconductor standards?
+
+No. You could, for instance, follow CRAN standards instead. Alternatively, you don't need to adhere to either CRAN or Bioconductor standards if you don't plan to submit the package to a public repo. You can still host the package on github, and if you follow the absolute minimum standards of 'packaged' software, you and anyone else could install your software from github using `remotes::install_github(your_github_username/your_repo_name)`.
+
+# I like python more (or, I am doing something for which Python is better)
+
+Packaging in python is very similar, but there isn't a tool as nice as `usethis` and `biocthis` unfortunately. I suggest [Poetry](https://python-poetry.org/). A nice feature of python is that PyPI, more or less equivalent to CRAN, has exactly 0 standards except that the package can be built with `pip`. They may not even enforce that. Additionally, from `PyPI` you can write a [bioconda](https://bioconda.github.io/) recipe to add your software to bioconda.
+
+# Bioconductor packages are autoamtically added to bioconda, and bioconda packages are automatically containerized and hosted in both docker (quay) and singularity (galaxy) by biocontainers
+
+Enough said.
+
+# Creating a package
+
+```{R}
+# I put software on which I write in a directory in my $HOME called code
+setwd("~/code")
+
+# create a new package with some biolerplate added for you
+usethis::create_package("BSA")
+
+# add a bunch of scripts which you can use to add a bunch of very nice, useful 
+# features to your package. Even if you aren't planning to add this to 
+# Bioconductor, these are nice features (eg, github actions CI, a github pages with pkgdown, etc)
+biocthis::use_bioc_pkg_templates()
+```
+
+biocthis will create 4 scripts which you can work through to get the package 
+'biolerplate' (eg, DESCRIPTION file, CITATIONS, NEWS, etc) as well as github 
+integration (including github actions and a gh-pages branch). Note that I have 
+had a lot of trouble getting github actions to automatically build the documentation 
+on the gh-pages branch using pkgdown -- it takes a lot of fiddling. It is worth 
+it though.
+
+# Write stuff!
+
+Functions and classes go into the `R` directory. use `usethis::use_r('foo')` to create 
+a file, in this case called `R/foo.R` and automatically open it for you. While 
+that file is active (open), you can create a test for that file using 
+`usethis::use_test()` which will create a file with the appropriate structure 
+in `tests/testthat/test-foo.R`.
+
+# Documentation with Sinew and Roxygen2
+
+Roxygen2 is similar to Doxygen, which has been around for a long time and builds 
+documentation/specification for your code. You have to write it in a specific 
+format, but then it gets parsed nicely. This is how the documentation that 
+appears when you do `?function` is written. Roxygen2 is the parser/builder 
+of the documentation. [Sinew](https://github.com/yonicd/sinew) is a helper 
+package which will create the skeleton structure of the documentation for you -- 
+this is useful, because writing the documentation does take a lot of typing. See [here](https://www.r-bloggers.com/2017/05/sinew-a-r-package-to-create-self-populating-roxygen2-skeletons/) and [here](https://yonicd.github.io/sinew/reference/pretty_namespace.html) for help with using 
+Sinew and [here](https://r-pkgs.org/man.html) and [here](https://roxygen2.r-lib.org/) for help with roxygen2.
+
+# But I just want to use notebooks
+
+There are two arguably better options -- the first is to do your EDA in a notebook 
+which is in the vignettes directory of a package. You can create the skeleton 
+of one with `usethis::use_vignettes("your_vignette_name")`. This will act as both 
+your analysis, it will get built as part of your documentation, and it will 
+serve as instructions on how to use your package.  
+
+Alternatively, you could open another R session, and maybe make a project using 
+`usethis::create_project('project_name')` rather than a package. A project is 
+just a directory with some extra little files which make it easy to save the 
+environment -- it is a nice place to do your work, in other words. Then you 
+can make notebooks, save data, save variables, etc. in this project and import 
+the package that you're concurrently working on into it. 
+
+# Publishing
+
+Bioconductor does have comparatively high standards for quality -- at minimum, 
+make sure all of the R CMD and bioc tests are passing. Then visit the bioconductor 
+website and follow their instructions on submitting. Alternatively, you can submit 
+to CRAN. Or, if you've been using github, you don't even really need to worry about 
+this -- your package can already be installed by users using 
+`remotes::install_github("username/Package")`. If you're using the pkgdown and 
+gh-pages branch, then you also have nice, professional looking documentation. 
