@@ -36,9 +36,9 @@ connectToDatabase = function(database_host, database_name, database_user, databa
 #'   (in that order, left joins) and return the result as a tibble
 #'
 #' @importFrom RPostgres dbDisconnect
-#' @importFrom dplyr left_join tbl collect
+#' @importFrom dplyr left_join tbl collect rename
 #' @importFrom stringr str_remove
-#' @importFrom tidyr replace_na
+#' @importFrom tidyr replace_na pivot_wider
 #'
 #' @inheritParams connectToDatabase
 #' @note for information on using R environmental files,
@@ -58,6 +58,7 @@ getMetadata = function(database_host, database_name,
   nutMixMod          = tbl(db, "nutrientMixMod")
   aa                 = tbl(db, "aminoAcids")
   gc                 = tbl(db, "growthConditions")
+  strain             = tbl(db, "strain") %>% collect()
   biosample          = tbl(db, 'bioSample') %>% collect()
   rnasample          = tbl(db, 'rnaSample') %>% collect()
   s1sample           = tbl(db, 's1cDNASample') %>% collect()
@@ -92,9 +93,15 @@ getMetadata = function(database_host, database_name,
     left_join(aa, by = c('aaid_id' = 'aaid')) %>%
     collect() %>%
     left_join(combined_nutrient_df) %>%
-    pivot_wider(names_from = nut, values_from = mod_value)
+    pivot_wider(names_from = nut, values_from = mod_value) %>%
+    # this was a column used for join -- should be dropped
+    dplyr::select(-gc)
 
   joined_meta_tables = biosample %>%
+    # this was a column used to create the gc column -- should be dropped
+    dplyr::select(-gc) %>%
+    left_join(strain, by = c('strain_id' = 'strain')) %>%
+    dplyr::rename(strain = strain_id) %>%
     left_join(conditions_df, by = c('gcid_id' = 'gcid')) %>%
     left_join(rnasample,
               by = c('bioSampleNumber' = 'bioSampleNumber_id'))%>%
@@ -127,8 +134,9 @@ getMetadata = function(database_host, database_name,
   dbDisconnect(db)
 
   # cast integer64 to integers. see Utils is_integer64
-  metadata_df <- metadata_df %>%
-    mutate_if(is_integer64, as.integer)
+  # possibly not necessary after setting defaults to all columns in DB
+  #metadata_df <- metadata_df %>%
+    #mutate_if(is_integer64, as.integer)
 
   return(metadata_df)
 }
