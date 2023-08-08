@@ -1,0 +1,129 @@
+---
+title: "Using Archive Data"
+author: "Chase Mateusiak"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+  Some notes on using data from the `lts` archive
+  brentlabRnaSeqTools package version: `r packageVersion("brentlabRnaSeqTools")`
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{Using Archive Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  include = TRUE,
+  eval = FALSE
+)
+```
+
+```{r setup}
+library(brentlabRnaSeqTools)
+```
+
+# Using data from the lts archive
+
+From 20220923 forward, I am going to carefully version both the archive and 
+the `brentlabRnaSeqTools`. In the past, I haven't done that, and as the database 
+has changed, so has the codebase used to parse and interpret it. As a result, 
+the archived data may not always work with the most current version of this 
+package. I can help you access the appropriate version/commit in the git history 
+if you need it. Alternatively, since the data is clean and you're a data scientist, 
+you should be able to parse the frames on your own outside of this package.
+
+That said, for more recent archived versions, it should work. To use the archive, 
+do something like the following:
+
+```{r}
+library(brentlabRnaSeqTools)
+library(tidyverse)
+
+# mount the cluster, or download the 20220208 kn99 db archive
+# paths will need to be updated for your machine. These are examples
+# of what it would look like if you mount.
+archive_prefix = '/mnt/lts/sequence_data/rnaseq_data/kn99_database_archive'
+coldata_df = read_csv(file.path(archive_prefix, "20220208/combined_df_20220208.csv"))
+count_df = read_csv(file.path(archive_prefix, "20220208/counts.csv"))
+
+gene_ids = getGeneNames(database_info$kn99$db_host,
+                        database_info$kn99$db_name,
+                        Sys.getenv('db_username'),
+                        Sys.getenv('db_password'))
+
+gene_ids = gene_ids$gene_id[1:6967]
+
+coldata_df_fltr = coldata_df %>%
+  filter(purpose == "fullRNASeq",
+         !is.na(fastqFileName))
+
+count_df_fltr = count_df[, colnames(count_df) %in% 
+                           coldata_df_fltr$fastqFileName]
+
+coldata_df_fltr = filter(coldata_df_fltr, 
+                         fastqFileName %in% 
+                           colnames(count_df_fltr))
+
+# make sure the order of the count cols matches order of the metadata rows
+count_df_fltr = count_df_fltr[order(match(colnames(count_df_fltr),
+                                            coldata_df_fltr$fastqFileName))]
+
+# if this checks false, stop and figure out why. useful functions would be 
+# setdiff(). Read the ?setdiff docs -- it is asymetric.
+stopifnot(identical(colnames(count_df_fltr), 
+                    coldata_df_fltr$fastqFileName))
+
+dds = DESeq2::DESeqDataSetFromMatrix(countData = count_df_fltr,
+                                     colData = coldata_df_fltr, 
+                                     design = ~1)
+rownames(dds) = gene_ids
+
+blrs = brentlabRnaSeqSet(dds = dds)
+
+# everything should work as usual from here
+```
+```{r}
+createEnvPert_epWT = function(blrs){
+
+  # filter
+  ep_meta_fastqFileNumbers = extractColData(blrs) %>%
+    filter(strain == 'TDY451',
+           treatment %in% c("cAMP","noTreatment"),
+           treatmentConc %in% c("20", 'noTreatmentConc'),
+           experimentDesign == 'Environmental_Perturbation',
+           purpose == "fullRNASeq",
+           libraryProtocol == 'E7420L',
+           !is.na(fastqFileName)) %>%
+    pull(fastqFileNumber)
+
+  ep_set = blrs[,colData(blrs)$fastqFileNumber %in%
+                  ep_meta_fastqFileNumbers]
+
+  experimental_conditions = alist(medium,
+                                  atmosphere,
+                                  temperature,
+                                  treatment,
+                                  treatmentConc,
+                                  pH,
+                                  timePoint)
+
+  concat_treatment = extractColData(ep_set) %>%
+    mutate(concat_treatment = as.factor(paste(!!!experimental_conditions,
+                                              sep="_"))) %>%
+    pull(concat_treatment)
+
+  colData(ep_set)$concat_treatment = concat_treatment
+
+  ep_set
+
+}
+```

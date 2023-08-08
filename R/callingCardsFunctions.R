@@ -27,15 +27,17 @@
 #'
 #' @export
 rank_response_plot = function(expression_df_list, binding_df_list,
-                              tf, lfc_thres = 0, padj_thres = .05){
+                              tf, random_ratio, lfc_thres = 0, padj_thres = .05){
 
   # TODO -- ADD THE BELOW AS AN OPTION, RATHER THAN UNIVERSAL, so that the
   # plots can be looked at separately rather than standardizing all together
 
   # TODO (CRITICAL)
-  #   first, identify passing set in all expression list using both padj, lfc.
-  #   Then rank passing genes by one criteria (lfc or padj). then threshold
-  #   such that the number of responsive genes is the same
+  #   first, identify responsive set in all expression list using both padj, lfc.
+  #   Then rank responsive genes by one criteria (lfc or padj).
+  #   then threshold such that the number of responsive genes is the same
+  #
+  #   Give user optino to use either lfc or padj (or both) for callign a gene DE (responsive)
 
 
  message("Summarizing data by rank response...")
@@ -54,6 +56,9 @@ rank_response_plot = function(expression_df_list, binding_df_list,
     do.call('rbind', df_list)
   }
 
+
+  # TODO chance is number of responsive genes / number of genes common between expr and binding (nrow)
+  # if this is comparing TFs across expr data, then this would be min(# responsive genes) / common genes (note that you may have to deal with what common genes means )
  rank_res_df %>%
    mutate(expression_source = as.factor(expression_source),
           binding_source = as.factor(binding_source)) %>%
@@ -116,32 +121,39 @@ create_partitions = function(vector_length, equal_parts = 100){
 sort_rank_mean_expr = function(expression_df, expression_src,
                                binding_df, binding_src,
                                lfc_thres, padj_thres,
-                               rank_resolution = 10,
-                               num_rows = 15){
+                               rank_resolution = 5,
+                               num_rows = 30){
 
+  # I think the todo below is already taken care of 20220902
   # TODO remove lfc and padj fltering from here -- do that earlier in rank-response-plot
 
   expression_cols = c('gene', "log2FoldChange", "padj")
   binding_cols = c('gene', 'binding_signal')
 
   stopifnot(expression_cols %in% colnames(expression_df))
+
   expression_df = select(expression_df, all_of(expression_cols)) %>%
-    filter(complete.cases(.))
+    filter(!gene %in% setdiff(binding_df$gene,expression_df$gene))
+  # %>%
+  #   filter(complete.cases(.))
   stopifnot(binding_cols %in% colnames(binding_df))
   binding_df = select(binding_df, all_of(binding_cols)) %>%
-    filter(complete.cases(.))
+    filter(!gene %in% setdiff(binding_df$gene,expression_df$gene))
+  # %>%
+  #   filter(complete.cases(.))
 
-  message(paste0("the overlap between the complete cases in the expression and binding ",
-                 sprintf("gene sets is: %s out of %s in the expression data ",
-                         length(intersect(expression_df$gene, binding_df$gene)),
-                         nrow(expression_df)),
-                 sprintf("and %s in the binding data", nrow(binding_df))))
+  # message(paste0("the overlap between the complete cases in the expression and binding ",
+  #                sprintf("gene sets is: %s out of %s in the expression data ",
+  #                        length(intersect(expression_df$gene, binding_df$gene)),
+  #                        nrow(expression_df)),
+  #                sprintf("and %s in the binding data", nrow(binding_df))))
 
   inner_join(expression_df, binding_df, by = "gene") %>%
     arrange(binding_signal) %>%
     mutate(rank = create_partitions(nrow(.), rank_resolution)*rank_resolution) %>%
     group_by(rank) %>%
     summarise(group_ratio = sum(abs(log2FoldChange) > lfc_thres & padj <= padj_thres)) %>%
+    # check that this is the same as if it were done without the binning/grouping
     mutate(response_ratio = (cumsum(group_ratio)/rank)) %>%
     mutate(binding_source = binding_src) %>%
     mutate(expression_source = expression_src) %>%

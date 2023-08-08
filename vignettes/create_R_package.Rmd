@@ -37,7 +37,7 @@ But, getting the benefits of packaged software requires a certain amount of 'boi
 - [usethis -- a collection of a lot of development tools. More or less, everything is here](https://usethis.r-lib.org/)
 - [roxygen2 -- for building documentation](https://roxygen2.r-lib.org/)
 - [biocthis -- an extension of some usethis functionality, and some extras, which make developing packages which adhere to Bioconductor standards easier](https://bioconductor.org/packages/release/bioc/vignettes/biocthis/inst/doc/biocthis.html)
--[renv -- similar to venv for python](https://rstudio.github.io/renv/)
+- [renv -- similar to venv for python](https://rstudio.github.io/renv/)
 
 # When should I make a package?
 

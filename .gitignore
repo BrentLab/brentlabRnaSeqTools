@@ -8,3 +8,5 @@ inst/doc
 .DS_Store
 local
 docs/*
+igv
+igv/*

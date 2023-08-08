@@ -11,8 +11,8 @@ sort_rank_mean_expr(
   binding_src,
   lfc_thres,
   padj_thres,
-  rank_resolution = 10,
-  num_rows = 15
+  rank_resolution = 5,
+  num_rows = 30
 )
 }
 \arguments{

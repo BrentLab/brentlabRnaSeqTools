@@ -95,11 +95,11 @@ ep_list = list(
   pert = createExperimentSet(blrs, 'envPert_perturbed')
 )
 
-# NOTE!! AS OF 20220201 CNAG_03894 forms a linear depdendence with both 
+# NOTE!! AS OF 20220201 CKF44_03894 forms a linear depdendence with both 
 # concat treatment and libraryDate columns. it is being removed here to solve
 # that issue
 
-ep_list$pert = ep_list$pert[,ep_list$pert$genotype1 != "CNAG_03894"]
+ep_list$pert = ep_list$pert[,ep_list$pert$genotype1 != "CKF44_03894"]
 
 
 ep_list_qc_passing = map(ep_list,qaFilter)
@@ -252,7 +252,7 @@ cumDistIqr = function(set_name){
        stat_ecdf(data = extractColData(ep_list_qc_passing_with_iqr[[set_name]]), 
                  aes(!!rlang::sym(paste0("ep_", set_name, "_iqr"))), 
                  color = "blue") + 
-       ggtitle("orange = normalized counts; blue = libdate_model_removed_libdate")) +
+       ggtitle("orange = normalized counts; blue = libdate_model_removed_libdate") +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,.05))+
   scale_y_continuous(limits = c(0,1), breaks = seq(0,1,.05))
 }

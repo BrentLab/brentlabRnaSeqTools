@@ -190,3 +190,127 @@ brentlabRnaSeqSetTransform <- function(SummarizedExperiment) {
   }
   new("brentlabRnaSeqSetTransform", se)
 }
+
+# Variant Explorer -------------------------------------------------------------
+
+#' @title VariantExplorer
+#' @description Use this to coordinate the analysis of the snpEff summary,
+#' alignment files and bam files.
+#'
+#' @rdname VariantExplorer
+#' @export
+setClass("VariantExplorer",
+         slots = list(
+           metadata = "data.frame",
+           gff = "GenomicRanges",
+           bsgenome = "BSgenome",
+           igv_genome = "character",
+           variants = "data.frame",
+           expected_metadata_fields = "character"
+         ),
+         prototype = prototype(
+           expected_metadata_fields = c("sample_id","bam","snpeff","variant_caller")
+         ),
+         contains = c("data.frame"))
+
+# variant explorer validity check
+setValidity2("VariantExplorer", function(self){
+  msg = NULL
+  if ( length(setdiff(self@expected_metadata_fields, colnames(self@metadata))) > 0){
+    msg = sprintf("Colnames for metadata frame must include %s",
+                  paste0(self@expected_metadata_fields, col=","))
+  } else if(is.null(self@gff)){
+    msg = paste0("The gff slot must be filled with a GenomicRanges object. ",
+                 "Use rtracklayer::import to read in the gff")
+  } else if(is.null(self@bsgenome)){
+    msg = "You must provide a BSgenome object"
+  } else if(identical(self@igv_genome, character(0))){
+    warning("WARNING: no igv genome set!")
+  }
+
+  if (!is.null(msg)){
+    msg
+  } else{
+    TRUE
+  }
+})
+
+
+#' @rdname VariantExplorer
+#' @param sample_metadata sample metadata with at least the columns sample_id,
+#'   snpeff, variant_caller. Suggested columns are bam and vcf.
+#' @param gff_ranges the gff for this organism imported with rtracklayer::import()
+#' @param bsgenome path to a BSgenome object. KN99 has one -- check bioconductor
+#' @param igv_genome path to a genome object created by igvtools
+#'
+#' @return A VariantExplorer object
+#'
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#'
+#' @seealso
+#'  \code{\link[Biostrings]{character(0)}}
+#'  \code{\link[GenomicRanges]{character(0)}}
+#'
+#' @export
+create_variant_explorer = function(sample_metadata,
+                                   gff_ranges,
+                                   bsgenome,
+                                   igv_genome = ""){
+
+  required_cols = c('sample_id', "snpeff", "variant_caller")
+  if (length(setdiff(required_cols, colnames(sample_metadata))) > 0){
+    stop(sprintf("The following columns must be in  the colnames of sample_metadata: %s",
+                 paste(required_cols, collapse=",")))
+  }
+
+
+
+  variant_frame = apply(sample_metadata,
+                        1,
+                        function(x) snpeff_summary_to_long(x[['snpeff']],
+                                                           x[['sample_id']],
+                                                           x[['variant_caller']])) %>%
+    do.call('rbind',.)
+
+  # todo: check that these fields exists
+  gff_ranges[is.na(gff_ranges$gene)]$gene = gff_ranges[is.na(gff_ranges$gene)]$ID
+  gff = gff_ranges[gff_ranges$gene %in% unique(variant_frame[['GeneId']])]
+
+
+  stopifnot(length(unique(gff$gene)) == length(unique(variant_frame[['GeneId']])))
+
+  new("VariantExplorer",
+      metadata = sample_metadata,
+      gff = gff,
+      bsgenome = bsgenome,
+      variants = variant_frame)
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

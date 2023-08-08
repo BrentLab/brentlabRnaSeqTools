@@ -29,6 +29,11 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(brentlabRnaSeqTools)
+library(RSQLite)
+library(tidyverse)
+library(org.Sc.sgd.db)
+
+con = RSQLite::dbConnect(RSQLite::SQLite(),"~/Desktop/cc_metadata/hops_db.sqlite")
 ```
 
 # Creating a Rank-Response plot
@@ -48,12 +53,43 @@ An example of creating the plots is below:
 
 ```{r}
 expr_list = list(
-  expr1 = read_csv("~/Desktop/zev_deseq_res.csv"),
+  expr1 = read_tsv("/mnt/scratch/calling_cards/outside_data/yeast_McIsaac_ZEV/YDL106C.DE_15min.txt"),
   expr2 = read_csv("~/Desktop/zev_deseq_res2.csv")
 )
 
+name_conversion = read_tsv("/mnt/scratch/calling_cards/outside_data/orf_name_conversion.tab",
+                           col_names = c('systematic','common'))
+
+expr1 = read_tsv("/mnt/scratch/calling_cards/outside_data/yeast_McIsaac_ZEV/YOR358W.DE_15min.txt") %>%
+  dplyr::rename(systematic = `#gene_sys`, log2FoldChange = shrunken) %>%
+  left_join(name_conversion) %>%
+  dplyr::select(common, log2FoldChange) %>%
+  dplyr::rename(gene = common) %>%
+  mutate(padj = 0)
+
+expr1 = read_tsv("/mnt/scratch/calling_cards/outside_data/yeast_Kemmeren_KO/YOR358W.DE.txt") %>%
+  dplyr::rename(systematic = `##gene`) %>%
+  left_join(name_conversion) %>%
+  dplyr::select(common, log2_fold_change,p_value) %>%
+  dplyr::rename(gene = common, log2FoldChange = log2_fold_change,padj=p_value)
+
+
+regions = read_tsv("~/code/callingCardsTools/src/callingcardstools/resources/yeast/orf_coding_all_R61-1-1_20080606.promoter_-700bpto0bp_with_ucsc_seqnames_common_names_coord_corrected.bed", col_names = c('chr', 'start', 'stop', 'gene','score','strand'))
+  
+binding1 = tbl(con, "regions_yiming_background_adh1_experiment_HAP5_sig") %>%
+  filter(sample == "HAP5_run_6021") %>%
+  collect() %>%
+  left_join(regions) %>%
+  dplyr::select(gene,poisson_pval) %>%
+  dplyr::rename(binding_signal = poisson_pval) %>%
+  left_join(name_conversion, by = c('gene' = 'common')) %>%
+  distinct(gene, .keep_all = TRUE)
+
+binding1 = filter(binding1, !gene %in% setdiff(binding1$gene,expr1$gene))
+expr1 = filter(expr1, !gene %in% setdiff(binding1$gene,expr1$gene))
+
 binding_list = list(
-  binding1 = read_tsv("~/Desktop/tmp/E0001_HAP2_JP008.sig_prom.txt") %>%
+  binding1 = read_tsv("~/Desktop/t") %>%
     dplyr::rename(gene = `Systematic Name`,
                   binding_signal = `Poisson pvalue`) %>%
     dplyr::select(gene, binding_signal),
@@ -63,7 +99,9 @@ binding_list = list(
     dplyr::select(gene, binding_signal)
 )
 
-rank_response_plot(expr_list, binding_list, 'test', lfc_thres = 0, padj_thres = .8)
+rank_response_plot(list(zev = expr1), list(run_6021=binding1), 'test', lfc_thres = 0, padj_thres = .05) +
+  scale_y_continuous(limits = c(0,1), breaks = seq(0,1,.1)) +
+  coord_cartesian(xlim = c(0,150))
 ```
 
 Caveat: I haven't implemented the random response line yet. However, that 

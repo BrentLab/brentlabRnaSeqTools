@@ -146,16 +146,16 @@ protocol_tallies = replicateByProtocolTally(blrs_90min_qc_passing)
 
 protocol_fltr =
   as_tibble(colData(blrs_90min_qc_passing)) %>%
-  filter(!(genotype1 == "CNAG_00031" & libraryProtocol == "SolexaPrep"),
-         !(genotype1 == "CNAG_00871" & libraryProtocol == "E7420L"),
-         !(genotype1 == "CNAG_00883" & libraryProtocol == "E7420L"),
-         !(genotype1 == "CNAG_01626" & libraryProtocol == "E7420L"),
-         !(genotype1 == "CNAG_02774" & libraryProtocol == "E7420L"),
-         !(genotype1 == "CNAG_03018" & libraryProtocol == "SolexaPrep"),
-         !(genotype1 == "CNAG_03279" & libraryProtocol == "SolexaPrep"),
-         !(genotype1 == "CNAG_03849" & libraryProtocol == "E7420L"),
-         !(genotype1 == "CNAG_04353" & libraryProtocol == "E7420L"),
-         !(genotype1 == "CNAG_05222" & libraryProtocol == "SolexaPrep")) %>%
+  filter(!(genotype1 == "CKF44_00031" & libraryProtocol == "SolexaPrep"),
+         !(genotype1 == "CKF44_00871" & libraryProtocol == "E7420L"),
+         !(genotype1 == "CKF44_00883" & libraryProtocol == "E7420L"),
+         !(genotype1 == "CKF44_01626" & libraryProtocol == "E7420L"),
+         !(genotype1 == "CKF44_02774" & libraryProtocol == "E7420L"),
+         !(genotype1 == "CKF44_03018" & libraryProtocol == "SolexaPrep"),
+         !(genotype1 == "CKF44_03279" & libraryProtocol == "SolexaPrep"),
+         !(genotype1 == "CKF44_03849" & libraryProtocol == "E7420L"),
+         !(genotype1 == "CKF44_04353" & libraryProtocol == "E7420L"),
+         !(genotype1 == "CKF44_05222" & libraryProtocol == "SolexaPrep")) %>%
   pull(fastqFileNumber)
 
 blrs_90min_qc_passing_protocol_fltr =
@@ -284,8 +284,8 @@ protocol_fltr_tally =
 min_set_size = 1
 
 hold_out_set = list(
-  SolexaPrep = createTestTrainSet(fltr_full_set_90min$SolexaPrep, min_set_size),
-  E7420L = createTestTrainSet(fltr_full_set_90min$E7420L, min_set_size)
+  SolexaPrep = test_train_partition(fltr_full_set_90min$SolexaPrep, min_set_size),
+  E7420L = test_train_partition(fltr_full_set_90min$E7420L, min_set_size)
 )
 ```
 
@@ -294,7 +294,7 @@ hold_out_set = list(
 ```{r}
 setNinetyMinDesign = function(obj){
   obj$genotype1 = as.factor(obj$genotype1)
-  relevel(obj$genotype1, ref = "CNAG_00000")
+  relevel(obj$genotype1, ref = "CKF44_00000")
 
   obj$libraryDate = as.factor(obj$libraryDate)
   relevel(obj$libraryDate, ref = min(as.character(obj$libraryDate)))

@@ -300,6 +300,8 @@ listTables = function(db){
                   schemaname != 'information_schema';")
 }
 
+
+
 #'
 #' get (via a http POST request) your user authentication token from the database
 #'
@@ -312,29 +314,72 @@ listTables = function(db){
 #'   If you don't have one, then you'll need to ask for one to be created
 #' @param password password associated with your username
 #'
+#' @return the auth token associated with the username and password
+#'
 #' @note do not save your auth token in a public repository.
 #'   For example, you might put it in your .Renviron and then make sure
 #'   that your .Renviron is in your .gitignore. Otherwise, save it outside
 #'   of a github tracked directory or otherwise ensure that it
 #'   will not be pushed up to github
 #'
-#' @return the auth token associated with the username and password
+#' @examples
+#' \dontrun{
+#' # Get a user authentication token
+#' token <- getUserAuthToken("https://example.com/auth", "myusername", "mypassword")
+#' print(token)
+#'
+#' # setting this into your environment
+#' # read about using your .Renviron here
+#' # https://support.posit.co/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf
+#' # you can set this at either a user or project level. I suggest working
+#' # in projects in general
+#' usethis::edit_r_environ('project')
+#'
+#' # this will open a file called .Renviron in your current project.
+#'
+#' # IMPORTANT immediately create a .gitignore and add the like .Renviron
+#' # to it, or you risk putting your login token onto github
+#'
+#' # add your token to the .Renviron like this
+#' # TOKEN=<your token>
+#'
+#' # reload the project, and now you can access the environmental variable
+#' # token
+#' print(Sys.getenv('TOKEN'))
+#'
+#' # Using the authentication token with httr
+#' library(httr)
+#' # if you have already put your token in your .Renviron, then you could
+#' # access it like this:
+#' token = Sys.getenv("TOKEN")
+#' # otherwise, token is set as it is in the example above
+#' my_api_call <- GET("https://example.com/api",
+#'                    add_headers(Authorization = paste("token", token)))
+#' content(my_api_call)
+#' }
 #'
 #' @export
-getUserAuthToken = function(url, username, password){
-
+getUserAuthToken <- function(url, username, password) {
   # see package httr for help
-  token_response = POST(url=url,
-                        body=list(username=username,
-                                  password=password),
-                        encode='json')
+  token_response <- httr::POST(
+    url = url,
+    body = list(
+      username = username,
+      password = password
+    ),
+    encode = "json"
+  )
 
-  if( http_status(token_response)$category == "Success" ){
-    message("You might want to put your token in your .Renviron. If you do, please make sure the .Renviron file is in your .gitignore")
+  if (http_status(token_response)$category == "Success") {
+    message(paste("You might want to put your token in your .Renviron.",
+                  "If you do, please make sure the .Renviron file",
+                  "is in your .gitignore",
+                  sep = " "
+    ))
     httr::content(token_response)$token
-  } else{
+  } else {
     message("There was a problem getting your token:")
-    message(http_status(token_response)$message)
+    message(httr::http_status(token_response)$message)
   }
 }
 

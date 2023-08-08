@@ -211,7 +211,9 @@ createEPTally = function(unfltr_set, qc1_set, iqr_set, tally_conditions){
 #' @export
 createNinetyMinuteInduction_2016grant = function(blrs){
 
-
+  # TODO removed the filtering on genotype1 having cnag/ckf44 in prefix
+  # b/c of change to strain table. check that samples form eg daniel do not
+  # slip through now
   condition_fltr_metadata = extractColData(blrs) %>%
     filter(baseNutrientMixName_id %in% c("dmem"),
            nutrientMixModName_id == 'none',
@@ -222,7 +224,6 @@ createNinetyMinuteInduction_2016grant = function(blrs){
            timePoint %in% c(90),
            purpose=="fullRNASeq",
            !is.na(fastqFileName),
-           str_detect(genotype1, "CNAG"),
            genotype2 == "none",
            perturbation1 =="deletion" | is.na(perturbation1) | perturbation1 == "")
 
@@ -230,7 +231,7 @@ createNinetyMinuteInduction_2016grant = function(blrs){
 
   # get wildtypes
   wt_induction_set = condition_fltr_metadata %>%
-    filter(genotype1 == "CNAG_00000", strain == 'TDY451')
+    filter(strain == 'TDY451')
 
   # filter for genotypes in the grant summary
   # exclude genotypes labelled 2 (which means 2 failed attempts)
@@ -262,6 +263,9 @@ createNinetyMinuteInduction_2016grant = function(blrs){
 #' @export
 createNinetyMinuteInduction_2016grantWithDoubles = function(blrs){
 
+  # TODO removed the filtering on genotype1 having cnag/ckf44 in prefix
+  # b/c of change to strain table. check that samples form eg daniel do not
+  # slip through now
   condition_fltr_metadata = extractColData(blrs) %>%
     filter(baseNutrientMixName_id %in% c("dmem"),
            nutrientMixModName_id == 'none',
@@ -272,14 +276,13 @@ createNinetyMinuteInduction_2016grantWithDoubles = function(blrs){
            timePoint %in% c(90),
            purpose=="fullRNASeq",
            !is.na(fastqFileName),
-           str_detect(genotype1, "CNAG"),
            perturbation1 =="deletion" | is.na(perturbation1) | perturbation1 == "",
            perturbation2 %in% c("deletion","none"))
 
   # TODO: COMBINE THE FILTER STATEMENTS INTO SINGLE FILTER
   # get wildtypes
   wt_induction_set = condition_fltr_metadata %>%
-    filter(genotype1 == "CNAG_00000", strain == 'TDY451')
+    filter(strain == 'TDY451')
 
   double_ko_df = condition_fltr_metadata %>%
     filter(genotype2 != "none",
@@ -319,6 +322,9 @@ createNinetyMinuteInduction_2016grantWithDoubles = function(blrs){
 #' @export
 createNinetyMinuteInduction_non2016grant = function(blrs){
 
+  # TODO removed the filtering on genotype1 having cnag/ckf44 in prefix
+  # b/c of change to strain table. check that samples form eg daniel do not
+  # slip through now
   condition_fltr_metadata = extractColData(blrs) %>%
     filter(baseNutrientMixName_id %in% c("dmem"),
            nutrientMixModName_id == 'none',
@@ -329,18 +335,17 @@ createNinetyMinuteInduction_non2016grant = function(blrs){
            timePoint %in% c(90),
            purpose =="fullRNASeq",
            !is.na(fastqFileName),
-           str_detect(genotype1, "CNAG"),
            perturbation1 == "deletion" | is.na(perturbation1) | perturbation1 == "",
            perturbation2 %in% c("deletion", "none"))
 
   # TODO: COMBINE THE FILTER STATEMENTS INTO SINGLE FILTER
   # get wildtypes
   wt_induction_set = condition_fltr_metadata %>%
-    filter(genotype1 == "CNAG_00000", strain == 'TDY451')
+    filter(strain == 'TDY451')
 
   # filter for genotypes for those not in the grant -- include doubles
   perturbed_induction_set = condition_fltr_metadata %>%
-    filter(genotype1 != "CNAG_00000",
+    filter(genotype1 != "CKF44_00000",
            !genotype1 %in% grant_df$genotype1 |
              genotype2 %in% grant_df$genotype1)
 
@@ -371,6 +376,9 @@ createNinetyMinuteInduction_non2016grant = function(blrs){
 #' @export
 createNinetyMinuteInduction_all = function(blrs){
 
+  # TODO removed the filtering on genotype1 having cnag/ckf44 in prefix
+  # b/c of change to strain table. check that samples form eg daniel do not
+  # slip through now
   condition_fltr_metadata = extractColData(blrs) %>%
     filter(baseNutrientMixName_id %in% c("dmem"),
            nutrientMixModName_id == 'none',
@@ -381,18 +389,17 @@ createNinetyMinuteInduction_all = function(blrs){
            timePoint %in% c(90),
            purpose =="fullRNASeq",
            !is.na(fastqFileName),
-           str_detect(genotype1, "CNAG"),
            perturbation1 == "deletion" | is.na(perturbation1) | perturbation1 == "",
            perturbation2 %in% c("deletion", "none"))
 
   # TODO: COMBINE THE FILTER STATEMENTS INTO SINGLE FILTER
   # get wildtypes
   wt_set = condition_fltr_metadata %>%
-    filter(genotype1 == "CNAG_00000", strain == 'TDY451')
+    filter(strain == 'TDY451')
 
   # filter for genotypes for those not in the grant -- include doubles
   perturbed_set = condition_fltr_metadata %>%
-    filter(genotype1 != "CNAG_00000")
+    filter(strain != "TDY451", strain != "TDY450")
 
   # put the wt and filtered genotypes together
   set = bind_rows(wt_set, perturbed_set)
@@ -557,14 +564,18 @@ replicateByProtocolTally_90min = function(metadata_df){
 #' @export
 filterWtByExperimentalLibdate_90min = function(blrs_90min){
 
+  # TODO removed the filtering on genotype1 having cnag/ckf44 in prefix
+  # b/c of change to strain table. check that samples form eg daniel do not
+  # slip through now
+
   # get unique dates of WT
   wt_dates = unique(pull(filter(
-    extractColData(blrs_90min), genotype1 == "CNAG_00000"),
+    extractColData(blrs_90min), strain == "TDY451"),
     libraryDate))
 
   # get unique dates of perturbed samples
   perturbed_dates = unique(pull(filter(
-    extractColData(blrs_90min), genotype1 != "CNAG_00000"),
+    extractColData(blrs_90min), strain != "TDY451", strain != "TDY450"),
     libraryDate))
 
   # find the wt dates which are not shared by perturbed samples

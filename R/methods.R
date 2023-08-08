@@ -333,14 +333,14 @@ setMethod("replicateByProtocolTally",
 
 })
 
-## createTestTrainSet ----
+## test_train_partition ----
 
 #' create test train set
 #'
 #' @description For brentlabRnaSeqExperiment objects, this offers methods to
 #'   create train test sets
 #'
-#' @rdname createTestTrainSet
+#' @rdname test_train_partition
 #'
 #' @param x a brentlabRnaSeqExperiment object
 #' @param min_set_size the minimum replicate set size to consider for hold outs
@@ -348,7 +348,7 @@ setMethod("replicateByProtocolTally",
 #' @return a list with slots train and test, each with brentlabRnaSeqSetExperiments
 #'
 #' @export
-setMethod("createTestTrainSet",
+setMethod("test_train_partition",
           "brentlabRnaSeqExperiment",
           function(x, min_set_size) {
 
@@ -357,7 +357,7 @@ setMethod("createTestTrainSet",
       genotype_list = as_tibble(colData(x)) %>%
         group_by(genotype1) %>%
         tally() %>%
-        filter(genotype1 != "CNAG_00000" & n > min_set_size) %>%
+        filter(genotype1 != "CKF44_00000" & n > min_set_size) %>%
         pull(genotype1)
 
       test_ffn = as_tibble(colData(x)) %>%
@@ -385,4 +385,144 @@ setMethod("createTestTrainSet",
       train = train,
       test = test
     )
+})
+
+
+#' @rdname VariantExplorer
+#' @param x a VariantExplorer object
+#' @inheritParams brentlabRnaSeqExperiment
+setMethod("igv_script", "VariantExplorer", function(x,...){
+
+  # check igv_genome attribute
+  if (identical(x@igv_genome, character(0))){
+    stop("The igv_genome slot must exist")
+  } else if(!file.exists(x@igv_genome)){
+    stop("The path to the igv genome is not valid")
+  }
+
+  # create the locus granges
+  granges = x@gff[x@gff$gene == locus & x@gff$type == "gene"]
+  if (length(granges) == 0){
+    stop(sprintf("Gene: %s is not recognized -- no ranges present in the gff",
+                 locus))
+  }
+
+  # create output directories
+  script_output_dir = file.path(output_dir, "igv", "igv_scripts")
+  dir.create(script_output_dir, recursive = TRUE)
+  browser_output_dir = file.path(output_dir, "igv", "browser_shots")
+  dir.create(browser_output_dir, recursive=TRUE)
+
+
+  # create output paths
+  if (image_basename == ""){
+    script_output_path = file.path(script_output_dir,paste0(locus,".txt"))
+    browser_output_filepath = file.path(browser_output_dir,paste0(locus,".png"))
+  } else{
+    script_output_path = file.path(script_output_dir,paste0(image_basename,".txt"))
+    browser_output_filepath = file.path(browser_output_dir,paste0(image_basename,".png"))
+  }
+
+  # get bam list
+  sample_id_list = x@variants %>%
+    filter(gene_id == locus) %>%
+    pull(sample) %>%
+    unique()
+
+  bam_list = x@metadata %>%
+    filter(sample_id %in% sample_id_list) %>%
+    pull(bam) %>%
+    unique()
+
+  # write igv batchscript lines
+  load_samples = paste0(map(bam_list, ~sprintf("\tload %s\n", .)), collapse=" ")
+  parsed_range = paste(as.character(granges@seqnames),
+                       as.character(granges@ranges), sep=":")
+  batch_script = paste0("new\nsnapshotDirectory %s\nmaxPanelHeight %s\ngenome %s\n",
+                        load_samples, "goto %s", collapse = " ")
+  batch_script = sprintf(batch_script,
+                         path.expand(output_dir),
+                         maxPanelHeight,
+                         path.expand(x@igv_genome),
+                         parsed_range)
+  if(exit_browser){
+    batch_script = paste0(batch_script, "\nsnapshot %s\nexit", collapse = " ")
+    batch_script = sprintf(batch_script, browser_output_filepath)
+  }
+
+  cat(batch_script, file = script_output_path)
+})
+
+#' @export
+#' @rdname VariantExplorer
+#' @param object a VariantExplorer instance
+setMethod('summary', signature(object = 'VariantExplorer'), function(object){
+  split_variants = object@variants %>%
+    ungroup() %>%
+    group_by(effect,impact) %>%
+    tally() %>%
+    dplyr::rename(num_genes = n) %>%
+    ungroup() %>%
+    group_by(impact) %>%
+    arrange(impact, desc(num_genes), .by_group = TRUE) %>%
+    droplevels() %>%
+    group_split()
+
+
+   names(split_variants) = unlist(map(split_variants, ~unique(pull(.,impact))))
+
+   pretty_print = function(impact_table, impact_level){
+
+       message(sprintf("Impact level: %s", impact_level))
+     dplyr::select(impact_table,-impact) %>% print()
+   }
+
+   for(i in names(split_variants)){
+     pretty_print(split_variants[[i]], i)
+   }
+
+
+})
+
+#' Visualize coverage at a locus
+#' @rdname VariantExplorer
+#' @param x a VariantExplorer object
+#' @param gene the name of the gene you wish to visualize
+#' @param sample the sample_id you wish to see
+#' @param plot_type either 'pileup' or 'coverage'. Defaults to 'pileup'
+#'
+#' @importFrom withr local_options
+#' @importFrom Gviz AlignmentsTrack AnnotationTrack GenomeAxisTrack SequenceTrack plotTracks
+#' @importFrom dplyr filter pull
+#'
+#' @export
+setMethod("visualize", "VariantExplorer",
+          function(x, gene, sample, plot_type = 'pileup'){
+            # set options locally -- this will revert to outer when function completes
+            withr::local_options(list(ucscChromosomeNames = FALSE))
+
+            gene_granges = x@gff[x@gff$gene == gene]
+            bamfile = filter(ve@metadata, sample_id == sample) %>%
+              pull(bam)
+
+
+            track_list = list(
+              axis_track = GenomeAxisTrack(),
+              annotation = AnnotationTrack(gene_granges, group = gene_granges$ID),
+              alignment = AlignmentsTrack(bamfile,
+                                          isPaired = TRUE,
+                                          showMismatches = TRUE,
+                                          showIndels = TRUE,
+                                          type = plot_type),
+              sequence  = SequenceTrack(ve@bsgenome,chromosome = unique(gene_granges$seqnames))
+            )
+
+
+            plotTracks(track_list,
+                       chromosome = unique(gene_granges$seqnames),
+                       start = gene_granges[gene_granges$type == 'gene']$start,
+                       end = gene_granges[gene_granges$type == 'gene']$end,
+                       add53 = TRUE,
+                       showId = TRUE,
+                       labelPos = 'below')
 })

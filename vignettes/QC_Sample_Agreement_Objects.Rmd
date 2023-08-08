@@ -129,7 +129,7 @@ colData(blrs_90min_grant_fltr)$libraryProtocol =
 
 colData(blrs_90min_grant_fltr)$genotype1 = 
   colData(blrs_90min_grant_fltr)$genotype1 %>%
-  relevel(ref = "CNAG_00000") %>%
+  relevel(ref = "CKF44_00000") %>%
   droplevels()
 
 mm = model.matrix(~libraryProtocol+libraryDate+genotype1, 
@@ -217,7 +217,7 @@ colData(blrs_grant_with_doubles_fltr)$genotype =
         sep = "_") %>%
   str_remove('_$') %>%
   factor() %>%
-  relevel(ref = "CNAG_00000") %>%
+  relevel(ref = "CKF44_00000") %>%
   droplevels()
 
 colData(blrs_grant_with_doubles_fltr)$libraryProtocol = 
@@ -313,7 +313,7 @@ colData(blrs_90min_all_fltr)$genotype =
         sep = "_") %>%
   str_remove('_$') %>%
   factor() %>%
-  relevel(ref = "CNAG_00000") %>%
+  relevel(ref = "CKF44_00000") %>%
   droplevels()
 
 colData(blrs_90min_all_fltr)$libraryProtocol = 
@@ -381,11 +381,11 @@ ep_list = list(
   perturbed = createExperimentSet(blrs, 'envPert_perturbed')
 )
 
-# NOTE!! AS OF 20220201 CNAG_03894 forms a linear depdendence with both 
+# NOTE!! AS OF 20220201 CKF44_03894 forms a linear depdendence with both 
 # concat treatment and libraryDate columns. it is being removed here to solve
 # that issue
 
-ep_list$perturbed = ep_list$perturbed[,ep_list$perturbed$genotype1 != "CNAG_03894"]
+ep_list$perturbed = ep_list$perturbed[,ep_list$perturbed$genotype1 != "CKF44_03894"]
 ```
 
 ### Quality Filter

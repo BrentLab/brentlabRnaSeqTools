@@ -406,9 +406,13 @@ novoalignPipelineQC = function(meta_df,
                  "Additionally, threads/cpus must be on the same machine ",
                  "(eg on slurm nodes_per_task=1, cpus_per_task=8)"))
 
+  # TODO removed the filtering on genotype1 having cnag/ckf44 in prefix
+  # b/c of change to strain table. check that samples form eg daniel do not
+  # slip through now
+
   # extract all perturbed loci in run
   geno1_loci = meta_df %>%
-    filter(genotype1 != 'CNAG_00000') %>%
+    filter(strain != 'TDY451', strain != 'TDY450') %>%
     pull(genotype1) %>%
     as.character() %>%
     unique()
@@ -468,6 +472,8 @@ novoalignPipelineQC = function(meta_df,
       # calculate perturbed locus metrics
       if(!is.na(row$locus)){
 
+        # note this replacement is unnecessary after the strain table addition
+        # on 20220830. kept for safety and markers
         locus_granges = geneGRanges(annote_obj_path,
                                     str_replace(row$locus, "CNAG", "CKF44"),
                                     feature = 'cds')
@@ -610,7 +616,7 @@ autoAuditQcTable = function(qc_table){
                     autoStatus)) %>%
 
     mutate(autoStatus =
-             ifelse((genotype1 != "CNAG_00000" &
+             ifelse((genotype1 != "CKF44_00000" &
                        genotype1Coverage >
                        kn99_novo_htseq_thresholds$perturbedCoverage) |
                       ((!is.na(genotype2) | genotype2 != "") &
@@ -633,7 +639,7 @@ autoAuditQcTable = function(qc_table){
                     autoStatus)) %>%
 
     mutate(autoStatus =
-             ifelse((genotype1 == "CNAG_00000" |
+             ifelse((genotype1 == "CKF44_00000" |
                        (marker1 == "G418" & (is.na(marker2) | marker2 == ""))) &
                       (natCoverage > kn99_novo_htseq_thresholds$natUnexpectedCoverage &
                          natLog2cpm > kn99_novo_htseq_thresholds$natUnexpectedLog2cpm),
@@ -641,7 +647,7 @@ autoAuditQcTable = function(qc_table){
                     autoStatus)) %>%
 
     mutate(autoStatus =
-             ifelse((genotype1 == "CNAG_00000" |
+             ifelse((genotype1 == "CKF44_00000" |
                        (marker1 == "NAT" & (is.na(marker2) | marker2 == ""))) &
                       g418Log2cpm > kn99_novo_htseq_thresholds$g418UnxpectedLog2cpm,
                     autoStatus + kn99_novo_htseq_status$g418Unexpected,

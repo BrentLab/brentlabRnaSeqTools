@@ -17,12 +17,15 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r, setup}
+library(DiagrammeR)
+```
+
+
 # Requirements
 
 An up to date R (so whatever the current version is -- check CRAN) and up to 
-date Rstudio
-
-# Install the following
+date Rstudio. You also need to install the following packages:
 
 ```{r}
 
@@ -46,7 +49,7 @@ like that.
 If you are not one of the computational/analyst people, then ask for help if 
 there are errors in the installation of those two packages. 
 
-# Install the brentlabRnaSeqTools
+# Install
 
 If there is a 'passing' badge in the github README, then this has been 
 successfully built on up to date linux, mac and windows OS. It should also work 
@@ -58,7 +61,7 @@ also include the output of `Sys.info()` in your issue report.
 remotes::install.packages("BrentLab/brentlabRnaSeqTools", Ncpus = 5)
 ```
 
-# Set up some environmental variables
+# Setup Environmental Variables
 
 Environmental variables are variables that are read by R and loaded into your 
 session when you launch R. You can set either 'user' level variables, which are 
@@ -111,153 +114,30 @@ Since the user level environment file is stored in `~/.Renviron`, there is
 no danger of pushing these credentials up to git if you are in a directory which 
 you are tracking with git/github.
 
-# Using an Rstudio project
-
-## set your working directory
-
-If you do not already have a directory in which you store the projects you work 
-on, create one. I suggest a direcory called `projects` in your `$HOME`
+# Project Overview
 
 ```{r}
-project_dir = "~/projects"
-if(!dir.exists(project_dir)){
-  dir.create(project_dir)
-}
-setwd(project_dir)
+grViz("digraph UML_Class_diagram {
+	graph [
+		label='Package Structure'
+		labelloc='t'
+		fontname='Helvetica,Arial,sans-serif'
+	]
+	node [
+		fontname='Helvetica,Arial,sans-serif'
+		shape=record
+		style=filled
+		fillcolor=gray95
+	]
+	edge [fontname='Helvetica,Arial,sans-serif']
+	edge [arrowhead=vee style=dashed]
+	brentlabSeqTools -> brentlabSeqSet
+	brentlabSeqTools -> VariantExplorer
+
+	brentlabSeqSet[label = <{<b> brentlabSeqSet  </b> | + property<br align='left'/>...<br align='left'/>|+ method<br align='left'/>...<br align='left'/>}>]
+	VariantExplorer[label = <{<b> VariantExplorer</b> | +metadata<br align='left'/> +gff<br align='left'/> +bsgenome<br align='left'/> +igv_genome <br align='left' /> +variants<br align='left'/> +expected_metadata_fields<br align='left'/>&nbsp;&nbsp;&nbsp;&nbsp; default: sample_id,bam,snpeff,variant_caller&nbsp;<br align='left'/><br align='left'/>|+create_variant_explorer<br align='left'/>+rank_results<br align='left'/>+visualize<br align='left'/>}>]
+
+}")
 ```
 
-## Create a new Rstudio project
-
-A project is a subset of the infrastructure in an R software package. You can use 
-a virtual environment, .Renviron files for environmental variables, etc. It is a 
-tool for reproducibility
-
-```{r}
-# if this is for the nineyMinuteInduction data, for example, you might call 
-# this project "ninetyMinInduction".
-project_name = "my_new_project"
-
-usethis::create_project(project_name)
-```
-
-## Using the project directory
-
-A new Rstudio session will launch in your new project directory. Now, whenever 
-you launch this project, all of your environment variables in .Renviron will be 
-loaded. If you are using a virtual environment (a good idea for reproducibility. 
-Use `renv`), then your virtual environment will be automatically launched, also.  
-
-The `/R` directory is for R scripts. You could make a `notebooks` directory, or 
-just put the notebook in the project parent directory, for example.
-
-[See here for a project directory example](https://github.com/cmatKhan/eds1_mimic_cc)
-
-## Using project level environmental variables in an active R project
-
-Just as with the user level environmental variables, you can set environmental 
-variables for a particular project. These are read in addition to the 
-user level variables, and will overwrite them if there are two that are named 
-the same thing. The first thing to do is to make sure that the project level 
-`.Renviron` is in the `.gitignore` so that you don't accidently push up login 
-credentials
-
-```{r}
-# you can use this, or just click on the .gitignore file in the project
-usethis::edit_git_ignore('project')
-```
-
-In the `.gitignore` file, add `.Renviron`. Next, open a project level `.Renviron`
-
-```{r}
-usethis::edit_r_environ("project")
-```
-
-and edit as before. Remember to re-launch your R session after editing the 
-`.Renviron` to have access to the environmental variables.
-
-# Using data from the lts archive
-
-```{r}
-library(brentlabRnaSeqTools)
-library(tidyverse)
-
-# mount the cluster, or download the 20220208 kn99 db archive
-# paths will need to be updated for your machine. These are examples
-# of what it would look like if you mount.
-archive_prefix = '/mnt/lts/sequence_data/rnaseq_data/kn99_database_archive'
-coldata_df = read_csv(file.path(archive_prefix, "20220208/combined_df_20220208.csv"))
-count_df = read_csv(file.path(archive_prefix, "20220208/counts.csv"))
-
-gene_ids = getGeneNames(database_info$kn99$db_host,
-                        database_info$kn99$db_name,
-                        Sys.getenv('db_username'),
-                        Sys.getenv('db_password'))
-
-gene_ids = gene_ids$gene_id[1:6967]
-
-coldata_df_fltr = coldata_df %>%
-  filter(purpose == "fullRNASeq",
-         !is.na(fastqFileName))
-
-count_df_fltr = count_df[, colnames(count_df) %in% 
-                           coldata_df_fltr$fastqFileName]
-
-coldata_df_fltr = filter(coldata_df_fltr, 
-                         fastqFileName %in% 
-                           colnames(count_df_fltr))
-
-# make sure the order of the count cols matches order of the metadata rows
-count_df_fltr = count_df_fltr[order(match(colnames(count_df_fltr),
-                                            coldata_df_fltr$fastqFileName))]
-
-# if this checks false, stop and figure out why. useful functions would be 
-# setdiff(). Read the ?setdiff docs -- it is asymetric.
-stopifnot(identical(colnames(count_df_fltr), 
-                    coldata_df_fltr$fastqFileName))
-
-dds = DESeq2::DESeqDataSetFromMatrix(countData = count_df_fltr,
-                                     colData = coldata_df_fltr, 
-                                     design = ~1)
-rownames(dds) = gene_ids
-
-blrs = brentlabRnaSeqSet(dds = dds)
-
-# everything should work as usual from here
-```
-```{r}
-createEnvPert_epWT = function(blrs){
-
-  # filter
-  ep_meta_fastqFileNumbers = extractColData(blrs) %>%
-    filter(strain == 'TDY451',
-           treatment %in% c("cAMP","noTreatment"),
-           treatmentConc %in% c("20", 'noTreatmentConc'),
-           experimentDesign == 'Environmental_Perturbation',
-           purpose == "fullRNASeq",
-           libraryProtocol == 'E7420L',
-           !is.na(fastqFileName)) %>%
-    pull(fastqFileNumber)
-
-  ep_set = blrs[,colData(blrs)$fastqFileNumber %in%
-                  ep_meta_fastqFileNumbers]
-
-  experimental_conditions = alist(medium,
-                                  atmosphere,
-                                  temperature,
-                                  treatment,
-                                  treatmentConc,
-                                  pH,
-                                  timePoint)
-
-  concat_treatment = extractColData(ep_set) %>%
-    mutate(concat_treatment = as.factor(paste(!!!experimental_conditions,
-                                              sep="_"))) %>%
-    pull(concat_treatment)
-
-  colData(ep_set)$concat_treatment = concat_treatment
-
-  ep_set
-
-}
-```
 

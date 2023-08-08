@@ -1,0 +1,84 @@
+---
+title: "Explore DNA Variants"
+author: "Chase Mateusiak"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+  Preliminary notes on using the VarientExplorer object to examine variants 
+  in the genotype_check pipeline output
+  brentlabRnaSeqTools package version: `r packageVersion("brentlabRnaSeqTools")`
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{Explore DNA Variants}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  include = TRUE,
+  eval = FALSE
+)
+```
+
+# Using the Variant Explorer
+
+These are preliminary notes on using the Variant Explorer object
+
+```{r setup}
+library(brentlabRnaSeqTools)
+#devtools::load_all("../R")
+```
+
+## create a sample metadata frame
+
+```{r}
+gff = rtracklayer::import("~/ref/KN99/current_htcf_genome/KN99_stranded_annotations_fungidb_augment.gff")
+
+snpeff_files = Sys.glob("/mnt/scratch/variant_calling_pipeline/genotype_check/run_6023/variant_annote/bwamem2/snpeff/*txt")
+names(snpeff_files) = ifelse(str_extract(snpeff_files, "tiddit|dusted") == 'tiddit', 'tiddit', 'freebayes')
+snpeff_files  = snpeff_files[names(snpeff_files)=='freebayes']
+
+bam_list = Sys.glob("/mnt/scratch/share_genotype_results/run_6023_results/alignment/*bam")
+names(bam_list) = str_extract(bam_list, "sample_\\d+")
+
+sample_meta = tibble(sample_id = str_extract(snpeff_files, "sample_\\d+"),
+                     snpeff = snpeff_files,
+                     variant_caller = names(snpeff_files)) %>%
+  left_join(tibble(sample_id = names(bam_list), bam = bam_list))
+```
+
+## Instantiate a VarianetExplorer
+
+```{r}
+ve = create_variant_explorer(sample_meta,
+                             gff,
+                             igv_genome = "~/ref/KN99/current_htcf_genome/kn99_stranded.genome",
+                             BSgenome.CneoformansVarGrubiiKN99.NCBI.ASM221672v1)
+```
+
+## Get an overview of the variants present in your samples
+
+```{r}
+
+summary(ve)
+#ve = rank_results(ve)
+```
+
+## look at the 
+
+```{r}
+
+view_variants(ve@variants)
+
+visualize(ve,'CKF44_01599', "sample_5", 'pileup')
+
+igv_script(ve, "CKF44_02980")
+```
+

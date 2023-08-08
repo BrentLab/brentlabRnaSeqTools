@@ -30,7 +30,7 @@ setPerturbedLociToZero = function(object){
   ) %dopar% {
     perturbed_locus = as.character(unique(object[,as.character(colname)]$genotype1))
     col_matrix = counts(object)[,as.character(colname), drop = FALSE]
-    if (perturbed_locus != "CNAG_00000"){
+    if (perturbed_locus != "CKF44_00000"){
       perturbed_locus = str_replace(perturbed_locus, "CNAG", "CKF44")
       col_matrix[perturbed_locus,] = 0
     }

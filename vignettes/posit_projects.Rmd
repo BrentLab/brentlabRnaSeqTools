@@ -1,0 +1,111 @@
+---
+title: "Using Posit Projects"
+author: "Chase Mateusiak"
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+abstract: >
+  A brief introduction to using Posit projects to organize your work.
+  brentlabRnaSeqTools package version: `r packageVersion("brentlabRnaSeqTools")`
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{Using Posit Projects}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  include = TRUE,
+  eval = FALSE
+)
+```
+
+```{r setup}
+library(brentlabRnaSeqTools)
+```
+
+# Using an Rstudio project
+
+## set your working directory
+
+If you do not already have a directory in which you store the projects you work 
+on, create one. I suggest a directory called `projects` in your `$HOME`
+
+```{r}
+project_dir = "~/projects"
+if(!dir.exists(project_dir)){
+  dir.create(project_dir)
+}
+setwd(project_dir)
+```
+
+## Set your global options
+
+Next, in your Rstudio window, go to Tools -> Global Options. A window will 
+open on the `General` tab. I recommend setting your default working directory 
+to your new `~/projects` directory. I also strongly recommend that you uncheck 
+any box whose description starts with the word "Restore", make sure "Always save 
+history" is unchecked, and if there is a dropdown option next to something that 
+says "save worksapce to .RData", set that to `never`. You are probably going to 
+be moving around a lot of data, and you don't want Rstudio trying to keep track 
+of all of it. You're writing code -- if you do it somewhat carefully, it will 
+always run and produce the same results. Save the code, don't save intermediate 
+data, unless that intermediate data takes a long time to process. Note that you 
+should also have an automatic backup set to backup your computer to a remote 
+device, and I'd suggest also using github to track changes and as another backup 
+for your code.
+
+## Creating a new Posit (Rstudio) project
+
+A project is a subset of the infrastructure in an R software package. You can use 
+a virtual environment, .Renviron files for environmental variables, etc. It is a 
+tool for reproducibility
+
+```{r}
+# if this is for the nineyMinuteInduction data, for example, you might call 
+# this project "ninetyMinInduction".
+project_name = "my_new_project"
+
+usethis::create_project(project_name)
+```
+
+## Using the project directory
+
+A new Rstudio session will launch in your new project directory. Now, whenever 
+you launch this project, all of your environment variables in .Renviron will be 
+loaded. If you are using a virtual environment (a good idea for reproducibility. 
+Use `renv`), then your virtual environment will be automatically launched, also.  
+
+The `/R` directory is for R scripts. You could make a `notebooks` directory, or 
+just put the notebook in the project parent directory, for example.
+
+[See here for a project directory example](https://github.com/cmatKhan/eds1_mimic_cc)
+
+## Using project level environmental variables in an active R project
+
+Just as with the user level environmental variables (see the homepage), 
+you can set environmental variables for a particular project. 
+These are read in addition to the user level variables, and will overwrite 
+them if there are two that are named the same thing. The first thing to do is 
+to make sure that the project level `.Renviron` is in the `.gitignore` 
+so that you don't accidentally push up login credentials to the cloud.
+
+```{r}
+# you can use this, or just click on the .gitignore file in the project
+usethis::edit_git_ignore('project')
+```
+
+In the `.gitignore` file, add `.Renviron`. Next, open a project level `.Renviron`
+
+```{r}
+usethis::edit_r_environ("project")
+```
+
+and edit as before. Remember to re-launch your R session after editing the 
+`.Renviron` to have access to the environmental variables.

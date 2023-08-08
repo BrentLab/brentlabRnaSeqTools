@@ -100,7 +100,7 @@ ep_list = list(
 # concat treatment and libraryDate columns. it is being removed here to solve
 # that issue
 
-ep_list$pert = ep_list$pert[,ep_list$pert$genotype1 != "CNAG_03894"]
+ep_list$pert = ep_list$pert[,ep_list$pert$genotype1 != "CKF44_03894"]
 ```
 
 # Quality Filter

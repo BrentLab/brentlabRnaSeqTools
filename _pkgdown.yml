@@ -15,7 +15,10 @@ articles:
   - Tally
   - Rank_Response_Plot
   - image_table_interactions
+  - exploring_dna_variants
   - create_R_package
+  - access_data_in_archive
+  - posit_projects
 
 reference:
 - title: Data objects
@@ -62,7 +65,7 @@ reference:
   - starts_with("brentlabRnaSeq")
   - coerceToDds
   - createExperimentSet
-  - createTestTrainSet
+  - test_train_partition
   - estimateSizeFactorsByProtocol
   - extractColData
   - extractDesignMatrix

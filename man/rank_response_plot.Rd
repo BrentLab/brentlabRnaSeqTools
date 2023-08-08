@@ -9,6 +9,7 @@ rank_response_plot(
   expression_df_list,
   binding_df_list,
   tf,
+  random_ratio,
   lfc_thres = 0,
   padj_thres = 0.05
 )
